@@ -2,12 +2,16 @@ package com.gyvacha.androidssh.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gyvacha.androidssh.domain.model.DatabaseResult
 import com.gyvacha.androidssh.domain.model.Host
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.state.AddHostUiState
+import com.gyvacha.androidssh.ui.utils.ViewEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,6 +21,9 @@ import javax.inject.Inject
 class AddHostViewModel @Inject constructor(
     private val insertHostUseCase: InsertHostUseCase
 ) : ViewModel() {
+
+    private val _eventFlow = MutableSharedFlow<ViewEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     private val _uiState = MutableStateFlow(AddHostUiState())
     val uiState = _uiState.asStateFlow()
@@ -73,7 +80,7 @@ class AddHostViewModel @Inject constructor(
 
     fun insertHost() {
         viewModelScope.launch {
-            insertHostUseCase(
+            val result = insertHostUseCase(
                 Host(
                     alias = _uiState.value.alias,
                     hostNameOrIp = _uiState.value.hostNameOrIp,
@@ -82,6 +89,16 @@ class AddHostViewModel @Inject constructor(
                     password = _uiState.value.password
                 )
             )
+            when (result) {
+                is DatabaseResult.Error -> {
+                    _eventFlow.emit(ViewEvent.DatabaseExceptionCaught(result.err))
+                }
+
+                DatabaseResult.Success -> {
+                    _eventFlow.emit(ViewEvent.HostInserted)
+                    _eventFlow.emit(ViewEvent.NavigateUp)
+                }
+            }
         }
     }
 

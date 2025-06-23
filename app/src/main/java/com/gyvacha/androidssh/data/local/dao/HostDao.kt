@@ -13,8 +13,8 @@ interface HostDao {
     fun getHosts(): Flow<List<HostEntity>>
 
     @Insert
-    suspend fun insertHost(host: HostEntity)
+    suspend fun insertHost(host: HostEntity): Long
 
     @Delete
-    suspend fun deleteHost(host: HostEntity)
+    suspend fun deleteHost(host: HostEntity): Int
 }

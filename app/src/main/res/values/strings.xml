@@ -23,4 +23,5 @@
     <!--  Errors  -->
     <string name="string_len_error">Превышен лимит символов</string>
     <string name="string_blank_error">Поле не должно быть пустым</string>
+    <string name="host_added_succesfully">Хост успешно добавлен!</string>
 </resources>

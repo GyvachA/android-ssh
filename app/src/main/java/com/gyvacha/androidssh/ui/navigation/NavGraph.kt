@@ -51,6 +51,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
             }
             composable<AppNavigation.HostsRoute.AddHost> {
                 AddHostScreen(
+                    navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.add_host),
                         canNavigateBack = navController.previousBackStackEntry != null,

@@ -1,6 +1,5 @@
 package com.gyvacha.androidssh.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -19,6 +19,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.components.BottomFabSaveActions
@@ -28,16 +30,30 @@ import com.gyvacha.androidssh.ui.components.TextFieldCharacterCount
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
 import com.gyvacha.androidssh.ui.components.getTextFieldErrorMessage
+import com.gyvacha.androidssh.ui.utils.ViewEvent
 import com.gyvacha.androidssh.ui.viewmodel.AddHostViewModel
+import com.gyvacha.androidssh.utils.LocalMessageNotifier
 
 @Composable
 fun AddHostScreen(
+    navController: NavController,
     topAppBarParams: TopAppBarParams,
     modifier: Modifier = Modifier,
     viewModel: AddHostViewModel = hiltViewModel()
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+    val messageNotifier = LocalMessageNotifier.current
+    val messageHostCreated = stringResource(R.string.host_added_succesfully)
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is ViewEvent.DatabaseExceptionCaught -> messageNotifier?.showSnackbar("Ошибка добавления хоста")
+                ViewEvent.HostInserted -> messageNotifier?.showSnackbar(messageHostCreated)
+                ViewEvent.NavigateUp -> navController.navigateUp()
+            }
+        }
+    }
 
     Scaffold(
         topBar = { TopAppBarWithBackButton(topAppBarParams) },
@@ -52,7 +68,7 @@ fun AddHostScreen(
                         viewModel.insertHost()
                     },
                     onCancel = {
-                        // TODO
+                        navController.navigateUp()
                     }
                 )
             }
@@ -152,5 +168,5 @@ fun AddHostScreen(
 @Composable
 @Preview
 fun AddHostPreview() {
-    AddHostScreen(TopAppBarParams.PREVIEW)
+    AddHostScreen(rememberNavController(), TopAppBarParams.PREVIEW)
 }
