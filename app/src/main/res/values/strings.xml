@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">android-ssh</string>
+
+    <!--    Bottom navigation bar    -->
+    <string name="label_settings">Настройки</string>
+    <string name="label_xray">XRAY</string>
+    <string name="label_servers">Хосты</string>
+    <string name="back_button">Назад</string>
+    <string name="comming_soon">Скоро...</string>
+    <string name="add">Добавить</string>
+    <string name="alias">Название</string>
+    <string name="add_host">Добавить хост</string>
+    <string name="address">Адрес</string>
+    <string name="port">Порт</string>
+    <string name="user_name">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="ssh_key">SSH ключ</string>
+    <string name="password_hide">Спрятать пароль</string>
+    <string name="password_show">Показать пароль</string>
+    <string name="cancel">Отменить</string>
+    <string name="save">Сохранить</string>
+
+    <!--  Errors  -->
+    <string name="string_len_error">Превышен лимит символов</string>
+    <string name="string_blank_error">Поле не должно быть пустым</string>
+</resources>

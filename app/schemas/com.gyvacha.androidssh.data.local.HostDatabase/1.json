@@ -1,0 +1,118 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "1e6213b1e19662608a47898c4ace3702",
+    "entities": [
+      {
+        "tableName": "hosts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`host_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `alias` TEXT NOT NULL, `host_name_or_ip` TEXT NOT NULL, `port` INTEGER NOT NULL, `user_name` TEXT NOT NULL, `password` TEXT, `ssh_key_id` INTEGER, FOREIGN KEY(`ssh_key_id`) REFERENCES `ssh_keys`(`ssh_key_id`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "hostId",
+            "columnName": "host_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alias",
+            "columnName": "alias",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hostNameOrIp",
+            "columnName": "host_name_or_ip",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "port",
+            "columnName": "port",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userName",
+            "columnName": "user_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sshKey",
+            "columnName": "ssh_key_id",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "host_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_hosts_ssh_key_id",
+            "unique": false,
+            "columnNames": [
+              "ssh_key_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_hosts_ssh_key_id` ON `${TABLE_NAME}` (`ssh_key_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ssh_keys",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "ssh_key_id"
+            ],
+            "referencedColumns": [
+              "ssh_key_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ssh_keys",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ssh_key_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `public_key` TEXT NOT NULL, `private_key` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "sshKeyId",
+            "columnName": "ssh_key_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "publicKey",
+            "columnName": "public_key",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "privateKey",
+            "columnName": "private_key",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "ssh_key_id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e6213b1e19662608a47898c4ace3702')"
+    ]
+  }
+}

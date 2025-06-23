@@ -1,0 +1,10 @@
+package com.gyvacha.androidssh.domain.repository
+
+import com.gyvacha.androidssh.domain.model.SshKey
+import kotlinx.coroutines.flow.Flow
+
+interface SshKeyRepository {
+    fun getSshKeys(): Flow<List<SshKey>>
+    suspend fun insertSshKey(sshKey: SshKey)
+    suspend fun deleteSshKey(sshKey: SshKey)
+}
