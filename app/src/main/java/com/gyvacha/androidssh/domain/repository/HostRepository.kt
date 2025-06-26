@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface HostRepository {
     fun getHosts(): Flow<List<Host>>
-    suspend fun insertHost(host: Host): Long
-    suspend fun deleteHost(host: Host): Int
+    suspend fun getHost(hostId: Int): Host
+    suspend fun insertHost(host: Host)
+    suspend fun deleteHost(host: Host)
 }

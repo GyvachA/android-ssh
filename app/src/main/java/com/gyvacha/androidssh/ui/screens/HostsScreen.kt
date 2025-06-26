@@ -5,13 +5,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gyvacha.androidssh.R
+import androidx.navigation.NavController
+import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.components.HostCard
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
@@ -19,12 +18,15 @@ import com.gyvacha.androidssh.ui.viewmodel.HostsViewModel
 
 @Composable
 fun HostsScreen(
+    navController: NavController,
     topAppBarParams: TopAppBarParams,
+    modifier: Modifier = Modifier,
     viewModel: HostsViewModel = hiltViewModel()
 ) {
     val hosts by viewModel.hosts.collectAsStateWithLifecycle()
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBarWithBackButton(
                 topAppBarParams
@@ -34,10 +36,14 @@ fun HostsScreen(
         LazyColumn(
             modifier = Modifier
                 .padding(padding)
-//                .padding(dimensionResource(R.dimen.small_padding))
         ) {
             items(hosts) { host ->
-                HostCard(host)
+                HostCard(
+                    host = host,
+                    onStartTerminal = {
+                        navController.navigate(AppNavigation.HostsRoute.Terminal(host.hostId))
+                    }
+                )
             }
         }
     }

@@ -31,11 +31,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -46,6 +46,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 }
@@ -66,6 +67,9 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.hierynomus.sshj)
+    implementation(libs.bouncycastle.crypto)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json)
     ksp(libs.room.compiler)
     ksp(libs.hilt.compiler)
@@ -79,7 +83,7 @@ dependencies {
 }
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(18)
     }
 }
 ksp {

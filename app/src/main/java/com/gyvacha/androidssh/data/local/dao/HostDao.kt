@@ -9,12 +9,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HostDao {
-    @Query("SELECT * FROM hosts")
+    @Query("SELECT host_id, alias, host_name_or_ip, port, user_name FROM hosts")
     fun getHosts(): Flow<List<HostEntity>>
 
+    @Query("SELECT * FROM hosts WHERE host_id = :hostId")
+    suspend fun getHost(hostId: Int): HostEntity
+
     @Insert
-    suspend fun insertHost(host: HostEntity): Long
+    suspend fun insertHost(host: HostEntity)
 
     @Delete
-    suspend fun deleteHost(host: HostEntity): Int
+    suspend fun deleteHost(host: HostEntity)
 }

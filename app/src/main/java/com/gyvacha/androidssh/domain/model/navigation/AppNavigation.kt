@@ -15,6 +15,11 @@ sealed interface AppNavigation: NavigationTarget {
     @Serializable
     data object HostsRoute : AppNavigation {
         @Serializable
+        data class Terminal(
+            val hostId: Int
+        ) : AppNavigation
+
+        @Serializable
         data object Hosts: AppNavigation
 
         @Serializable

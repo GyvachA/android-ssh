@@ -12,7 +12,7 @@ class CommandExecutor @Inject constructor() {
     fun execute(command: String): Flow<String> {
         return flow {
             try {
-                val process = ProcessBuilder(command.split(" "))
+                val process = ProcessBuilder(listOf("sh", "-c") + command.split(" "))
                     .redirectErrorStream(true)
                     .start()
                 process.inputStream.bufferedReader().use { reader ->

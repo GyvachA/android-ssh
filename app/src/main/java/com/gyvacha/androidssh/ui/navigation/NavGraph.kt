@@ -11,12 +11,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.screens.AddHostScreen
 import com.gyvacha.androidssh.ui.screens.HostsScreen
 import com.gyvacha.androidssh.ui.screens.SettingsScreen
+import com.gyvacha.androidssh.ui.screens.TerminalScreen
 import com.gyvacha.androidssh.ui.screens.XrayScreen
 
 @Composable
@@ -29,6 +31,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
         navigation<AppNavigation.HostsRoute>(startDestination = AppNavigation.HostsRoute.Hosts) {
             composable<AppNavigation.HostsRoute.Hosts> {
                 HostsScreen(
+                    navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.label_servers),
                         canNavigateBack = navController.previousBackStackEntry != null,
@@ -54,6 +57,17 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                     navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.add_host),
+                        canNavigateBack = navController.previousBackStackEntry != null,
+                        navigateUp = navController::navigateUp
+                    )
+                )
+            }
+            composable<AppNavigation.HostsRoute.Terminal> { backstackEntry ->
+                val hostId = backstackEntry.toRoute<AppNavigation.HostsRoute.Terminal>().hostId
+                TerminalScreen(
+                    hostId = hostId,
+                    topAppBarParams = TopAppBarParams(
+                        screenTitle = stringResource(R.string.terminal),
                         canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = navController::navigateUp
                     )

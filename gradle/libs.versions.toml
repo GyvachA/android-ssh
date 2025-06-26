@@ -15,6 +15,8 @@ hiltNavigationCompose = "1.2.0"
 room = "2.7.1"
 materialIcons = "1.7.8"
 kotlinxSerialization = "1.7.3"
+sshj = "0.38.0"
+bouncycastle = "1.81"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +42,8 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+hierynomus-sshj = { group = "com.hierynomus", name = "sshj", version.ref = "sshj" }
+bouncycastle-crypto = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
 
 
 [plugins]

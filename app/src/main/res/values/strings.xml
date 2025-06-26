@@ -6,7 +6,7 @@
     <string name="label_xray">XRAY</string>
     <string name="label_servers">Хосты</string>
     <string name="back_button">Назад</string>
-    <string name="comming_soon">Скоро...</string>
+    <string name="comming_soon">Скоро…</string>
     <string name="add">Добавить</string>
     <string name="alias">Название</string>
     <string name="add_host">Добавить хост</string>
@@ -24,4 +24,7 @@
     <string name="string_len_error">Превышен лимит символов</string>
     <string name="string_blank_error">Поле не должно быть пустым</string>
     <string name="host_added_succesfully">Хост успешно добавлен!</string>
+    <string name="send">Отправить</string>
+    <string name="start_terminal">Открыть терминал</string>
+    <string name="terminal">Терминал</string>
 </resources>
