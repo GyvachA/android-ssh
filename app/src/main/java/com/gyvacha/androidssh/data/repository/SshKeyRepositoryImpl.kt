@@ -5,6 +5,7 @@ import com.gyvacha.androidssh.domain.model.SshKey
 import com.gyvacha.androidssh.domain.model.toDomain
 import com.gyvacha.androidssh.domain.model.toEntity
 import com.gyvacha.androidssh.domain.repository.SshKeyRepository
+import com.gyvacha.androidssh.utils.SshKeyGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -29,6 +30,24 @@ class SshKeyRepositoryImpl @Inject constructor(
     override suspend fun deleteSshKey(sshKey: SshKey) {
         withContext(Dispatchers.IO) {
             sshKeyDao.deleteSshKey(sshKey.toEntity())
+        }
+    }
+
+    override suspend fun generateSshKey(algorithm: SshKeyGenerator.Algorithm, passphrase: String?): SshKey {
+        return withContext(Dispatchers.IO) {
+            val keyPair = when (algorithm) {
+                SshKeyGenerator.Algorithm.ALGORITHM_RSA -> {
+                    SshKeyGenerator.generateRsaKeyPair()
+                }
+                SshKeyGenerator.Algorithm.ALGORITHM_ED25519 -> {
+                    SshKeyGenerator.generateEd25519KeyPair()
+                }
+            }
+            SshKey(
+                alias = "Generated key pair",
+                publicKey = SshKeyGenerator.convertToOpenSshPublicKey(keyPair),
+                privateKey = SshKeyGenerator.privateKeyPem(keyPair, passphrase)
+            )
         }
     }
 }

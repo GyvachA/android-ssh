@@ -24,8 +24,10 @@ fun TextFieldCharacterCount(
     TextFieldBase(
         value = value,
         label = label,
-        onValueChange = onValueChange,
-        modifier = modifier,
+        onValueChange = {
+            if (it.length <= maxLength) onValueChange(it)
+        },
+        modifier = modifier.fillMaxWidth(),
         keyboardOptions = keyboardOptions,
         isError = isError,
         supportingText = {

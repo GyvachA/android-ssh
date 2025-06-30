@@ -14,5 +14,7 @@ data class AddHostUiState(
     val isHostNameOrIpError: TextFieldErrors? = null,
     val isPortError: TextFieldErrors? = null,
     val isUserNameError: TextFieldErrors? = null,
-    val isFormValid: Boolean = false
+    val isFormValid: Boolean = false,
+    val isShowBottomSheet: Boolean = false,
+    val isShowGenerateSshKeyDialog: Boolean = false,
 )

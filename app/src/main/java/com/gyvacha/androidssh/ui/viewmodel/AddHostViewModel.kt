@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gyvacha.androidssh.domain.model.DatabaseResult
 import com.gyvacha.androidssh.domain.model.Host
+import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.state.AddHostUiState
@@ -11,15 +12,18 @@ import com.gyvacha.androidssh.ui.utils.ViewEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddHostViewModel @Inject constructor(
-    private val insertHostUseCase: InsertHostUseCase
+    private val insertHostUseCase: InsertHostUseCase,
+    getSshKeysUseCase: GetSshKeysUseCase
 ) : ViewModel() {
 
     private val _eventFlow = MutableSharedFlow<ViewEvent>()
@@ -27,6 +31,25 @@ class AddHostViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(AddHostUiState())
     val uiState = _uiState.asStateFlow()
+
+    val sshKeys = getSshKeysUseCase()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun updateShowBottomSheet(newState: Boolean) {
+        _uiState.update {
+            it.copy(
+                isShowBottomSheet = newState
+            )
+        }
+    }
+
+    fun updateShowGenerateSshKeyDialog(newState: Boolean) {
+        _uiState.update {
+            it.copy(
+                isShowGenerateSshKeyDialog = newState
+            )
+        }
+    }
 
     fun updateAlias(newAlias: String, isError: TextFieldErrors?) {
         _uiState.update {
@@ -68,10 +91,6 @@ class AddHostViewModel @Inject constructor(
 
     fun updatePassword(newPassword: String) {
         _uiState.update { it.copy(password = newPassword) }
-    }
-
-    fun updateSshKey(newSshKey: String) {
-        _uiState.update { it.copy(sshKey = newSshKey.toInt()) }
     }
 
     fun updatePasswordVisibility(newVisibility: Boolean) {

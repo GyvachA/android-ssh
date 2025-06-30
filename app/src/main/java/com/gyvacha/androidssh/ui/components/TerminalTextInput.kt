@@ -47,7 +47,7 @@ fun TerminalTextInput(
             TextFieldBase(
                 value = inputValue,
                 onValueChange = onValueChange,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,

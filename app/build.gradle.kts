@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.gyvacha.androidssh"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.hierynomus.sshj)
     implementation(libs.bouncycastle.crypto)
+    implementation(libs.bouncycastle.pkix)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json)
     ksp(libs.room.compiler)

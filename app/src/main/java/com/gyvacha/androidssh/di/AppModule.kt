@@ -2,12 +2,15 @@ package com.gyvacha.androidssh.di
 
 import com.gyvacha.androidssh.data.CommandExecutor
 import com.gyvacha.androidssh.data.local.dao.HostDao
+import com.gyvacha.androidssh.data.local.dao.SshKeyDao
 import com.gyvacha.androidssh.data.repository.HostRepositoryImpl
+import com.gyvacha.androidssh.data.repository.SshKeyRepositoryImpl
 import com.gyvacha.androidssh.data.repository.SshRepositoryImpl
 import com.gyvacha.androidssh.domain.repository.HostRepository
 import com.gyvacha.androidssh.domain.repository.SshKeyRepository
 import com.gyvacha.androidssh.domain.repository.SshRepository
 import com.gyvacha.androidssh.domain.usecase.ExecuteCommandUseCase
+import com.gyvacha.androidssh.domain.usecase.GenerateSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostsUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
@@ -33,6 +36,10 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideSshKeyRepository(sshKeyDao: SshKeyDao): SshKeyRepository = SshKeyRepositoryImpl(sshKeyDao)
+
+    @Provides
+    @Singleton
     fun provideCommandExecutor(): CommandExecutor = CommandExecutor()
 
     @Provides
@@ -53,6 +60,9 @@ object AppModule {
 
     @Provides
     fun provideInsertSshKeyUseCase(repository: SshKeyRepository): InsertSshKeyUseCase = InsertSshKeyUseCase(repository)
+
+    @Provides
+    fun provideGenerateSshKeyUseCase(repository: SshKeyRepository): GenerateSshKeyUseCase = GenerateSshKeyUseCase(repository)
 
     @Provides
     @Singleton

@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -27,7 +28,7 @@ fun SecureTextField(
     TextFieldBase(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions.Default.copy(
             autoCorrectEnabled = false,

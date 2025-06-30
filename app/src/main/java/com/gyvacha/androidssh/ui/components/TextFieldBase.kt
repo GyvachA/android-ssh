@@ -1,6 +1,6 @@
 package com.gyvacha.androidssh.ui.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
@@ -30,11 +30,14 @@ fun TextFieldBase(
     supportingText: @Composable() (() -> Unit)? = null,
     textStyle: TextStyle = LocalTextStyle.current,
     shape: Shape = OutlinedTextFieldDefaults.shape,
+    readOnly: Boolean = false,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         visualTransformation = visualTransformation,
         label = label,
         maxLines = maxLines,
@@ -46,6 +49,9 @@ fun TextFieldBase(
         supportingText = supportingText,
         textStyle = textStyle,
         singleLine = singleLine,
-        shape = shape
+        shape = shape,
+        readOnly = readOnly,
+        interactionSource = interactionSource,
+        enabled = enabled
     )
 }

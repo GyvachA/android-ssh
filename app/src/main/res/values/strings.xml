@@ -27,4 +27,11 @@
     <string name="send">Отправить</string>
     <string name="start_terminal">Открыть терминал</string>
     <string name="terminal">Терминал</string>
+    <string name="open_list">Открыть список</string>
+    <string name="list_blank">Пустой список</string>
+    <string name="algorithm">Алгоритм</string>
+    <string name="create_ssh_key">Создать SSH-ключ</string>
+    <string name="choose_ssh_key">Выбрать SSH-ключ</string>
+    <string name="select_ssh_key">Выбрать SSH-ключ</string>
+    <string name="close_list">Закрыть список</string>
 </resources>

@@ -24,7 +24,6 @@ fun HostsScreen(
     viewModel: HostsViewModel = hiltViewModel()
 ) {
     val hosts by viewModel.hosts.collectAsStateWithLifecycle()
-
     Scaffold(
         modifier = modifier,
         topBar = {

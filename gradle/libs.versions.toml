@@ -7,7 +7,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2025.06.00"
+composeBom = "2025.06.01"
 hilt = "2.49"
 ksp = "2.0.21-1.0.27"
 navigationCompose = "2.9.0"
@@ -15,7 +15,7 @@ hiltNavigationCompose = "1.2.0"
 room = "2.7.1"
 materialIcons = "1.7.8"
 kotlinxSerialization = "1.7.3"
-sshj = "0.38.0"
+sshj = "0.40.0"
 bouncycastle = "1.81"
 
 [libraries]
@@ -44,6 +44,7 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 hierynomus-sshj = { group = "com.hierynomus", name = "sshj", version.ref = "sshj" }
 bouncycastle-crypto = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-pkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 
 
 [plugins]
