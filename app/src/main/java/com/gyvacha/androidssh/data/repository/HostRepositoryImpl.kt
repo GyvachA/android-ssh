@@ -2,6 +2,7 @@ package com.gyvacha.androidssh.data.repository
 
 import com.gyvacha.androidssh.data.local.dao.HostDao
 import com.gyvacha.androidssh.domain.model.Host
+import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.toDomain
 import com.gyvacha.androidssh.domain.model.toEntity
 import com.gyvacha.androidssh.domain.repository.HostRepository
@@ -24,6 +25,12 @@ class HostRepositoryImpl @Inject constructor(
     override suspend fun getHost(hostId: Int): Host {
         return withContext(Dispatchers.IO) {
             hostDao.getHost(hostId).toDomain()
+        }
+    }
+
+    override suspend fun getHostWithSshKey(hostId: Int): HostWithSshKey {
+        return withContext(Dispatchers.IO) {
+            hostDao.getHostWithSshKey(hostId).toDomain()
         }
     }
 

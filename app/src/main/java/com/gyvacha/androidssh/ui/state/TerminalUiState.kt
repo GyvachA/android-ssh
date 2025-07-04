@@ -1,6 +1,7 @@
 package com.gyvacha.androidssh.ui.state
 
 import com.gyvacha.androidssh.domain.model.Host
+import com.gyvacha.androidssh.domain.model.SshAuthType
 
 data class TerminalUiState(
     val terminalOutput: List<String> = listOf("Welcome to Terminal!"),
@@ -10,6 +11,7 @@ data class TerminalUiState(
         hostNameOrIp = "",
         port = 0,
         alias = "",
-        userName = ""
+        userName = "",
+        authType = SshAuthType.SSH_KEY
     )
 )

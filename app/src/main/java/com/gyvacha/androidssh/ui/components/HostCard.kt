@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.Host
+import com.gyvacha.androidssh.domain.model.SshAuthType
 
 @Composable
 fun HostCard(
@@ -55,6 +57,11 @@ fun HostCard(
             ) {
                 Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.start_terminal))
             }
+            IconButton(
+                onClick = onStartTerminal
+            ) {
+                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = stringResource(R.string.open_menu))
+            }
         }
     }
 }
@@ -68,7 +75,8 @@ fun HostCardPreview() {
             alias = "Alias",
             hostNameOrIp = "127.0.0.1",
             port = 22,
-            userName = "UserName"
+            userName = "UserName",
+            authType = SshAuthType.SSH_KEY
         ),
         onStartTerminal = {}
     )

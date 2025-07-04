@@ -21,8 +21,8 @@ class SshKeyRepositoryImpl @Inject constructor(
         entities.map { it.toDomain() }
     }
 
-    override suspend fun insertSshKey(sshKey: SshKey) {
-        withContext(Dispatchers.IO) {
+    override suspend fun insertSshKey(sshKey: SshKey): Long {
+        return withContext(Dispatchers.IO) {
             sshKeyDao.insertSshKey(sshKey.toEntity())
         }
     }

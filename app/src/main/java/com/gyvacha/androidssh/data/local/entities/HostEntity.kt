@@ -30,6 +30,8 @@ data class HostEntity(
     val port: Int,
     @ColumnInfo(name = "user_name")
     val userName: String,
+    @ColumnInfo(name = "auth_type")
+    val authType: String,
     @ColumnInfo(name = "password")
     val password: String?,
     @ColumnInfo(name = "ssh_key_id")

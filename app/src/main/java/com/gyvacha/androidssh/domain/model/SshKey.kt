@@ -6,7 +6,7 @@ data class SshKey(
     val sshKeyId: Int = 0,
     val alias: String,
     val publicKey: String,
-    val privateKey: String?,
+    val privateKey: String? = null,
     val passphrase: String? = null
 )
 

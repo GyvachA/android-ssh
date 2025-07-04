@@ -10,9 +10,34 @@ data class Host(
     val hostNameOrIp: String,
     val port: Int,
     val userName: String,
+    val authType: SshAuthType,
     val password: String? = null,
     val sshKey: Int? = null
 )
 
-fun HostEntity.toDomain() = Host(hostId, alias, hostNameOrIp, port, userName, password, sshKey)
-fun Host.toEntity() = HostEntity(hostId, alias, hostNameOrIp, port, userName, password, sshKey)
+fun HostEntity.toDomain() = Host(
+    hostId = hostId,
+    alias = alias,
+    hostNameOrIp = hostNameOrIp,
+    port = port,
+    userName = userName,
+    password = password,
+    sshKey = sshKey,
+    authType = SshAuthType.valueOf(authType)
+)
+fun Host.toEntity() = HostEntity(
+    hostId = hostId,
+    alias =alias,
+    hostNameOrIp = hostNameOrIp,
+    port = port,
+    userName = userName,
+    password = password,
+    sshKey = sshKey,
+    authType = authType.name
+)
+
+
+enum class SshAuthType {
+    PASSWORD,
+    SSH_KEY
+}

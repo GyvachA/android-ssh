@@ -13,7 +13,7 @@ interface SshKeyDao {
     fun getSshKeys(): Flow<List<SshKeyEntity>>
 
     @Insert
-    suspend fun insertSshKey(sshKey: SshKeyEntity)
+    suspend fun insertSshKey(sshKey: SshKeyEntity): Long
 
     @Delete
     suspend fun deleteSshKey(sshKey: SshKeyEntity)

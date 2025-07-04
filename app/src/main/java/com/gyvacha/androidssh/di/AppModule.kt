@@ -12,6 +12,7 @@ import com.gyvacha.androidssh.domain.repository.SshRepository
 import com.gyvacha.androidssh.domain.usecase.ExecuteCommandUseCase
 import com.gyvacha.androidssh.domain.usecase.GenerateSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostUseCase
+import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostsUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
@@ -51,6 +52,9 @@ object AppModule {
 
     @Provides
     fun provideGetHostUseCase(repository: HostRepository): GetHostUseCase = GetHostUseCase(repository)
+
+    @Provides
+    fun provideGetHostWithSshKeyUseCase(repository: HostRepository): GetHostWithSshKeyUseCase = GetHostWithSshKeyUseCase(repository)
 
     @Provides
     fun provideInsertHostUseCase(repository: HostRepository): InsertHostUseCase = InsertHostUseCase(repository)

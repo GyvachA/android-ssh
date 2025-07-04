@@ -1,6 +1,5 @@
 package com.gyvacha.androidssh.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
@@ -20,14 +19,17 @@ import com.gyvacha.androidssh.utils.SshKeyGenerator
 
 @Composable
 fun GenerateSshKeyDialog(
-    onSave: () -> Unit,
+    onSave: (String, String) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var sshKeyAlias by rememberSaveable { mutableStateOf("Host Key") }
     var sshKeyAlgorithm by rememberSaveable { mutableStateOf(SshKeyGenerator.Algorithm.ALGORITHM_ED25519.title) }
     var sshKeyAlgorithmMenuExpanded by rememberSaveable { mutableStateOf(false) }
-    val algorithmList = listOf(SshKeyGenerator.Algorithm.ALGORITHM_ED25519.title, SshKeyGenerator.Algorithm.ALGORITHM_RSA.title)
+    val algorithmList = listOf(
+        SshKeyGenerator.Algorithm.ALGORITHM_ED25519.title,
+        SshKeyGenerator.Algorithm.ALGORITHM_RSA.title
+    )
     var saveButtonEnabled by rememberSaveable { mutableStateOf(true) }
 
     AlertDialog(
@@ -52,10 +54,7 @@ fun GenerateSshKeyDialog(
                     selectedOption = sshKeyAlgorithm,
                     onDismiss = { sshKeyAlgorithmMenuExpanded = false },
                     expanded = sshKeyAlgorithmMenuExpanded,
-                    onMenuClick = {
-                        sshKeyAlgorithmMenuExpanded = true
-                        Log.e("AVAVA", "WTF")
-                                  },
+                    onMenuClick = { sshKeyAlgorithmMenuExpanded = true },
                     label = stringResource(R.string.algorithm),
                 ) {
                     algorithmList.forEach { algorithm ->
@@ -72,7 +71,9 @@ fun GenerateSshKeyDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = { onSave() },
+                onClick = {
+                    onSave(sshKeyAlias, sshKeyAlgorithm)
+                },
                 enabled = saveButtonEnabled
             ) {
                 Text(stringResource(R.string.save))
@@ -91,7 +92,7 @@ fun GenerateSshKeyDialog(
 @Preview
 fun GenerateSshKeyDialogPreview() {
     GenerateSshKeyDialog(
-        onSave = {},
+        onSave = { _, _ -> },
         onDismiss = {},
     )
 }

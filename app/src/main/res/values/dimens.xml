@@ -6,4 +6,5 @@
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="large_icon_size">156dp</dimen>
     <dimen name="card_corner">16dp</dimen>
+    <dimen name="large_round_corner">32dp</dimen>
 </resources>

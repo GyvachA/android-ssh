@@ -35,7 +35,9 @@ object SshKeyGenerator {
                 "ssh-ed25519 $base64"
             }
             Algorithm.ALGORITHM_RSA.title -> {
-                val rsaPubKey = keyPair.public as RSAPublicKey
+                val encoded = keyPair.public.encoded
+                val subjectPublicKeyInfo = org.bouncycastle.asn1.x509.SubjectPublicKeyInfo.getInstance(encoded)
+                val rsaPubKey = RSAPublicKey.getInstance(subjectPublicKeyInfo.parsePublicKey())
                 val byteStream = ByteArrayOutputStream()
                 val dos = DataOutputStream(byteStream)
                 val sshRsaString = "ssh-rsa".toByteArray()

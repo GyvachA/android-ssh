@@ -11,8 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.SshKey
@@ -21,7 +21,9 @@ import com.gyvacha.androidssh.domain.model.SshKey
 fun SshKeyCard(
     onClick: () -> Unit,
     sshKey: SshKey,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    actionButtonImage: ImageVector,
+    actionButtonDesc: String?
 ) {
     BaseCard(
         modifier = modifier,
@@ -40,7 +42,7 @@ fun SshKeyCard(
             IconButton(
                 onClick = onClick
             ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(R.string.select_ssh_key))
+                Icon(imageVector = actionButtonImage, contentDescription = actionButtonDesc)
             }
         }
     }
@@ -55,6 +57,8 @@ fun SshKeyCardPreview() {
             publicKey = "pub",
             privateKey = "priv"
         ),
-        onClick = {}
+        onClick = {},
+        actionButtonImage = Icons.Filled.Add,
+        actionButtonDesc = null
     )
 }

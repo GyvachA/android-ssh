@@ -1,14 +1,20 @@
 package com.gyvacha.androidssh.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gyvacha.androidssh.domain.model.DatabaseResult
 import com.gyvacha.androidssh.domain.model.Host
+import com.gyvacha.androidssh.domain.model.SshAuthType
+import com.gyvacha.androidssh.domain.model.SshKey
+import com.gyvacha.androidssh.domain.usecase.GenerateSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
+import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.state.AddHostUiState
 import com.gyvacha.androidssh.ui.utils.ViewEvent
+import com.gyvacha.androidssh.utils.SshKeyGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddHostViewModel @Inject constructor(
     private val insertHostUseCase: InsertHostUseCase,
+    private val insertSshKeyUseCase: InsertSshKeyUseCase,
+    private val generateSshKeyUseCase: GenerateSshKeyUseCase,
     getSshKeysUseCase: GetSshKeysUseCase
 ) : ViewModel() {
 
@@ -35,6 +43,23 @@ class AddHostViewModel @Inject constructor(
     val sshKeys = getSshKeysUseCase()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
+    fun generateSshKey(algorithm: SshKeyGenerator.Algorithm, alias: String, passphrase: String? = null) {
+        viewModelScope.launch {
+            runCatching {
+                val sshKey = generateSshKeyUseCase(algorithm, passphrase).copy(alias = alias)
+                val sshKeyId = insertSshKeyUseCase(sshKey)
+                updateSshKey(SshKey(sshKeyId = sshKeyId.toInt(), alias = alias, publicKey = sshKey.publicKey))
+            }
+                .onSuccess {
+                    _eventFlow.emit(ViewEvent.SshKeyCreated)
+                }
+                .onFailure { err ->
+                    _eventFlow.emit(ViewEvent.SshKeyCreateFailure)
+                    Log.e(AddHostViewModel::class.simpleName, err.localizedMessage, err)
+                }
+        }
+    }
+
     fun updateShowBottomSheet(newState: Boolean) {
         _uiState.update {
             it.copy(
@@ -43,10 +68,26 @@ class AddHostViewModel @Inject constructor(
         }
     }
 
+    fun updateSshKey(sshKey: SshKey?) {
+        _uiState.update {
+            it.copy(
+                sshKey = sshKey
+            )
+        }
+    }
+
     fun updateShowGenerateSshKeyDialog(newState: Boolean) {
         _uiState.update {
             it.copy(
                 isShowGenerateSshKeyDialog = newState
+            )
+        }
+    }
+
+    fun updateSshAuthType(newAuthType: SshAuthType) {
+        _uiState.update {
+            it.copy(
+                sshAuthType = newAuthType
             )
         }
     }
@@ -101,11 +142,13 @@ class AddHostViewModel @Inject constructor(
         viewModelScope.launch {
             val result = insertHostUseCase(
                 Host(
-                    alias = _uiState.value.alias,
+                    alias = _uiState.value.alias.trim(),
                     hostNameOrIp = _uiState.value.hostNameOrIp,
                     port = _uiState.value.port,
-                    userName = _uiState.value.userName,
-                    password = _uiState.value.password
+                    userName = _uiState.value.userName.trim(),
+                    password = _uiState.value.password,
+                    sshKey = _uiState.value.sshKey?.sshKeyId,
+                    authType = _uiState.value.sshAuthType
                 )
             )
             when (result) {
@@ -122,10 +165,10 @@ class AddHostViewModel @Inject constructor(
     }
 
     private fun updateIsFormValid() {
-        val isFormValid = !(_uiState.value.isAliasError != null ||
-                _uiState.value.isPortError != null ||
-                _uiState.value.isHostNameOrIpError != null ||
-                _uiState.value.isUserNameError != null)
+        val isFormValid = _uiState.value.alias.isNotBlank() &&
+                _uiState.value.port != 0 &&
+                _uiState.value.hostNameOrIp.isNotBlank() &&
+                _uiState.value.userName.isNotBlank()
         _uiState.update { it.copy(isFormValid = isFormValid) }
     }
 }

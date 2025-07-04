@@ -34,4 +34,10 @@
     <string name="choose_ssh_key">Выбрать SSH-ключ</string>
     <string name="select_ssh_key">Выбрать SSH-ключ</string>
     <string name="close_list">Закрыть список</string>
+    <string name="host_create_failure">Ошибка добавления хоста</string>
+    <string name="ssh_key_created">SSH-ключ успешно создан</string>
+    <string name="ssh_key_create_failure">Ошибка при создании SSH-ключа</string>
+    <string name="update_ssh_key">Поменять SSH-ключ</string>
+    <string name="auth_method">Метод авторизации</string>
+    <string name="open_menu">Открыть меню</string>
 </resources>
