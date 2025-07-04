@@ -23,7 +23,9 @@ sealed interface AppNavigation: NavigationTarget {
         data object Hosts: AppNavigation
 
         @Serializable
-        data object AddHost: AppNavigation
+        data class EditHost(
+            val hostId: Int? = null
+        ): AppNavigation
     }
 
     @Serializable

@@ -41,6 +41,9 @@ fun HostsScreen(
                     host = host,
                     onStartTerminal = {
                         navController.navigate(AppNavigation.HostsRoute.Terminal(host.hostId))
+                    },
+                    onCardClick = {
+                        navController.navigate(AppNavigation.HostsRoute.EditHost(host.hostId))
                     }
                 )
             }

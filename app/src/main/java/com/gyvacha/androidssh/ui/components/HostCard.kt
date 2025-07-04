@@ -27,8 +27,10 @@ fun HostCard(
     host: Host,
     modifier: Modifier = Modifier,
     onStartTerminal: () -> Unit,
+    onCardClick: () -> Unit,
 ) {
     BaseCard(
+        onClick = { onCardClick() },
         modifier = modifier
     ) {
         Row(
@@ -55,12 +57,12 @@ fun HostCard(
             IconButton(
                 onClick = onStartTerminal
             ) {
-                Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.start_terminal))
+                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = stringResource(R.string.open_menu))
             }
             IconButton(
                 onClick = onStartTerminal
             ) {
-                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = stringResource(R.string.open_menu))
+                Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.start_terminal))
             }
         }
     }
@@ -78,6 +80,7 @@ fun HostCardPreview() {
             userName = "UserName",
             authType = SshAuthType.SSH_KEY
         ),
-        onStartTerminal = {}
+        onStartTerminal = {},
+        onCardClick = {}
     )
 }

@@ -1,16 +1,23 @@
 package com.gyvacha.androidssh.ui.state
 
+import com.gyvacha.androidssh.domain.model.Host
+import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
-import com.gyvacha.androidssh.domain.model.SshKey
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 
 data class AddHostUiState(
-    val alias: String = "Host",
-    val hostNameOrIp: String = "",
-    val port: Int = 22,
-    val userName: String = "",
-    val password: String = "",
-    val sshKey: SshKey? = null,
+    val hostWithSshKey: HostWithSshKey = HostWithSshKey(
+        host = Host(
+            hostId = -1,
+            alias = "Host",
+            hostNameOrIp = "",
+            port = 22,
+            userName = "",
+            password = "",
+            authType = SshAuthType.PASSWORD
+        ),
+        sshKey = null
+    ),
     val isPasswordVisible: Boolean = false,
     val isAliasError: TextFieldErrors? = null,
     val isHostNameOrIpError: TextFieldErrors? = null,
@@ -19,5 +26,4 @@ data class AddHostUiState(
     val isFormValid: Boolean = false,
     val isShowBottomSheet: Boolean = false,
     val isShowGenerateSshKeyDialog: Boolean = false,
-    val sshAuthType: SshAuthType = SshAuthType.PASSWORD
 )

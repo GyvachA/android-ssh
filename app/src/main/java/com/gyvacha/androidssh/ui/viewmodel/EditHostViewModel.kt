@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gyvacha.androidssh.domain.model.DatabaseResult
 import com.gyvacha.androidssh.domain.model.Host
+import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
 import com.gyvacha.androidssh.domain.model.SshKey
 import com.gyvacha.androidssh.domain.usecase.GenerateSshKeyUseCase
+import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
@@ -27,10 +29,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddHostViewModel @Inject constructor(
+class EditHostViewModel @Inject constructor(
     private val insertHostUseCase: InsertHostUseCase,
     private val insertSshKeyUseCase: InsertSshKeyUseCase,
     private val generateSshKeyUseCase: GenerateSshKeyUseCase,
+    private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase,
     getSshKeysUseCase: GetSshKeysUseCase
 ) : ViewModel() {
 
@@ -43,19 +46,29 @@ class AddHostViewModel @Inject constructor(
     val sshKeys = getSshKeysUseCase()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    fun generateSshKey(algorithm: SshKeyGenerator.Algorithm, alias: String, passphrase: String? = null) {
+    fun generateSshKey(
+        algorithm: SshKeyGenerator.Algorithm,
+        alias: String,
+        passphrase: String? = null
+    ) {
         viewModelScope.launch {
             runCatching {
                 val sshKey = generateSshKeyUseCase(algorithm, passphrase).copy(alias = alias)
                 val sshKeyId = insertSshKeyUseCase(sshKey)
-                updateSshKey(SshKey(sshKeyId = sshKeyId.toInt(), alias = alias, publicKey = sshKey.publicKey))
+                updateSshKey(
+                    SshKey(
+                        sshKeyId = sshKeyId.toInt(),
+                        alias = alias,
+                        publicKey = sshKey.publicKey
+                    )
+                )
             }
                 .onSuccess {
                     _eventFlow.emit(ViewEvent.SshKeyCreated)
                 }
                 .onFailure { err ->
                     _eventFlow.emit(ViewEvent.SshKeyCreateFailure)
-                    Log.e(AddHostViewModel::class.simpleName, err.localizedMessage, err)
+                    Log.e(EditHostViewModel::class.simpleName, err.localizedMessage, err)
                 }
         }
     }
@@ -71,7 +84,9 @@ class AddHostViewModel @Inject constructor(
     fun updateSshKey(sshKey: SshKey?) {
         _uiState.update {
             it.copy(
-                sshKey = sshKey
+                hostWithSshKey = it.hostWithSshKey.copy(
+                    sshKey = sshKey
+                ),
             )
         }
     }
@@ -87,7 +102,11 @@ class AddHostViewModel @Inject constructor(
     fun updateSshAuthType(newAuthType: SshAuthType) {
         _uiState.update {
             it.copy(
-                sshAuthType = newAuthType
+                hostWithSshKey = it.hostWithSshKey.copy(
+                    host = it.hostWithSshKey.host.copy(
+                        authType = newAuthType
+                    )
+                ),
             )
         }
     }
@@ -95,7 +114,11 @@ class AddHostViewModel @Inject constructor(
     fun updateAlias(newAlias: String, isError: TextFieldErrors?) {
         _uiState.update {
             it.copy(
-                alias = newAlias,
+                hostWithSshKey = it.hostWithSshKey.copy(
+                    host = it.hostWithSshKey.host.copy(
+                        alias = newAlias
+                    )
+                ),
                 isAliasError = isError
             )
         }
@@ -105,7 +128,11 @@ class AddHostViewModel @Inject constructor(
     fun updateHostNameOrIp(newHostNameOrIp: String, isError: TextFieldErrors?) {
         _uiState.update {
             it.copy(
-                hostNameOrIp = newHostNameOrIp,
+                hostWithSshKey = it.hostWithSshKey.copy(
+                    host = it.hostWithSshKey.host.copy(
+                        hostNameOrIp = newHostNameOrIp
+                    )
+                ),
                 isHostNameOrIpError = isError
             )
         }
@@ -115,7 +142,11 @@ class AddHostViewModel @Inject constructor(
     fun updatePort(newPort: String, isError: TextFieldErrors?) {
         _uiState.update {
             it.copy(
-                port = newPort.toInt(),
+                hostWithSshKey = it.hostWithSshKey.copy(
+                    host = it.hostWithSshKey.host.copy(
+                        port = newPort.toInt()
+                    )
+                ),
                 isPortError = isError
             )
         }
@@ -124,14 +155,34 @@ class AddHostViewModel @Inject constructor(
     fun updateUserName(newUserName: String, isError: TextFieldErrors?) {
         _uiState.update {
             it.copy(
-                userName = newUserName,
+                hostWithSshKey = it.hostWithSshKey.copy(
+                    host = it.hostWithSshKey.host.copy(
+                        userName = newUserName
+                    )
+                ),
                 isUserNameError = isError
             )
         }
     }
 
     fun updatePassword(newPassword: String) {
-        _uiState.update { it.copy(password = newPassword) }
+        _uiState.update {
+            it.copy(
+                hostWithSshKey = it.hostWithSshKey.copy(
+                    host = it.hostWithSshKey.host.copy(
+                        password = newPassword
+                    )
+                ),
+            )
+        }
+    }
+
+
+    fun getHostWithSshKey(newHostId: Int) {
+        viewModelScope.launch {
+            val hostWithSshKey = getHostWithSshKeyUseCase(newHostId)
+            updateHostWithSshKey(hostWithSshKey)
+        }
     }
 
     fun updatePasswordVisibility(newVisibility: Boolean) {
@@ -142,13 +193,13 @@ class AddHostViewModel @Inject constructor(
         viewModelScope.launch {
             val result = insertHostUseCase(
                 Host(
-                    alias = _uiState.value.alias.trim(),
-                    hostNameOrIp = _uiState.value.hostNameOrIp,
-                    port = _uiState.value.port,
-                    userName = _uiState.value.userName.trim(),
-                    password = _uiState.value.password,
-                    sshKey = _uiState.value.sshKey?.sshKeyId,
-                    authType = _uiState.value.sshAuthType
+                    alias = _uiState.value.hostWithSshKey.host.alias.trim(),
+                    hostNameOrIp = _uiState.value.hostWithSshKey.host.hostNameOrIp,
+                    port = _uiState.value.hostWithSshKey.host.port,
+                    userName = _uiState.value.hostWithSshKey.host.userName.trim(),
+                    password = _uiState.value.hostWithSshKey.host.password,
+                    sshKey = _uiState.value.hostWithSshKey.sshKey?.sshKeyId,
+                    authType = _uiState.value.hostWithSshKey.host.authType
                 )
             )
             when (result) {
@@ -164,11 +215,17 @@ class AddHostViewModel @Inject constructor(
         }
     }
 
+    private fun updateHostWithSshKey(newHostWithSshKey: HostWithSshKey) {
+        _uiState.update {
+            it.copy(hostWithSshKey = newHostWithSshKey)
+        }
+    }
+
     private fun updateIsFormValid() {
-        val isFormValid = _uiState.value.alias.isNotBlank() &&
-                _uiState.value.port != 0 &&
-                _uiState.value.hostNameOrIp.isNotBlank() &&
-                _uiState.value.userName.isNotBlank()
+        val isFormValid = _uiState.value.hostWithSshKey.host.alias.isNotBlank() &&
+                _uiState.value.hostWithSshKey.host.port != 0 &&
+                _uiState.value.hostWithSshKey.host.hostNameOrIp.isNotBlank() &&
+                _uiState.value.hostWithSshKey.host.userName.isNotBlank()
         _uiState.update { it.copy(isFormValid = isFormValid) }
     }
 }

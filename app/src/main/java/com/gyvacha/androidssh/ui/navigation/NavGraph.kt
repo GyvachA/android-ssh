@@ -15,7 +15,7 @@ import androidx.navigation.toRoute
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
-import com.gyvacha.androidssh.ui.screens.AddHostScreen
+import com.gyvacha.androidssh.ui.screens.EditHostScreen
 import com.gyvacha.androidssh.ui.screens.HostsScreen
 import com.gyvacha.androidssh.ui.screens.SettingsScreen
 import com.gyvacha.androidssh.ui.screens.TerminalScreen
@@ -38,7 +38,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                         navigateUp = navController::navigateUp,
                         actions = {
                             IconButton(onClick = {
-                                navController.navigate(AppNavigation.HostsRoute.AddHost) {
+                                navController.navigate(AppNavigation.HostsRoute.EditHost()) {
                                     launchSingleTop = true
                                     restoreState = true
                                 }
@@ -52,14 +52,16 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                     )
                 )
             }
-            composable<AppNavigation.HostsRoute.AddHost> {
-                AddHostScreen(
+            composable<AppNavigation.HostsRoute.EditHost> { backstackEntry ->
+                val hostId = backstackEntry.toRoute<AppNavigation.HostsRoute.EditHost>().hostId
+                EditHostScreen(
                     navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.add_host),
                         canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = navController::navigateUp
-                    )
+                    ),
+                    hostId = hostId
                 )
             }
             composable<AppNavigation.HostsRoute.Terminal> { backstackEntry ->

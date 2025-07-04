@@ -54,17 +54,18 @@ import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
 import com.gyvacha.androidssh.ui.components.getTextFieldErrorMessage
 import com.gyvacha.androidssh.ui.utils.ViewEvent
-import com.gyvacha.androidssh.ui.viewmodel.AddHostViewModel
+import com.gyvacha.androidssh.ui.viewmodel.EditHostViewModel
 import com.gyvacha.androidssh.utils.LocalMessageNotifier
 import com.gyvacha.androidssh.utils.SshKeyGenerator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddHostScreen(
+fun EditHostScreen(
     navController: NavController,
     topAppBarParams: TopAppBarParams,
     modifier: Modifier = Modifier,
-    viewModel: AddHostViewModel = hiltViewModel()
+    viewModel: EditHostViewModel = hiltViewModel(),
+    hostId: Int? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
@@ -76,6 +77,10 @@ fun AddHostScreen(
     val messageHostCreateError = stringResource(R.string.host_create_failure)
     val messageSshKeyCreateError = stringResource(R.string.ssh_key_create_failure)
     LaunchedEffect(Unit) {
+        if (hostId != null) {
+            viewModel.getHostWithSshKey(hostId)
+        }
+
         viewModel.eventFlow.collect { event ->
             when (event) {
                 is ViewEvent.DatabaseExceptionCaught -> messageNotifier?.showSnackbar(
@@ -120,7 +125,7 @@ fun AddHostScreen(
         ) {
             val maxTextLength = 60
             TextFieldCharacterCount(
-                value = uiState.alias,
+                value = uiState.hostWithSshKey.host.alias,
                 onValueChange = {
                     var isError: TextFieldErrors? = null
                     if (it.isBlank()) isError = TextFieldErrors.STRING_BLANK_ERROR
@@ -133,7 +138,7 @@ fun AddHostScreen(
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
             TextFieldCharacterCount(
-                value = uiState.hostNameOrIp,
+                value = uiState.hostWithSshKey.host.hostNameOrIp,
                 onValueChange = {
                     val newHostNameOrIp = it.trim()
                     var isError: TextFieldErrors? = null
@@ -149,7 +154,7 @@ fun AddHostScreen(
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
             TextFieldCharacterCount(
-                value = uiState.port.toString(),
+                value = uiState.hostWithSshKey.host.port.toString(),
                 onValueChange = {
                     var newPort = it.filter { char -> char.isDigit() }
                     if (newPort.isBlank()) newPort = "0"
@@ -168,7 +173,7 @@ fun AddHostScreen(
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
             TextFieldCharacterCount(
-                value = uiState.userName,
+                value = uiState.hostWithSshKey.host.userName,
                 onValueChange = {
                     val newUsername = it
                     var isError: TextFieldErrors? = null
@@ -194,7 +199,7 @@ fun AddHostScreen(
                     onClick = {
                         viewModel.updateSshAuthType(SshAuthType.PASSWORD)
                     },
-                    selected = uiState.sshAuthType == SshAuthType.PASSWORD,
+                    selected = uiState.hostWithSshKey.host.authType == SshAuthType.PASSWORD,
                     modifier = Modifier
                         .padding(end = dimensionResource(R.dimen.small_padding)),
                     shape = RoundedCornerShape(50)
@@ -204,15 +209,15 @@ fun AddHostScreen(
                     onClick = {
                         viewModel.updateSshAuthType(SshAuthType.SSH_KEY)
                     },
-                    selected = uiState.sshAuthType == SshAuthType.SSH_KEY,
+                    selected = uiState.hostWithSshKey.host.authType == SshAuthType.SSH_KEY,
                     shape = RoundedCornerShape(50)
                 )
             }
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
-            when(uiState.sshAuthType) {
+            when(uiState.hostWithSshKey.host.authType) {
                 SshAuthType.PASSWORD -> {
                     SecureTextField(
-                        value = uiState.password,
+                        value = uiState.hostWithSshKey.host.password ?: "",
                         onValueChange = viewModel::updatePassword,
                         label = stringResource(R.string.password),
                         onVisibilityClick = { viewModel.updatePasswordVisibility(!uiState.isPasswordVisible) },
@@ -220,7 +225,7 @@ fun AddHostScreen(
                     )
                 }
                 SshAuthType.SSH_KEY -> {
-                    if (uiState.sshKey == null) {
+                    if (uiState.hostWithSshKey.sshKey == null) {
                         Button(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
@@ -236,7 +241,7 @@ fun AddHostScreen(
                     } else {
                         SshKeyCard(
                             onClick = { viewModel.updateShowBottomSheet(true) },
-                            sshKey = uiState.sshKey ?: SshKey(alias = "Error", publicKey = ""),
+                            sshKey = uiState.hostWithSshKey.sshKey ?: SshKey(alias = "Error", publicKey = ""),
                             actionButtonImage = Icons.Filled.Update,
                             actionButtonDesc = stringResource(R.string.update_ssh_key),
                             modifier = Modifier.fillMaxWidth()
@@ -323,5 +328,5 @@ fun AddHostScreen(
 @Composable
 @Preview
 fun AddHostPreview() {
-    AddHostScreen(rememberNavController(), TopAppBarParams.PREVIEW)
+    EditHostScreen(rememberNavController(), TopAppBarParams.PREVIEW)
 }
