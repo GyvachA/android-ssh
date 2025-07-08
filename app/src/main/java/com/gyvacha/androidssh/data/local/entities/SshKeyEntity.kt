@@ -14,7 +14,7 @@ data class SshKeyEntity(
     @ColumnInfo(name = "public_key")
     val publicKey: String,
     @ColumnInfo(name = "private_key")
-    val privateKey: String?,
+    val privateKey: String,
     @ColumnInfo(name = "passphrase")
     val passphrase: String?
 )

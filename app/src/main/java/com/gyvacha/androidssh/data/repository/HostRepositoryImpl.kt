@@ -45,4 +45,10 @@ class HostRepositoryImpl @Inject constructor(
             hostDao.deleteHost(host.toEntity())
         }
     }
+
+    override suspend fun updateHost(host: Host) {
+        withContext(Dispatchers.IO) {
+            hostDao.updateHost(host.toEntity())
+        }
+    }
 }

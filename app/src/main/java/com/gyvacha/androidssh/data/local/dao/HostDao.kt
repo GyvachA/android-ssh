@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.gyvacha.androidssh.data.local.entities.HostEntity
 import com.gyvacha.androidssh.data.local.entities.HostWithSshKeyEntity
 import kotlinx.coroutines.flow.Flow
@@ -26,4 +27,7 @@ interface HostDao {
 
     @Delete
     suspend fun deleteHost(host: HostEntity)
+
+    @Update
+    suspend fun updateHost(host: HostEntity)
 }

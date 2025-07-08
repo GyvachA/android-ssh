@@ -1,9 +1,10 @@
 package com.gyvacha.androidssh.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gyvacha.androidssh.domain.usecase.GetHostUseCase
+import com.gyvacha.androidssh.domain.model.SshAuthType
+import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
+import com.gyvacha.androidssh.domain.usecase.SshConnectViaKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.SshConnectViaPwdUseCase
 import com.gyvacha.androidssh.domain.usecase.SshDisconnectUseCase
 import com.gyvacha.androidssh.domain.usecase.SshExecuteCommandUseCase
@@ -19,8 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class TerminalViewModel @Inject constructor(
     private val executeCommandUseCase: SshExecuteCommandUseCase,
-    private val getHostUseCase: GetHostUseCase,
+    private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase,
     private val connectViaPwdUseCase: SshConnectViaPwdUseCase,
+    private val connectViaSshKeyUseCase: SshConnectViaKeyUseCase,
     private val disconnectUseCase: SshDisconnectUseCase
 ) : ViewModel() {
 
@@ -35,7 +37,6 @@ class TerminalViewModel @Inject constructor(
 
     fun sendCommand() {
         val command = _uiState.value.terminalInput.trim()
-        appendOutputLine(command)
         _uiState.update {
             it.copy(terminalInput = "")
         }
@@ -60,24 +61,39 @@ class TerminalViewModel @Inject constructor(
 
     fun initSshConnect(hostId: Int) {
         viewModelScope.launch {
-            val host = getHostUseCase(hostId)
-            _uiState.update { it.copy(host = host) }
+            val hostWithSshKey = getHostWithSshKeyUseCase(hostId)
+            _uiState.update { it.copy(hostWithSshKey = hostWithSshKey) }
 
             runCatching {
-                connectViaPwdUseCase(
-                    host.hostNameOrIp,
-                    host.port,
-                    host.userName,
-                    host.password!!
-                )
+                val welcomeText = when (hostWithSshKey.host.authType) {
+                    SshAuthType.PASSWORD -> {
+                        connectViaPwdUseCase(
+                            hostWithSshKey.host.hostNameOrIp,
+                            hostWithSshKey.host.port,
+                            hostWithSshKey.host.userName,
+                            hostWithSshKey.host.password ?: ""
+                        )
+                    }
+                    SshAuthType.SSH_KEY -> {
+                        connectViaSshKeyUseCase(
+                            hostWithSshKey.host.hostNameOrIp,
+                            hostWithSshKey.host.port,
+                            hostWithSshKey.host.userName,
+                            hostWithSshKey.sshKey?.privateKey ?: "",
+                            hostWithSshKey.sshKey?.publicKey ?: "",
+                            hostWithSshKey.sshKey?.passphrase,
+                        )
+                    }
+                }
+                welcomeText?.catch { err ->
+                    appendOutputLine("Error: ${err.localizedMessage}")
+                }
+                    ?.collect { output ->
+                        appendOutputLine(output)
+                    }
             }
                 .onFailure { err ->
-                    appendOutputLine("Connect to host: FAILURE")
                     appendOutputLine("Error: ${err.localizedMessage}")
-                    Log.e("Ssh", err.localizedMessage, err)
-                }
-                .onSuccess {
-                    appendOutputLine("Connect to host: SUCCESS")
                 }
         }
     }

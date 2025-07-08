@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "eebbcb92267f83711b8bab1a434f5178",
+    "identityHash": "d67ffcbed6e1d055ddb325c8b31c8933",
     "entities": [
       {
         "tableName": "hosts",
@@ -88,7 +88,7 @@
       },
       {
         "tableName": "ssh_keys",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ssh_key_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `alias` TEXT NOT NULL, `public_key` TEXT NOT NULL, `private_key` TEXT, `passphrase` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ssh_key_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `alias` TEXT NOT NULL, `public_key` TEXT NOT NULL, `private_key` TEXT NOT NULL, `passphrase` TEXT)",
         "fields": [
           {
             "fieldPath": "sshKeyId",
@@ -111,7 +111,8 @@
           {
             "fieldPath": "privateKey",
             "columnName": "private_key",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "passphrase",
@@ -129,7 +130,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eebbcb92267f83711b8bab1a434f5178')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd67ffcbed6e1d055ddb325c8b31c8933')"
     ]
   }
 }

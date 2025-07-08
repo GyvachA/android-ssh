@@ -10,4 +10,5 @@ interface HostRepository {
     suspend fun getHostWithSshKey(hostId: Int): HostWithSshKey
     suspend fun insertHost(host: Host)
     suspend fun deleteHost(host: Host)
+    suspend fun updateHost(host: Host)
 }

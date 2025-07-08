@@ -21,7 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.gyvacha.androidssh.R
 
 @Composable
 fun DropdownMenuBase(
@@ -61,15 +63,15 @@ fun DropdownMenuBase(
                 )
                 Icon(
                     imageVector = if (!expanded) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
-                    contentDescription = null
+                    contentDescription = if (!expanded) stringResource(R.string.open_options) else stringResource(R.string.close_options)
                 )
             }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { onDismiss() },
+                modifier = Modifier,
+                content = content
+            )
         }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { onDismiss() },
-            modifier = Modifier,
-            content = content
-        )
     }
 }

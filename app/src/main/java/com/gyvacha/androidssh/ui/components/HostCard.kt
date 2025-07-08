@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -28,7 +32,11 @@ fun HostCard(
     modifier: Modifier = Modifier,
     onStartTerminal: () -> Unit,
     onCardClick: () -> Unit,
+    onEditHost: ((Host) -> Unit)? = null,
+    onDeleteHost: ((Host) -> Unit)? = null,
 ) {
+    var expandedMenu by rememberSaveable { mutableStateOf(false) }
+
     BaseCard(
         onClick = { onCardClick() },
         modifier = modifier
@@ -50,19 +58,42 @@ fun HostCard(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                     text = "${host.hostNameOrIp}:${host.port}, ${host.userName}"
+                )
+            }
+            if (onEditHost != null || onDeleteHost != null) {
+                KebabMenu(
+                    expanded = expandedMenu,
+                    onDismiss = { expandedMenu = false },
+                    onMenuClick = { expandedMenu = true },
+                    content = {
+                        if (onEditHost != null) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.edit)) },
+                                onClick = {
+                                    onEditHost(host)
+                                }
+                            )
+                        }
+                        if (onDeleteHost != null) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.delete)) },
+                                onClick = {
+                                    onDeleteHost(host)
+                                }
+                            )
+                        }
+                    }
                 )
             }
             IconButton(
                 onClick = onStartTerminal
             ) {
-                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = stringResource(R.string.open_menu))
-            }
-            IconButton(
-                onClick = onStartTerminal
-            ) {
-                Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.start_terminal))
+                Icon(
+                    imageVector = Icons.Filled.PlayArrow,
+                    contentDescription = stringResource(R.string.start_terminal)
+                )
             }
         }
     }

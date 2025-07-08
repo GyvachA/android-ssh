@@ -3,7 +3,6 @@ package com.gyvacha.androidssh.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gyvacha.androidssh.domain.model.DatabaseResult
 import com.gyvacha.androidssh.domain.model.Host
 import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
@@ -13,6 +12,7 @@ import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
+import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.state.AddHostUiState
 import com.gyvacha.androidssh.ui.utils.ViewEvent
@@ -31,6 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditHostViewModel @Inject constructor(
     private val insertHostUseCase: InsertHostUseCase,
+    private val updateHostUseCase: UpdateHostUseCase,
     private val insertSshKeyUseCase: InsertSshKeyUseCase,
     private val generateSshKeyUseCase: GenerateSshKeyUseCase,
     private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase,
@@ -59,7 +60,8 @@ class EditHostViewModel @Inject constructor(
                     SshKey(
                         sshKeyId = sshKeyId.toInt(),
                         alias = alias,
-                        publicKey = sshKey.publicKey
+                        publicKey = sshKey.publicKey,
+                        privateKey = sshKey.privateKey
                     )
                 )
             }
@@ -68,7 +70,6 @@ class EditHostViewModel @Inject constructor(
                 }
                 .onFailure { err ->
                     _eventFlow.emit(ViewEvent.SshKeyCreateFailure)
-                    Log.e(EditHostViewModel::class.simpleName, err.localizedMessage, err)
                 }
         }
     }
@@ -150,6 +151,7 @@ class EditHostViewModel @Inject constructor(
                 isPortError = isError
             )
         }
+        updateIsFormValid()
     }
 
     fun updateUserName(newUserName: String, isError: TextFieldErrors?) {
@@ -163,6 +165,7 @@ class EditHostViewModel @Inject constructor(
                 isUserNameError = isError
             )
         }
+        updateIsFormValid()
     }
 
     fun updatePassword(newPassword: String) {
@@ -175,6 +178,7 @@ class EditHostViewModel @Inject constructor(
                 ),
             )
         }
+        updateIsFormValid()
     }
 
 
@@ -189,29 +193,55 @@ class EditHostViewModel @Inject constructor(
         _uiState.update { it.copy(isPasswordVisible = newVisibility) }
     }
 
+    fun updateHost() {
+        viewModelScope.launch {
+            runCatching {
+                updateHostUseCase(
+                    Host(
+                        hostId = _uiState.value.hostWithSshKey.host.hostId,
+                        alias = _uiState.value.hostWithSshKey.host.alias.trim(),
+                        hostNameOrIp = _uiState.value.hostWithSshKey.host.hostNameOrIp,
+                        port = _uiState.value.hostWithSshKey.host.port,
+                        userName = _uiState.value.hostWithSshKey.host.userName.trim(),
+                        password = _uiState.value.hostWithSshKey.host.password,
+                        sshKey = _uiState.value.hostWithSshKey.sshKey?.sshKeyId,
+                        authType = _uiState.value.hostWithSshKey.host.authType
+                    )
+                )
+            }
+                .onFailure { err ->
+                    _eventFlow.emit(ViewEvent.DatabaseExceptionCaught)
+                }
+                .onSuccess {
+                    _eventFlow.emit(ViewEvent.HostUpdated)
+                    _eventFlow.emit(ViewEvent.NavigateUp)
+                }
+        }
+    }
+
     fun insertHost() {
         viewModelScope.launch {
-            val result = insertHostUseCase(
-                Host(
-                    alias = _uiState.value.hostWithSshKey.host.alias.trim(),
-                    hostNameOrIp = _uiState.value.hostWithSshKey.host.hostNameOrIp,
-                    port = _uiState.value.hostWithSshKey.host.port,
-                    userName = _uiState.value.hostWithSshKey.host.userName.trim(),
-                    password = _uiState.value.hostWithSshKey.host.password,
-                    sshKey = _uiState.value.hostWithSshKey.sshKey?.sshKeyId,
-                    authType = _uiState.value.hostWithSshKey.host.authType
+            runCatching {
+                insertHostUseCase(
+                    Host(
+                        alias = _uiState.value.hostWithSshKey.host.alias.trim(),
+                        hostNameOrIp = _uiState.value.hostWithSshKey.host.hostNameOrIp,
+                        port = _uiState.value.hostWithSshKey.host.port,
+                        userName = _uiState.value.hostWithSshKey.host.userName.trim(),
+                        password = _uiState.value.hostWithSshKey.host.password,
+                        sshKey = _uiState.value.hostWithSshKey.sshKey?.sshKeyId,
+                        authType = _uiState.value.hostWithSshKey.host.authType
+                    )
                 )
-            )
-            when (result) {
-                is DatabaseResult.Error -> {
-                    _eventFlow.emit(ViewEvent.DatabaseExceptionCaught(result.err))
+            }
+                .onFailure { err ->
+                    Log.e(EditHostViewModel::class.simpleName, err.localizedMessage, err)
+                    _eventFlow.emit(ViewEvent.DatabaseExceptionCaught)
                 }
-
-                DatabaseResult.Success -> {
+                .onSuccess {
                     _eventFlow.emit(ViewEvent.HostInserted)
                     _eventFlow.emit(ViewEvent.NavigateUp)
                 }
-            }
         }
     }
 

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SshKeyDao {
-    @Query("SELECT ssh_key_id, alias, public_key FROM ssh_keys")
+    @Query("SELECT * FROM ssh_keys")
     fun getSshKeys(): Flow<List<SshKeyEntity>>
 
     @Insert

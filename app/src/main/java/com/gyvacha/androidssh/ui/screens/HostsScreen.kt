@@ -43,6 +43,12 @@ fun HostsScreen(
                         navController.navigate(AppNavigation.HostsRoute.Terminal(host.hostId))
                     },
                     onCardClick = {
+                        navController.navigate(AppNavigation.HostsRoute.Terminal(host.hostId))
+                    },
+                    onDeleteHost = {
+                        viewModel.deleteHost(it)
+                    },
+                    onEditHost = {
                         navController.navigate(AppNavigation.HostsRoute.EditHost(host.hostId))
                     }
                 )

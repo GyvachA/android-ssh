@@ -16,7 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -75,6 +75,7 @@ fun EditHostScreen(
     val messageHostCreated = stringResource(R.string.host_added_succesfully)
     val messageSshKeyCreated = stringResource(R.string.ssh_key_created)
     val messageHostCreateError = stringResource(R.string.host_create_failure)
+    val messageHostUpdated = stringResource(R.string.host_updated)
     val messageSshKeyCreateError = stringResource(R.string.ssh_key_create_failure)
     LaunchedEffect(Unit) {
         if (hostId != null) {
@@ -94,6 +95,7 @@ fun EditHostScreen(
                 )
 
                 ViewEvent.SshKeyCreated -> messageNotifier?.showSnackbar(messageSshKeyCreated)
+                ViewEvent.HostUpdated -> messageNotifier?.showSnackbar(messageHostUpdated)
             }
         }
     }
@@ -108,7 +110,11 @@ fun EditHostScreen(
                 BottomFabSaveActions(
                     isSaveButtonActive = uiState.isFormValid,
                     onSave = {
-                        viewModel.insertHost()
+                        if (hostId == null) {
+                            viewModel.insertHost()
+                        } else {
+                            viewModel.updateHost()
+                        }
                     },
                     onCancel = {
                         navController.navigateUp()
@@ -241,10 +247,15 @@ fun EditHostScreen(
                     } else {
                         SshKeyCard(
                             onClick = { viewModel.updateShowBottomSheet(true) },
-                            sshKey = uiState.hostWithSshKey.sshKey ?: SshKey(alias = "Error", publicKey = ""),
-                            actionButtonImage = Icons.Filled.Update,
+                            sshKey = uiState.hostWithSshKey.sshKey ?: SshKey(
+                                alias = "Error",
+                                publicKey = "",
+                                privateKey = ""
+                            ),
+                            actionButtonImage = Icons.Filled.KeyboardArrowDown,
                             actionButtonDesc = stringResource(R.string.update_ssh_key),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            isShowMenu = true
                         )
                     }
                 }
@@ -301,7 +312,7 @@ fun EditHostScreen(
                                     viewModel.updateSshKey(sshKey)
                                 },
                                 actionButtonImage = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                                actionButtonDesc = stringResource(R.string.select_ssh_key)
+                                actionButtonDesc = stringResource(R.string.choose_ssh_key)
                             )
                         }
                     }

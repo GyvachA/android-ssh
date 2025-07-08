@@ -21,6 +21,7 @@ import com.gyvacha.androidssh.domain.usecase.SshConnectViaKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.SshConnectViaPwdUseCase
 import com.gyvacha.androidssh.domain.usecase.SshDisconnectUseCase
 import com.gyvacha.androidssh.domain.usecase.SshExecuteCommandUseCase
+import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,6 +53,9 @@ object AppModule {
 
     @Provides
     fun provideGetHostUseCase(repository: HostRepository): GetHostUseCase = GetHostUseCase(repository)
+
+    @Provides
+    fun provideUpdateHostUseCase(repository: HostRepository): UpdateHostUseCase = UpdateHostUseCase(repository)
 
     @Provides
     fun provideGetHostWithSshKeyUseCase(repository: HostRepository): GetHostWithSshKeyUseCase = GetHostWithSshKeyUseCase(repository)

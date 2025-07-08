@@ -41,7 +41,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.6.1"
     }
     packaging {
         resources {
@@ -67,11 +67,13 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.database.sqlcipher)
     implementation(libs.hierynomus.sshj)
     implementation(libs.bouncycastle.crypto)
     implementation(libs.bouncycastle.pkix)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.google.crypto.tink)
     ksp(libs.room.compiler)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)

@@ -23,21 +23,29 @@
     <!--  Errors  -->
     <string name="string_len_error">Превышен лимит символов</string>
     <string name="string_blank_error">Поле не должно быть пустым</string>
-    <string name="host_added_succesfully">Хост успешно добавлен!</string>
+    <string name="host_added_succesfully">Хост успешно добавлен</string>
     <string name="send">Отправить</string>
     <string name="start_terminal">Открыть терминал</string>
     <string name="terminal">Терминал</string>
     <string name="open_list">Открыть список</string>
     <string name="list_blank">Пустой список</string>
     <string name="algorithm">Алгоритм</string>
-    <string name="create_ssh_key">Создать SSH-ключ</string>
-    <string name="choose_ssh_key">Выбрать SSH-ключ</string>
-    <string name="select_ssh_key">Выбрать SSH-ключ</string>
+    <string name="create_ssh_key">Создать SSH ключ</string>
+    <string name="choose_ssh_key">Выбрать SSH ключ</string>
     <string name="close_list">Закрыть список</string>
     <string name="host_create_failure">Ошибка добавления хоста</string>
-    <string name="ssh_key_created">SSH-ключ успешно создан</string>
-    <string name="ssh_key_create_failure">Ошибка при создании SSH-ключа</string>
-    <string name="update_ssh_key">Поменять SSH-ключ</string>
+    <string name="ssh_key_created">SSH ключ успешно создан</string>
+    <string name="ssh_key_create_failure">Ошибка при создании SSH ключа</string>
+    <string name="update_ssh_key">Поменять SSH ключ</string>
     <string name="auth_method">Метод авторизации</string>
     <string name="open_menu">Открыть меню</string>
+    <string name="open_options">Открыть список опций</string>
+    <string name="close_options">Закрыть список опций</string>
+    <string name="host_updated">Хост успешно обновлен</string>
+    <string name="copy_public_key">Скопировать публичный ключ</string>
+    <string name="copy_private_key">Скопировать приватный ключ</string>
+    <string name="key_copied">Ключ скопирован</string>
+    <string name="delete">Удалить</string>
+    <string name="edit">Редактировать</string>
+    <string name="ssh_keys">SSH ключи</string>
 </resources>
