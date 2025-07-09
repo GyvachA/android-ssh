@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.hilt.android)
     implementation(libs.room.runtime)
