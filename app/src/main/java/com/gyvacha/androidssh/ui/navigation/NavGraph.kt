@@ -19,7 +19,7 @@ import com.gyvacha.androidssh.ui.screens.EditHostScreen
 import com.gyvacha.androidssh.ui.screens.HostsScreen
 import com.gyvacha.androidssh.ui.screens.SettingsScreen
 import com.gyvacha.androidssh.ui.screens.TerminalScreen
-import com.gyvacha.androidssh.ui.screens.XrayScreen
+import com.gyvacha.androidssh.ui.screens.SingboxScreen
 
 @Composable
 fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -92,7 +92,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
 
         navigation<AppNavigation.XrayRoute>(startDestination = AppNavigation.XrayRoute.Xray) {
             composable<AppNavigation.XrayRoute.Xray> {
-                XrayScreen(
+                SingboxScreen(
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.label_xray),
                         canNavigateBack = navController.previousBackStackEntry != null,

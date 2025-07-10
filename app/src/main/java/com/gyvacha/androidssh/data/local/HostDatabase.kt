@@ -3,6 +3,7 @@ package com.gyvacha.androidssh.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.gyvacha.androidssh.data.local.dao.HostDao
+import com.gyvacha.androidssh.data.local.dao.ProxyConfigDao
 import com.gyvacha.androidssh.data.local.dao.SshKeyDao
 import com.gyvacha.androidssh.data.local.entities.HostEntity
 import com.gyvacha.androidssh.data.local.entities.SshKeyEntity
@@ -11,4 +12,5 @@ import com.gyvacha.androidssh.data.local.entities.SshKeyEntity
 abstract class HostDatabase : RoomDatabase() {
     abstract fun hostDao(): HostDao
     abstract fun sshKeyDao(): SshKeyDao
+    abstract fun proxyConfigDao(): ProxyConfigDao
 }

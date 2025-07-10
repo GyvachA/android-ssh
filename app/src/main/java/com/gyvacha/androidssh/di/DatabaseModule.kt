@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.gyvacha.androidssh.data.local.HostDatabase
 import com.gyvacha.androidssh.data.local.dao.HostDao
+import com.gyvacha.androidssh.data.local.dao.ProxyConfigDao
 import com.gyvacha.androidssh.data.local.dao.SshKeyDao
 import com.gyvacha.androidssh.utils.DatabaseKeyManager
 import dagger.Module
@@ -52,4 +53,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideSshKeyDao(db: HostDatabase): SshKeyDao = db.sshKeyDao()
+
+    @Provides
+    @Singleton
+    fun provideProxyConfigDao(db: HostDatabase): ProxyConfigDao = db.proxyConfigDao()
 }

@@ -3,21 +3,29 @@ package com.gyvacha.androidssh.di
 import android.content.Context
 import com.gyvacha.androidssh.data.CommandExecutor
 import com.gyvacha.androidssh.data.local.dao.HostDao
+import com.gyvacha.androidssh.data.local.dao.ProxyConfigDao
 import com.gyvacha.androidssh.data.local.dao.SshKeyDao
 import com.gyvacha.androidssh.data.repository.HostRepositoryImpl
+import com.gyvacha.androidssh.data.repository.ProxyConfigRepositoryImpl
 import com.gyvacha.androidssh.data.repository.SingboxRepositoryImpl
 import com.gyvacha.androidssh.data.repository.SshKeyRepositoryImpl
 import com.gyvacha.androidssh.data.repository.SshRepositoryImpl
 import com.gyvacha.androidssh.domain.repository.HostRepository
+import com.gyvacha.androidssh.domain.repository.ProxyConfigRepository
 import com.gyvacha.androidssh.domain.repository.SingboxRepository
 import com.gyvacha.androidssh.domain.repository.SshKeyRepository
 import com.gyvacha.androidssh.domain.repository.SshRepository
+import com.gyvacha.androidssh.domain.usecase.DeleteConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.ExecuteCommandUseCase
+import com.gyvacha.androidssh.domain.usecase.GenerateSingboxConfigFileUseCase
 import com.gyvacha.androidssh.domain.usecase.GenerateSshKeyUseCase
+import com.gyvacha.androidssh.domain.usecase.GetActiveConfigUseCase
+import com.gyvacha.androidssh.domain.usecase.GetConfigsUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostsUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
+import com.gyvacha.androidssh.domain.usecase.InsertConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxLogsUseCase
@@ -28,7 +36,9 @@ import com.gyvacha.androidssh.domain.usecase.SshDisconnectUseCase
 import com.gyvacha.androidssh.domain.usecase.SshExecuteCommandUseCase
 import com.gyvacha.androidssh.domain.usecase.StartSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.StopSingboxUseCase
+import com.gyvacha.androidssh.domain.usecase.UpdateConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
+import com.gyvacha.androidssh.utils.SingboxConfigFileManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,7 +64,29 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideProxyConfigRepository(proxyConfigDao: ProxyConfigDao): ProxyConfigRepository = ProxyConfigRepositoryImpl(proxyConfigDao)
+
+    @Provides
+    @Singleton
     fun provideCommandExecutor(): CommandExecutor = CommandExecutor()
+
+    @Provides
+    fun provideStartSingboxUseCase(repository: ProxyConfigRepository): GetActiveConfigUseCase = GetActiveConfigUseCase(repository)
+
+    @Provides
+    fun provideInsertConfigUseCase(repository: ProxyConfigRepository): InsertConfigUseCase = InsertConfigUseCase(repository)
+
+    @Provides
+    fun provideUpdateConfigUseCase(repository: ProxyConfigRepository): UpdateConfigUseCase = UpdateConfigUseCase(repository)
+
+    @Provides
+    fun provideGetConfigsUseCase(repository: ProxyConfigRepository): GetConfigsUseCase = GetConfigsUseCase(repository)
+
+    @Provides
+    fun provideDeleteConfigUseCase(repository: ProxyConfigRepository): DeleteConfigUseCase = DeleteConfigUseCase(repository)
+
+    @Provides
+    fun provideGenerateSingboxConfigFileUseCase(repository: ProxyConfigRepository, fileManager: SingboxConfigFileManager): GenerateSingboxConfigFileUseCase = GenerateSingboxConfigFileUseCase(repository, fileManager)
 
     @Provides
     fun provideStartSingboxUseCase(repository: SingboxRepository): StartSingboxUseCase = StartSingboxUseCase(repository)
@@ -111,4 +143,8 @@ object AppModule {
 
     @Provides
     fun provideSshDisconnect(repository: SshRepository): SshDisconnectUseCase = SshDisconnectUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSingboxConfigFileManager(@ApplicationContext context: Context): SingboxConfigFileManager = SingboxConfigFileManager(context)
 }

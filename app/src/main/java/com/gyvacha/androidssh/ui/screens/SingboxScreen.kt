@@ -13,7 +13,9 @@ import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
 
 @Composable
-fun XrayScreen(topAppBarParams: TopAppBarParams) {
+fun SingboxScreen(
+    topAppBarParams: TopAppBarParams
+) {
     var changeText by rememberSaveable {
         mutableStateOf("Xray")
     }
