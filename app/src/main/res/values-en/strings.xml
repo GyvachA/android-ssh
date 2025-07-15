@@ -45,4 +45,10 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="ssh_keys">SSH keys</string>
+    <string name="edit_host">Edit host</string>
+    <string name="label_singbox">Singbox</string>
+    <string name="add_manually">Add manually</string>
+    <string name="import_from_qr_code">Import from QR-code</string>
+    <string name="import_from_copy_buffer">Import from copy buffer</string>
+    <string name="error_get_config_from_copyboard">Error while importing from copy buffer</string>
 </resources>
