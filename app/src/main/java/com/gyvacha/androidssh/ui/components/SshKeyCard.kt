@@ -1,6 +1,5 @@
 package com.gyvacha.androidssh.ui.components
 
-import android.content.ClipData
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -21,14 +20,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.SshKey
+import com.gyvacha.androidssh.utils.ClipboardService
 import com.gyvacha.androidssh.utils.LocalMessageNotifier
 import kotlinx.coroutines.launch
 
@@ -43,7 +41,7 @@ fun SshKeyCard(
     onDeleteSshKey: ((SshKey) -> Unit)? = null
 ) {
     var expandedMenu by rememberSaveable { mutableStateOf(false) }
-    val clipboardManager = LocalClipboard.current
+    val clipboardService = ClipboardService(LocalClipboard.current)
     val snackbarNotifier = LocalMessageNotifier.current
     val clipboardScope = rememberCoroutineScope()
     val keyCopiedText = stringResource(R.string.key_copied)
@@ -73,7 +71,7 @@ fun SshKeyCard(
             }
 
             if (isShowMenu) {
-                KebabMenu(
+                MenuWithIcon(
                     expanded = expandedMenu,
                     onDismiss = { expandedMenu = false },
                     onMenuClick = { expandedMenu = true },
@@ -82,12 +80,7 @@ fun SshKeyCard(
                             text = { Text(stringResource(R.string.copy_public_key)) },
                             onClick = {
                                 clipboardScope.launch {
-                                    val clipData = ClipData.newPlainText(
-                                        "Copied",
-                                        AnnotatedString(sshKey.publicKey)
-                                    )
-                                    val clipEntry = ClipEntry(clipData)
-                                    clipboardManager.setClipEntry(clipEntry)
+                                    clipboardService.setText("SSH key", sshKey.publicKey)
                                     snackbarNotifier?.showSnackbar(keyCopiedText)
                                 }
                             }
@@ -96,12 +89,7 @@ fun SshKeyCard(
                             text = { Text(stringResource(R.string.copy_private_key)) },
                             onClick = {
                                 clipboardScope.launch {
-                                    val clipData = ClipData.newPlainText(
-                                        "Copied",
-                                        AnnotatedString(sshKey.privateKey)
-                                    )
-                                    val clipEntry = ClipEntry(clipData)
-                                    clipboardManager.setClipEntry(clipEntry)
+                                    clipboardService.setText("SSH key", sshKey.privateKey)
                                     snackbarNotifier?.showSnackbar(keyCopiedText)
                                 }
                             }

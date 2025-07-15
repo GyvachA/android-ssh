@@ -34,7 +34,6 @@ import com.gyvacha.androidssh.domain.usecase.SshConnectViaKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.SshConnectViaPwdUseCase
 import com.gyvacha.androidssh.domain.usecase.SshDisconnectUseCase
 import com.gyvacha.androidssh.domain.usecase.SshExecuteCommandUseCase
-import com.gyvacha.androidssh.domain.usecase.StartSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.StopSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
@@ -87,9 +86,6 @@ object AppModule {
 
     @Provides
     fun provideGenerateSingboxConfigFileUseCase(repository: ProxyConfigRepository, fileManager: SingboxConfigFileManager): GenerateSingboxConfigFileUseCase = GenerateSingboxConfigFileUseCase(repository, fileManager)
-
-    @Provides
-    fun provideStartSingboxUseCase(repository: SingboxRepository): StartSingboxUseCase = StartSingboxUseCase(repository)
 
     @Provides
     fun provideStopSingboxUseCase(repository: SingboxRepository): StopSingboxUseCase = StopSingboxUseCase(repository)

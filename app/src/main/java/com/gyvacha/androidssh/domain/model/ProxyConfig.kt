@@ -10,6 +10,35 @@ data class ProxyConfig(
     val isActive: Boolean
 )
 
+fun ProxyConfig.getAddress(): String {
+    return when (type) {
+        ProxyType.VMESS -> {
+            val cfg = config as? ProxySpec.Vmess
+            if (cfg != null) "${cfg.server}:${cfg.port}" else ""
+        }
+        ProxyType.VLESS -> {
+            val cfg = config as? ProxySpec.Vless
+            if (cfg != null) "${cfg.server}:${cfg.port}" else ""
+        }
+        ProxyType.TROJAN -> {
+            val cfg = config as? ProxySpec.Trojan
+            if (cfg != null) "${cfg.server}:${cfg.port}" else ""
+        }
+        ProxyType.SHADOWSOCKS -> {
+            val cfg = config as? ProxySpec.Shadowsocks
+            if (cfg != null) "${cfg.server}:${cfg.port}" else ""
+        }
+        ProxyType.SOCKS -> {
+            val cfg = config as? ProxySpec.Socks
+            if (cfg != null) "${cfg.server}:${cfg.port}" else ""
+        }
+        ProxyType.HTTP -> {
+            val cfg = config as? ProxySpec.Http
+            if (cfg != null) "${cfg.server}:${cfg.port}" else ""
+        }
+    }
+}
+
 fun ProxyConfigEntity.toModel() = ProxyConfig(
     id = id,
     alias = alias,

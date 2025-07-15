@@ -57,7 +57,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                 EditHostScreen(
                     navController = navController,
                     topAppBarParams = TopAppBarParams(
-                        screenTitle = stringResource(R.string.add_host),
+                        screenTitle =  if (hostId != null) stringResource(R.string.add_host) else stringResource(R.string.edit_host),
                         canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = navController::navigateUp
                     ),
@@ -86,7 +86,6 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                         navigateUp = navController::navigateUp
                     )
                 )
-//            ComingSoonScreen()
             }
         }
 
@@ -94,12 +93,11 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
             composable<AppNavigation.XrayRoute.Xray> {
                 SingboxScreen(
                     topAppBarParams = TopAppBarParams(
-                        screenTitle = stringResource(R.string.label_xray),
+                        screenTitle = stringResource(R.string.label_singbox),
                         canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = navController::navigateUp
                     )
                 )
-//            ComingSoonScreen()
             }
         }
 

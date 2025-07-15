@@ -63,7 +63,7 @@ fun HostCard(
                 )
             }
             if (onEditHost != null || onDeleteHost != null) {
-                KebabMenu(
+                MenuWithIcon(
                     expanded = expandedMenu,
                     onDismiss = { expandedMenu = false },
                     onMenuClick = { expandedMenu = true },

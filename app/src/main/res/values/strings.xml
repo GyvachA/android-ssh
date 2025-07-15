@@ -48,4 +48,10 @@
     <string name="delete">Удалить</string>
     <string name="edit">Редактировать</string>
     <string name="ssh_keys">SSH ключи</string>
+    <string name="edit_host">Редактировать хост</string>
+    <string name="label_singbox">Singbox</string>
+    <string name="add_manually">Добавить вручную</string>
+    <string name="import_from_qr_code">Импорт из QR-кода</string>
+    <string name="import_from_copy_buffer">Импорт из буфера обмена</string>
+    <string name="error_get_config_from_copyboard">Ошибка при извлечении из буфера обмена</string>
 </resources>
