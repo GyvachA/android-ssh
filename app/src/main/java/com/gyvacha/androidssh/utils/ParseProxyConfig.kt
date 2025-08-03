@@ -18,14 +18,12 @@ object ParseProxyConfig {
             "vless" -> {
                 val uuid = uri.userInfo ?: ""
                 val flow = uri.getQueryParameter("flow")
-                val encryption = uri.getQueryParameter("encryption") ?: "none"
                 val transport = parseTransport(uri)
                 ProxySpec.Vless(
                     server = server,
                     port = port,
                     uuid = uuid,
                     flow = flow,
-                    encryption = encryption,
                     transport = transport
                 )
             }

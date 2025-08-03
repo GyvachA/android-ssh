@@ -5,23 +5,23 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.gyvacha.androidssh.domain.repository.SingboxRepository
+import com.gyvacha.androidssh.receiver.SingboxActionReceiver
 import com.gyvacha.androidssh.service.SingboxService
+import com.gyvacha.androidssh.service.SingboxService.Companion.ACTION_STOP
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 
 class SingboxRepositoryImpl(
     private val context: Context
 ) : SingboxRepository {
-    private val _isRunning = MutableStateFlow(false)
-    override val isRunning: StateFlow<Boolean> = _isRunning.asStateFlow()
+    override val isRunning: StateFlow<Boolean> = SingboxService.isRunning
     private val _logs = MutableSharedFlow<String>(extraBufferCapacity = 100)
     override val logs: Flow<String> = _logs.asSharedFlow()
     private var logReceiver: BroadcastReceiver? = null
@@ -29,23 +29,25 @@ class SingboxRepositoryImpl(
 
     override suspend fun start(configPath: String) {
         return withContext(Dispatchers.IO) {
-            if (_isRunning.value) return@withContext
+            if (isRunning.value) return@withContext
             registerLogReceiver()
             startIntent = Intent(context, SingboxService::class.java).apply {
                 putExtra(SingboxService.EXTRA_CONFIG_PATH, configPath)
             }
+            Log.d("SingboxService", "startIntent ${startIntent.toString()}")
             startIntent?.let { ContextCompat.startForegroundService(context, it) }
-            _isRunning.value = true
         }
 
     }
 
     override suspend fun stop() {
         return withContext(Dispatchers.IO) {
-            if (!_isRunning.value || startIntent == null) return@withContext
-            context.stopService(startIntent)
+            if (!isRunning.value || startIntent == null) return@withContext
+            val stopIntent = Intent(context, SingboxActionReceiver::class.java).apply {
+                action = ACTION_STOP
+            }
+            context.sendBroadcast(stopIntent)
             unregisterLogReceiver()
-            _isRunning.value = false
         }
     }
 

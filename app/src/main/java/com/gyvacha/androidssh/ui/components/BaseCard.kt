@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import com.gyvacha.androidssh.R
 fun BaseCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    border: BorderStroke? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Card(
@@ -29,6 +31,7 @@ fun BaseCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = dimensionResource(R.dimen.card_elevation)
         ),
-        content = content
+        content = content,
+        border = border
     )
 }

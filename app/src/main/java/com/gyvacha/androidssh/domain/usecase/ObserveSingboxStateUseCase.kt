@@ -4,7 +4,7 @@ import com.gyvacha.androidssh.domain.repository.SingboxRepository
 import kotlinx.coroutines.flow.StateFlow
 
 class ObserveSingboxStateUseCase(private val repository: SingboxRepository) {
-    fun invoke(): StateFlow<Boolean> {
+    operator fun invoke(): StateFlow<Boolean> {
         return repository.isRunning
     }
 }

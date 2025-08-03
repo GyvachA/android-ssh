@@ -54,4 +54,8 @@
     <string name="import_from_qr_code">Импорт из QR-кода</string>
     <string name="import_from_copy_buffer">Импорт из буфера обмена</string>
     <string name="error_get_config_from_copyboard">Ошибка при извлечении из буфера обмена</string>
+    <string name="ping">ping</string>
+    <string name="start_singbox">Запустить singbox</string>
+    <string name="grant_permissions">Разрешить уведомления</string>
+    <string name="stop_singbox">Остановить singbox</string>
 </resources>

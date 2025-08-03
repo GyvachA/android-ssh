@@ -15,7 +15,7 @@ import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.state.AddHostUiState
-import com.gyvacha.androidssh.ui.utils.ViewEvent
+import com.gyvacha.androidssh.ui.utils.EditHostViewEvent
 import com.gyvacha.androidssh.utils.SshKeyGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,7 +38,7 @@ class EditHostViewModel @Inject constructor(
     getSshKeysUseCase: GetSshKeysUseCase
 ) : ViewModel() {
 
-    private val _eventFlow = MutableSharedFlow<ViewEvent>()
+    private val _eventFlow = MutableSharedFlow<EditHostViewEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private val _uiState = MutableStateFlow(AddHostUiState())
@@ -66,10 +66,10 @@ class EditHostViewModel @Inject constructor(
                 )
             }
                 .onSuccess {
-                    _eventFlow.emit(ViewEvent.SshKeyCreated)
+                    _eventFlow.emit(EditHostViewEvent.SshKeyCreated)
                 }
                 .onFailure { err ->
-                    _eventFlow.emit(ViewEvent.SshKeyCreateFailure)
+                    _eventFlow.emit(EditHostViewEvent.SshKeyCreateFailure)
                 }
         }
     }
@@ -210,11 +210,11 @@ class EditHostViewModel @Inject constructor(
                 )
             }
                 .onFailure { err ->
-                    _eventFlow.emit(ViewEvent.DatabaseExceptionCaught)
+                    _eventFlow.emit(EditHostViewEvent.DatabaseExceptionCaught)
                 }
                 .onSuccess {
-                    _eventFlow.emit(ViewEvent.HostUpdated)
-                    _eventFlow.emit(ViewEvent.NavigateUp)
+                    _eventFlow.emit(EditHostViewEvent.HostUpdated)
+                    _eventFlow.emit(EditHostViewEvent.NavigateUp)
                 }
         }
     }
@@ -236,11 +236,11 @@ class EditHostViewModel @Inject constructor(
             }
                 .onFailure { err ->
                     Log.e(EditHostViewModel::class.simpleName, err.localizedMessage, err)
-                    _eventFlow.emit(ViewEvent.DatabaseExceptionCaught)
+                    _eventFlow.emit(EditHostViewEvent.DatabaseExceptionCaught)
                 }
                 .onSuccess {
-                    _eventFlow.emit(ViewEvent.HostInserted)
-                    _eventFlow.emit(ViewEvent.NavigateUp)
+                    _eventFlow.emit(EditHostViewEvent.HostInserted)
+                    _eventFlow.emit(EditHostViewEvent.NavigateUp)
                 }
         }
     }

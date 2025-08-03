@@ -32,6 +32,12 @@ class ProxyConfigRepositoryImpl(
         }
     }
 
+    override suspend fun setActiveConfig(config: ProxyConfig) {
+        return withContext(Dispatchers.IO) {
+            dao.setActiveConfig(config.toEntity())
+        }
+    }
+
     override fun getConfigs(): Flow<List<ProxyConfig>> {
         return dao.getConfigs().map { entities ->
             entities.map { it.toModel() }

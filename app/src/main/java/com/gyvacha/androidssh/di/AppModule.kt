@@ -19,7 +19,6 @@ import com.gyvacha.androidssh.domain.usecase.DeleteConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.ExecuteCommandUseCase
 import com.gyvacha.androidssh.domain.usecase.GenerateSingboxConfigFileUseCase
 import com.gyvacha.androidssh.domain.usecase.GenerateSshKeyUseCase
-import com.gyvacha.androidssh.domain.usecase.GetActiveConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.GetConfigsUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
@@ -30,10 +29,12 @@ import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxLogsUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxStateUseCase
+import com.gyvacha.androidssh.domain.usecase.SetActiveConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.SshConnectViaKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.SshConnectViaPwdUseCase
 import com.gyvacha.androidssh.domain.usecase.SshDisconnectUseCase
 import com.gyvacha.androidssh.domain.usecase.SshExecuteCommandUseCase
+import com.gyvacha.androidssh.domain.usecase.StartSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.StopSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
@@ -70,10 +71,13 @@ object AppModule {
     fun provideCommandExecutor(): CommandExecutor = CommandExecutor()
 
     @Provides
-    fun provideStartSingboxUseCase(repository: ProxyConfigRepository): GetActiveConfigUseCase = GetActiveConfigUseCase(repository)
+    fun provideStartSingboxUseCase(repository: SingboxRepository, fileManager: SingboxConfigFileManager): StartSingboxUseCase = StartSingboxUseCase(repository, fileManager)
 
     @Provides
     fun provideInsertConfigUseCase(repository: ProxyConfigRepository): InsertConfigUseCase = InsertConfigUseCase(repository)
+
+    @Provides
+    fun provideSetActiveConfigUseCase(repository: ProxyConfigRepository): SetActiveConfigUseCase = SetActiveConfigUseCase(repository)
 
     @Provides
     fun provideUpdateConfigUseCase(repository: ProxyConfigRepository): UpdateConfigUseCase = UpdateConfigUseCase(repository)

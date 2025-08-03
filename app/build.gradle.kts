@@ -22,6 +22,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        ndk {
+            abiFilters += setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
     }
 
     buildTypes {
@@ -47,6 +50,16 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+        jniLibs {
+            useLegacyPackaging = true
+        }
+        jniLibs.pickFirsts.add("libsingbox.so")
+    }
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
         }
     }
 }
@@ -75,6 +88,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.google.crypto.tink)
+    implementation(libs.androidx.lifecycle.service)
     ksp(libs.room.compiler)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
@@ -90,6 +104,7 @@ java {
         languageVersion = JavaLanguageVersion.of(18)
     }
 }
+
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }

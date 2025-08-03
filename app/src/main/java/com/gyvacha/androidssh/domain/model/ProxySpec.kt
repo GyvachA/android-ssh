@@ -12,7 +12,6 @@ sealed class ProxySpec {
         val port: Int,
         val uuid: String,
         val flow: String? = null,
-        val encryption: String = "none",
         val transport: Transport = Transport.TCP
     ) : ProxySpec()
 

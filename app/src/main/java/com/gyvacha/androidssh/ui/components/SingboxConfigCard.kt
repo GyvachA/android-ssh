@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -32,10 +33,10 @@ fun SingboxConfigCard(
     onDeleteConfig: ((ProxyConfig) -> Unit)? = null,
 ) {
     var expandedMenu by rememberSaveable { mutableStateOf(false) }
-
     BaseCard(
         modifier = modifier,
-        onClick = onCardClick
+        onClick = onCardClick,
+        border = if (config.isActive) BorderStroke(dimensionResource(R.dimen.small_stroke), MaterialTheme.colorScheme.inversePrimary) else null
     ) {
         Row(
             modifier = Modifier.padding(dimensionResource(R.dimen.medium_padding)),
@@ -90,7 +91,7 @@ fun SingboxConfigCardPreview() {
             "Alias",
             ProxyType.VLESS,
             ProxySpec.Vless("123.0.0.1", 22, "uuid"),
-            isActive = false
+            isActive = true
         ),
         onCardClick = {}
     )

@@ -53,7 +53,7 @@ import com.gyvacha.androidssh.ui.components.TextFieldCharacterCount
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
 import com.gyvacha.androidssh.ui.components.getTextFieldErrorMessage
-import com.gyvacha.androidssh.ui.utils.ViewEvent
+import com.gyvacha.androidssh.ui.utils.EditHostViewEvent
 import com.gyvacha.androidssh.ui.viewmodel.EditHostViewModel
 import com.gyvacha.androidssh.utils.LocalMessageNotifier
 import com.gyvacha.androidssh.utils.SshKeyGenerator
@@ -84,18 +84,18 @@ fun EditHostScreen(
 
         viewModel.eventFlow.collect { event ->
             when (event) {
-                is ViewEvent.DatabaseExceptionCaught -> messageNotifier?.showSnackbar(
+                is EditHostViewEvent.DatabaseExceptionCaught -> messageNotifier?.showSnackbar(
                     messageHostCreateError
                 )
 
-                ViewEvent.HostInserted -> messageNotifier?.showSnackbar(messageHostCreated)
-                ViewEvent.NavigateUp -> navController.navigateUp()
-                ViewEvent.SshKeyCreateFailure -> messageNotifier?.showSnackbar(
+                EditHostViewEvent.HostInserted -> messageNotifier?.showSnackbar(messageHostCreated)
+                EditHostViewEvent.NavigateUp -> navController.navigateUp()
+                EditHostViewEvent.SshKeyCreateFailure -> messageNotifier?.showSnackbar(
                     messageSshKeyCreateError
                 )
 
-                ViewEvent.SshKeyCreated -> messageNotifier?.showSnackbar(messageSshKeyCreated)
-                ViewEvent.HostUpdated -> messageNotifier?.showSnackbar(messageHostUpdated)
+                EditHostViewEvent.SshKeyCreated -> messageNotifier?.showSnackbar(messageSshKeyCreated)
+                EditHostViewEvent.HostUpdated -> messageNotifier?.showSnackbar(messageHostUpdated)
             }
         }
     }

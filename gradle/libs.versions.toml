@@ -20,6 +20,7 @@ sshj = "0.40.0"
 bouncycastle = "1.81"
 cryptoTink = "1.13.0"
 coreSplashScreen = "1.0.1"
+lifecycleService = "2.9.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +52,7 @@ hierynomus-sshj = { group = "com.hierynomus", name = "sshj", version.ref = "sshj
 bouncycastle-crypto = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-pkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 google-crypto-tink = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "cryptoTink" }
+androidx-lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "lifecycleService" }
 
 
 [plugins]

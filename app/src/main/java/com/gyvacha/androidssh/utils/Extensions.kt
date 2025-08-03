@@ -14,3 +14,10 @@ inline fun SharedPreferences.edit(operation: SharedPreferences.Editor.() -> Unit
     editor.apply()
 }
 
+fun String.toLibSuffix(): String = when (this) {
+    "arm64-v8a" -> "arm64"
+    "armeabi-v7a" -> "arm"
+    "x86", "x86_64" -> "386"
+    else -> error("Unsupported ABI: $this")
+}
+
