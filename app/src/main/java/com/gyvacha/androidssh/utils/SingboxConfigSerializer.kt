@@ -1,162 +1,264 @@
 package com.gyvacha.androidssh.utils
 
+import android.util.Log
 import com.gyvacha.androidssh.data.local.entities.ProxyConfigEntity
 import com.gyvacha.androidssh.domain.model.ProxySpec
-import com.gyvacha.androidssh.domain.model.Transport
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonObjectBuilder
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 
 object SingboxConfigSerializer {
 
     fun serialize(config: ProxyConfigEntity): String {
-        require(validate(config)) { "Invalid config: ${config.alias}" }
-        val outbound = when (val spec = config.config) {
-            is ProxySpec.Vless -> buildVless(spec)
-            is ProxySpec.Vmess -> buildVmess(spec)
-            is ProxySpec.Trojan -> buildTrojan(spec)
-            is ProxySpec.Shadowsocks -> buildShadowsocks(spec)
-            is ProxySpec.Socks -> buildSocks(spec)
-            is ProxySpec.Http -> buildHttp(spec)
+        val singboxConfig = SingboxConfig(
+            log = LogConfig(),
+            inbounds = listOf(TunInbound()),
+            outbounds = listOf(
+                buildOutbound(config.config),
+                Outbound(type = "direct", tag = "direct"),
+                Outbound(type = "block", tag = "block"),
+                Outbound(type = "dns", tag = "dns-out"),
+            ),
+            route = RouteConfig(
+                rules = listOf(
+                    // DNS трафик всегда в DoH
+                    RouteRule(protocol = "dns", outbound = "dns-out"),
+                    // Локальные сети в обход прокси
+                    RouteRule(ipIsPrivate = true, outbound = "direct"),
+                    // Всё остальное — в прокси
+                    RouteRule(network = "tcp,udp", outbound = "proxy")
+                ),
+                final = "proxy"
+            ),
+            dns = DnsConfig(
+                servers = listOf(
+                    DnsServer(
+                        tag = "system",
+                        address = "local",
+                        detour = "direct",
+//                        serverName = "dns.google"
+                    ),
+                    DnsServer(
+                        tag = "google-doh",
+                        address = "https://dns.google/dns-query",
+                        detour = "direct",
+                        addressResolver = "system"
+//                        serverName = "dns.google"
+                    ),
+                    DnsServer(
+                        tag = "cloudflare-doh",
+                        address = "https://cloudflare-dns.com/dns-query",
+                        detour = "direct",
+                        addressResolver = "system"
+//                        serverName = "cloudflare-dns.com"
+                    )
+                ),
+                rules = listOf(
+                    // Локальные домены и приватные зоны — через системный DNS
+                    DnsRule(domain = listOf("geosite:private"), server = "direct"),
+                    // Можно добавить быстрый путь для локальных TLD
+                    DnsRule(domainSuffix = listOf(".lan", ".local"), server = "direct")
+                ),
+                final = "google-doh",
+                strategy = "prefer_ipv4"
+            )
+        )
+
+        val json = Json {
+            encodeDefaults = true
+            explicitNulls = false
+            prettyPrint = true
         }
 
-        val json = buildJsonObject {
-            put("log", buildJsonObject {
-                put("disabled", false)
-                put("level", "debug")
-            })
-            put("inbounds", JsonArray(listOf(buildTunInboundFd())))
-            put("outbounds", JsonArray(listOf(outbound)))
-        }
-
-        return Json.encodeToString(JsonObject.serializer(), json)
+        val jsonString = json.encodeToString(singboxConfig)
+        Log.d("SingboxConfigSerializer", "Generated config:\n$jsonString")
+        return jsonString
     }
 
-    private fun buildTunInboundFd(): JsonObject = buildJsonObject {
-        put("type", "tun")
-        put("tag", "tun-in")
-        put("fd", "fd://0")
-        put("mtu", 1500)
-        put("auto_route", true)
-        put("stack", "system")
-        put("domain_strategy", "prefer_ipv4")
-        put("address", JsonArray(listOf(
-            JsonPrimitive("10.0.0.2/32"),
-            JsonPrimitive("fd00::1/128")
-        )))
-        put("route_address", JsonArray(listOf(
-            JsonPrimitive("0.0.0.0/0"),
-            JsonPrimitive("::/0")
-        )))
-        put("route_exclude_address", JsonArray(listOf(
-            JsonPrimitive("192.168.0.0/16"),
-            JsonPrimitive("10.0.0.0/8"),
-            JsonPrimitive("172.16.0.0/12"),
-            JsonPrimitive("fd00::/8")
-        )))
-    }
+    private fun buildOutbound(spec: ProxySpec): Outbound {
+        return when (spec) {
+            is ProxySpec.Vless -> Outbound(
+                type = "vless",
+                tag = "proxy",
+                server = spec.server,
+                serverPort = spec.port,
+                uuid = spec.uuid,
+                flow = spec.flow,
+                tls = if (spec.port == 443 || spec.flow?.contains("tls") == true || spec.flow?.contains("xtls") == true) {
+                    TlsConfig(
+                        enabled = true,
+                        serverName = spec.server,
+                        insecure = true,
+                        alpn = listOf("h2", "http/1.1")
+                    )
+                } else null,
+            )
 
+            is ProxySpec.Vmess -> Outbound(
+                type = "vmess",
+                tag = "proxy",
+                server = spec.server,
+                serverPort = spec.port,
+                uuid = spec.uuid,
+                security = "auto",
+                tls = if (spec.port == 443) {
+                    TlsConfig(
+                        enabled = true,
+                        serverName = spec.server,
+                        insecure = false,
+                        alpn = listOf("h2", "http/1.1")
+                    )
+                } else null
+            )
 
-    private fun buildVless(spec: ProxySpec.Vless): JsonObject = buildJsonObject {
-        put("type", "vless")
-        put("tag", "proxy")
-        put("server", spec.server)
-        put("server_port", spec.port)
-        put("uuid", spec.uuid)
-        spec.flow?.let { put("flow", it) }
-        applyTransport(this, spec.transport)
-    }
+            is ProxySpec.Trojan -> Outbound(
+                type = "trojan",
+                tag = "proxy",
+                server = spec.server,
+                serverPort = spec.port,
+                password = spec.password,
+                tls = TlsConfig(
+                    enabled = true,
+                    serverName = spec.sni ?: spec.server,
+                    insecure = false,
+                    alpn = listOf("h2", "http/1.1")
+                )
+            )
 
-    private fun buildVmess(spec: ProxySpec.Vmess): JsonObject = buildJsonObject {
-        put("type", "vmess")
-        put("tag", "proxy")
-        put("server", spec.server)
-        put("server_port", spec.port)
-        put("uuid", spec.uuid)
-        put("alter_id", spec.alterId)
-        put("security", spec.security)
-        applyTransport(this, spec.transport)
-    }
+            is ProxySpec.Shadowsocks -> Outbound(
+                type = "shadowsocks",
+                tag = "proxy",
+                server = spec.server,
+                serverPort = spec.port,
+                method = spec.method,
+                password = spec.password
+            )
 
-    private fun buildTrojan(spec: ProxySpec.Trojan): JsonObject = buildJsonObject {
-        put("type", "trojan")
-        put("tag", "proxy")
-        put("server", spec.server)
-        put("server_port", spec.port)
-        put("password", spec.password)
-        spec.sni?.let { put("sni", it) }
-        applyTransport(this, Transport.TCP)
-    }
+            is ProxySpec.Socks -> Outbound(
+                type = "socks",
+                tag = "proxy",
+                server = spec.server,
+                serverPort = spec.port,
+                version = "5",
+                username = spec.username,
+                password = spec.password
+            )
 
-    private fun buildShadowsocks(spec: ProxySpec.Shadowsocks): JsonObject = buildJsonObject {
-        put("type", "shadowsocks")
-        put("tag", "proxy")
-        put("server", spec.server)
-        put("server_port", spec.port)
-        put("method", spec.method)
-        put("password", spec.password)
-        applyTransport(this, Transport.TCP)
-    }
-
-    private fun buildSocks(spec: ProxySpec.Socks): JsonObject = buildJsonObject {
-        put("type", "socks")
-        put("tag", "proxy")
-        put("server", spec.server)
-        put("server_port", spec.port)
-        spec.username?.let { put("username", it) }
-        spec.password?.let { put("password", it) }
-        applyTransport(this, Transport.TCP)
-    }
-
-    private fun buildHttp(spec: ProxySpec.Http): JsonObject = buildJsonObject {
-        put("type", "http")
-        put("tag", "proxy")
-        put("server", spec.server)
-        put("server_port", spec.port)
-        spec.username?.let { put("username", it) }
-        spec.password?.let { put("password", it) }
-        applyTransport(this, Transport.TCP)
-    }
-
-    private fun applyTransport(builder: JsonObjectBuilder, transport: Transport) {
-        when (transport) {
-            is Transport.TCP -> {
-                builder.put("network", "tcp")
-            }
-
-            is Transport.WS -> {
-                builder.put("network", "ws")
-                builder.put("ws_settings", buildJsonObject {
-                    put("path", transport.path)
-                    if (transport.hostHeader.isNotBlank()) {
-                        put("headers", buildJsonObject {
-                            put("Host", transport.hostHeader)
-                        })
-                    }
-                })
-            }
-
-            is Transport.GRPC -> {
-                builder.put("network", "grpc")
-                builder.put("grpc_settings", buildJsonObject {
-                    put("service_name", transport.serviceName)
-                })
-            }
-        }
-    }
-
-    private fun validate(config: ProxyConfigEntity): Boolean {
-        return when (val spec = config.config) {
-            is ProxySpec.Vless -> spec.server.isNotBlank() && spec.uuid.isNotBlank()
-            is ProxySpec.Vmess -> spec.server.isNotBlank() && spec.uuid.isNotBlank()
-            is ProxySpec.Trojan -> spec.server.isNotBlank() && spec.password.isNotBlank()
-            is ProxySpec.Shadowsocks -> spec.method.isNotBlank() && spec.password.isNotBlank()
-            is ProxySpec.Socks -> spec.server.isNotBlank()
-            is ProxySpec.Http -> spec.server.isNotBlank()
+            is ProxySpec.Http -> Outbound(
+                type = "http",
+                tag = "proxy",
+                server = spec.server,
+                serverPort = spec.port,
+                username = spec.username,
+                password = spec.password,
+                tls = if (spec.port == 443) {
+                    TlsConfig(enabled = true, serverName = spec.server, insecure = false)
+                } else null
+            )
         }
     }
 }
+
+@Serializable
+data class TlsConfig(
+    val enabled: Boolean,
+    @SerialName("server_name") val serverName: String,
+    val insecure: Boolean = false,
+    val alpn: List<String>? = null
+)
+
+@Serializable
+data class DnsRule(
+    val domain: List<String>? = null,
+    @SerialName("domain_suffix") val domainSuffix: List<String>? = null,
+    @SerialName("domain_keyword") val domainKeyword: List<String>? = null,
+    @SerialName("domain_regex") val domainRegex: List<String>? = null,
+    val server: String
+)
+
+@Serializable
+data class Outbound(
+    val type: String,
+    val tag: String,
+    val server: String? = null,
+    @SerialName("server_port") val serverPort: Int? = null,
+    val uuid: String? = null,
+    val flow: String? = null,
+    val password: String? = null,
+    val method: String? = null,
+    val security: String? = null,
+    val username: String? = null,
+    val version: String? = null,
+    val tls: TlsConfig? = null
+)
+
+@Serializable
+data class TunInbound(
+    val type: String = "tun",
+    val tag: String = "tun-in",
+    @SerialName("interface_name") val interfaceName: String = "tun0",
+    @SerialName("inet4_address") val inet4Address: List<String> = listOf("172.19.0.1/28"),
+    @SerialName("inet6_address") val inet6Address: List<String> = listOf("fd00::1/126"),
+    val mtu: Int = 1500,
+    @SerialName("auto_route") val autoRoute: Boolean = true,
+    val sniff: Boolean = true,
+    @SerialName("sniff_override_destination") val sniffOverrideDestination: Boolean = true,
+    @SerialName("domain_strategy") val domainStrategy: String = "prefer_ipv4"
+)
+
+@Serializable
+data class RouteRule(
+    val protocol: String? = null,
+    @SerialName("ip_is_private") val ipIsPrivate: Boolean? = null,
+    val domain: List<String>? = null,
+    val port: Int? = null,
+    @SerialName("ip_cidr") val ipCidr: List<String>? = null,
+    val network: String? = null,
+    val outbound: String
+)
+
+@Serializable
+data class RouteConfig(
+    val rules: List<RouteRule>,
+    val final: String
+)
+
+@Serializable
+data class DnsServer(
+    val tag: String,
+    val address: String,
+    val detour: String,
+    @SerialName("server_name") val serverName: String? = null,
+    @SerialName("address_resolver") val addressResolver: String? = null
+)
+
+@Serializable
+data class DnsConfig(
+    val servers: List<DnsServer>,
+    val rules: List<DnsRule>? = null,
+    val final: String,
+    val strategy: String? = null
+)
+
+@Serializable
+data class LogConfig(
+    val disabled: Boolean = false,
+    val level: String = "trace"
+)
+
+@Serializable
+data class SingboxConfig(
+    val log: LogConfig,
+    val inbounds: List<TunInbound>,
+    val outbounds: List<Outbound>,
+    val route: RouteConfig,
+    val dns: DnsConfig? = null
+)
+
+@Serializable
+data class TransportConfig(
+    val type: String,
+    val path: String? = null,
+    @SerialName("service_name") val serviceName: String? = null
+)

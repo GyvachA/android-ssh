@@ -16,3 +16,4 @@ local.properties
 /.kotlin/
 /out/
 /go.sum
+/app/libs/

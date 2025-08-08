@@ -3,6 +3,7 @@ package com.gyvacha.androidssh.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
+import io.nekohasekai.libbox.StringIterator
 
 fun Context.showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
@@ -21,3 +22,11 @@ fun String.toLibSuffix(): String = when (this) {
     else -> error("Unsupported ABI: $this")
 }
 
+
+fun StringIterator.toList(): List<String> {
+    return mutableListOf<String>().apply {
+        while (hasNext()) {
+            add(next())
+        }
+    }
+}

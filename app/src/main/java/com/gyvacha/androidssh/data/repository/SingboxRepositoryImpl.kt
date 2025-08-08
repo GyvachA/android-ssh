@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.gyvacha.androidssh.domain.model.Status
 import com.gyvacha.androidssh.domain.repository.SingboxRepository
 import com.gyvacha.androidssh.receiver.SingboxActionReceiver
 import com.gyvacha.androidssh.service.SingboxService
@@ -21,7 +22,7 @@ import kotlinx.coroutines.withContext
 class SingboxRepositoryImpl(
     private val context: Context
 ) : SingboxRepository {
-    override val isRunning: StateFlow<Boolean> = SingboxService.isRunning
+    override val serviceStatus: StateFlow<Status> = SingboxService.serviceStatus
     private val _logs = MutableSharedFlow<String>(extraBufferCapacity = 100)
     override val logs: Flow<String> = _logs.asSharedFlow()
     private var logReceiver: BroadcastReceiver? = null
@@ -29,7 +30,7 @@ class SingboxRepositoryImpl(
 
     override suspend fun start(configPath: String) {
         return withContext(Dispatchers.IO) {
-            if (isRunning.value) return@withContext
+            if (serviceStatus.value == Status.Started || serviceStatus.value == Status.Starting || serviceStatus.value == Status.Restarting) return@withContext
             registerLogReceiver()
             startIntent = Intent(context, SingboxService::class.java).apply {
                 putExtra(SingboxService.EXTRA_CONFIG_PATH, configPath)
@@ -42,7 +43,7 @@ class SingboxRepositoryImpl(
 
     override suspend fun stop() {
         return withContext(Dispatchers.IO) {
-            if (!isRunning.value || startIntent == null) return@withContext
+            if (serviceStatus.value == Status.Stopped || serviceStatus.value == Status.Stopping ||startIntent == null) return@withContext
             val stopIntent = Intent(context, SingboxActionReceiver::class.java).apply {
                 action = ACTION_STOP
             }

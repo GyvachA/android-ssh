@@ -1,12 +1,11 @@
 package com.gyvacha.androidssh
 
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.util.Log
 import com.google.crypto.tink.aead.AeadConfig
-import com.gyvacha.androidssh.service.SingboxService
 import dagger.hilt.android.HiltAndroidApp
+import io.nekohasekai.libbox.Libbox
+import io.nekohasekai.libbox.SetupOptions
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.io.File
 import java.security.Security
@@ -23,14 +22,19 @@ class SshApp : Application() {
         Security.insertProviderAt(BouncyCastleProvider(), 1)
         AeadConfig.register()
         System.loadLibrary("sqlcipher")
-        System.loadLibrary("native-lib")
 
-        val channel = NotificationChannel(
-            SingboxService.NOTIFICATION_CHANNEL,
-            "Singbox Service",
-            NotificationManager.IMPORTANCE_LOW
-        )
-        getSystemService(NotificationManager::class.java)
-            .createNotificationChannel(channel)
+        // initialize libbox
+        val baseDir = filesDir
+        baseDir.mkdirs()
+        val workingDir = getExternalFilesDir(null) ?: return
+        workingDir.mkdirs()
+        val tempDir = cacheDir
+        tempDir.mkdirs()
+        Libbox.setup(SetupOptions().also {
+            it.basePath = baseDir.path
+            it.workingPath = workingDir.path
+            it.tempPath = tempDir.path
+        })
+        Libbox.redirectStderr(File(workingDir, "stderr.log").path)
     }
 }

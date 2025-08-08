@@ -34,6 +34,7 @@ import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.ProxyConfig
 import com.gyvacha.androidssh.domain.model.ProxySpec
 import com.gyvacha.androidssh.domain.model.ProxyType
+import com.gyvacha.androidssh.domain.model.Status
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.components.MenuWithIcon
 import com.gyvacha.androidssh.ui.components.RequestNotificationPermission
@@ -169,24 +170,23 @@ fun SingboxScreen(
                     )
                     FloatingActionButton(
                         onClick = {
-                            if (singboxState) {
-                                viewModel.stopSingbox()
-                            } else {
-                                viewModel.updateRequestPermission(true)
+                            when (singboxState) {
+                                Status.Stopped -> viewModel.updateRequestPermission(true)
+                                Status.Started -> viewModel.stopSingbox()
+                                else -> {}
                             }
                         },
                         shape = CircleShape,
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = MaterialTheme.colorScheme.primary,
                     ) {
-                        if (singboxState) {
-                            Icon(
-                                Icons.Filled.Stop,
-                                contentDescription = stringResource(R.string.stop_singbox)
-                            )
-                        } else {
-                            Icon(
+                        when (singboxState) {
+                            Status.Stopped, Status.Stopping -> Icon(
                                 Icons.Filled.PlayArrow,
                                 contentDescription = stringResource(R.string.start_singbox)
+                            )
+                            Status.Started, Status.Starting, Status.Restarting -> Icon(
+                                Icons.Filled.Stop,
+                                contentDescription = stringResource(R.string.stop_singbox)
                             )
                         }
                     }

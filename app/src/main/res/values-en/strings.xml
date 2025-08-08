@@ -55,4 +55,6 @@
     <string name="start_singbox">Start singbox</string>
     <string name="grant_permissions">Allow notifications</string>
     <string name="stop_singbox">Stop singbox</string>
+    <string name="singbox_service_starting">Service starting...</string>
+    <string name="singbox_service_started">Service started</string>
 </resources>
