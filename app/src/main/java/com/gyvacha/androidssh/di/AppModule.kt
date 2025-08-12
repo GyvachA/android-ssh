@@ -56,95 +56,126 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSshKeyRepository(sshKeyDao: SshKeyDao): SshKeyRepository = SshKeyRepositoryImpl(sshKeyDao)
+    fun provideSshKeyRepository(sshKeyDao: SshKeyDao): SshKeyRepository =
+        SshKeyRepositoryImpl(sshKeyDao)
 
     @Provides
     @Singleton
-    fun provideSingboxRepository(@ApplicationContext context: Context): SingboxRepository = SingboxRepositoryImpl(context)
+    fun provideSingboxRepository(@ApplicationContext context: Context): SingboxRepository =
+        SingboxRepositoryImpl(context)
 
     @Provides
     @Singleton
-    fun provideProxyConfigRepository(proxyConfigDao: ProxyConfigDao): ProxyConfigRepository = ProxyConfigRepositoryImpl(proxyConfigDao)
+    fun provideProxyConfigRepository(proxyConfigDao: ProxyConfigDao): ProxyConfigRepository =
+        ProxyConfigRepositoryImpl(proxyConfigDao)
 
     @Provides
     @Singleton
     fun provideCommandExecutor(): CommandExecutor = CommandExecutor()
 
     @Provides
-    fun provideStartSingboxUseCase(repository: SingboxRepository, fileManager: SingboxConfigFileManager): StartSingboxUseCase = StartSingboxUseCase(repository, fileManager)
+    fun provideStartSingboxUseCase(
+        repository: SingboxRepository,
+        fileManager: SingboxConfigFileManager
+    ): StartSingboxUseCase = StartSingboxUseCase(repository, fileManager)
 
     @Provides
-    fun provideInsertConfigUseCase(repository: ProxyConfigRepository): InsertConfigUseCase = InsertConfigUseCase(repository)
+    fun provideInsertConfigUseCase(repository: ProxyConfigRepository): InsertConfigUseCase =
+        InsertConfigUseCase(repository)
 
     @Provides
-    fun provideSetActiveConfigUseCase(repository: ProxyConfigRepository): SetActiveConfigUseCase = SetActiveConfigUseCase(repository)
+    fun provideSetActiveConfigUseCase(repository: ProxyConfigRepository): SetActiveConfigUseCase =
+        SetActiveConfigUseCase(repository)
 
     @Provides
-    fun provideUpdateConfigUseCase(repository: ProxyConfigRepository): UpdateConfigUseCase = UpdateConfigUseCase(repository)
+    fun provideUpdateConfigUseCase(repository: ProxyConfigRepository): UpdateConfigUseCase =
+        UpdateConfigUseCase(repository)
 
     @Provides
-    fun provideGetConfigsUseCase(repository: ProxyConfigRepository): GetConfigsUseCase = GetConfigsUseCase(repository)
+    fun provideGetConfigsUseCase(repository: ProxyConfigRepository): GetConfigsUseCase =
+        GetConfigsUseCase(repository)
 
     @Provides
-    fun provideDeleteConfigUseCase(repository: ProxyConfigRepository): DeleteConfigUseCase = DeleteConfigUseCase(repository)
+    fun provideDeleteConfigUseCase(repository: ProxyConfigRepository): DeleteConfigUseCase =
+        DeleteConfigUseCase(repository)
 
     @Provides
-    fun provideGenerateSingboxConfigFileUseCase(repository: ProxyConfigRepository, fileManager: SingboxConfigFileManager): GenerateSingboxConfigFileUseCase = GenerateSingboxConfigFileUseCase(repository, fileManager)
+    fun provideGenerateSingboxConfigFileUseCase(
+        repository: ProxyConfigRepository,
+        fileManager: SingboxConfigFileManager
+    ): GenerateSingboxConfigFileUseCase = GenerateSingboxConfigFileUseCase(repository, fileManager)
 
     @Provides
-    fun provideStopSingboxUseCase(repository: SingboxRepository): StopSingboxUseCase = StopSingboxUseCase(repository)
+    fun provideStopSingboxUseCase(repository: SingboxRepository): StopSingboxUseCase =
+        StopSingboxUseCase(repository)
 
     @Provides
-    fun provideObserveSingboxLogsUseCase(repository: SingboxRepository): ObserveSingboxLogsUseCase = ObserveSingboxLogsUseCase(repository)
+    fun provideObserveSingboxLogsUseCase(repository: SingboxRepository): ObserveSingboxLogsUseCase =
+        ObserveSingboxLogsUseCase(repository)
 
     @Provides
-    fun provideObserveSingboxStateUseCase(repository: SingboxRepository): ObserveSingboxStateUseCase = ObserveSingboxStateUseCase(repository)
-
-    @Provides
-    @Singleton
-    fun provideExecuteCommandUseCase(executor: CommandExecutor): ExecuteCommandUseCase = ExecuteCommandUseCase(executor)
-
-    @Provides
-    fun provideGetHostsUseCase(repository: HostRepository): GetHostsUseCase = GetHostsUseCase(repository)
-
-    @Provides
-    fun provideGetHostUseCase(repository: HostRepository): GetHostUseCase = GetHostUseCase(repository)
-
-    @Provides
-    fun provideUpdateHostUseCase(repository: HostRepository): UpdateHostUseCase = UpdateHostUseCase(repository)
-
-    @Provides
-    fun provideGetHostWithSshKeyUseCase(repository: HostRepository): GetHostWithSshKeyUseCase = GetHostWithSshKeyUseCase(repository)
-
-    @Provides
-    fun provideInsertHostUseCase(repository: HostRepository): InsertHostUseCase = InsertHostUseCase(repository)
-
-    @Provides
-    fun provideGetSshKeysUseCase(repository: SshKeyRepository): GetSshKeysUseCase = GetSshKeysUseCase(repository)
-
-    @Provides
-    fun provideInsertSshKeyUseCase(repository: SshKeyRepository): InsertSshKeyUseCase = InsertSshKeyUseCase(repository)
-
-    @Provides
-    fun provideGenerateSshKeyUseCase(repository: SshKeyRepository): GenerateSshKeyUseCase = GenerateSshKeyUseCase(repository)
+    fun provideObserveSingboxStateUseCase(repository: SingboxRepository): ObserveSingboxStateUseCase =
+        ObserveSingboxStateUseCase(repository)
 
     @Provides
     @Singleton
-    fun provideSshRepository() : SshRepository = SshRepositoryImpl()
+    fun provideExecuteCommandUseCase(executor: CommandExecutor): ExecuteCommandUseCase =
+        ExecuteCommandUseCase(executor)
 
     @Provides
-    fun provideSshConnectViaKey(repository: SshRepository): SshConnectViaKeyUseCase = SshConnectViaKeyUseCase(repository)
+    fun provideGetHostsUseCase(repository: HostRepository): GetHostsUseCase =
+        GetHostsUseCase(repository)
 
     @Provides
-    fun provideSshConnectViaPwd(repository: SshRepository): SshConnectViaPwdUseCase = SshConnectViaPwdUseCase(repository)
+    fun provideGetHostUseCase(repository: HostRepository): GetHostUseCase =
+        GetHostUseCase(repository)
 
     @Provides
-    fun provideSshExecuteCommand(repository: SshRepository): SshExecuteCommandUseCase = SshExecuteCommandUseCase(repository)
+    fun provideUpdateHostUseCase(repository: HostRepository): UpdateHostUseCase =
+        UpdateHostUseCase(repository)
 
     @Provides
-    fun provideSshDisconnect(repository: SshRepository): SshDisconnectUseCase = SshDisconnectUseCase(repository)
+    fun provideGetHostWithSshKeyUseCase(repository: HostRepository): GetHostWithSshKeyUseCase =
+        GetHostWithSshKeyUseCase(repository)
+
+    @Provides
+    fun provideInsertHostUseCase(repository: HostRepository): InsertHostUseCase =
+        InsertHostUseCase(repository)
+
+    @Provides
+    fun provideGetSshKeysUseCase(repository: SshKeyRepository): GetSshKeysUseCase =
+        GetSshKeysUseCase(repository)
+
+    @Provides
+    fun provideInsertSshKeyUseCase(repository: SshKeyRepository): InsertSshKeyUseCase =
+        InsertSshKeyUseCase(repository)
+
+    @Provides
+    fun provideGenerateSshKeyUseCase(repository: SshKeyRepository): GenerateSshKeyUseCase =
+        GenerateSshKeyUseCase(repository)
 
     @Provides
     @Singleton
-    fun provideSingboxConfigFileManager(@ApplicationContext context: Context): SingboxConfigFileManager = SingboxConfigFileManager(context)
+    fun provideSshRepository(): SshRepository = SshRepositoryImpl()
+
+    @Provides
+    fun provideSshConnectViaKey(repository: SshRepository): SshConnectViaKeyUseCase =
+        SshConnectViaKeyUseCase(repository)
+
+    @Provides
+    fun provideSshConnectViaPwd(repository: SshRepository): SshConnectViaPwdUseCase =
+        SshConnectViaPwdUseCase(repository)
+
+    @Provides
+    fun provideSshExecuteCommand(repository: SshRepository): SshExecuteCommandUseCase =
+        SshExecuteCommandUseCase(repository)
+
+    @Provides
+    fun provideSshDisconnect(repository: SshRepository): SshDisconnectUseCase =
+        SshDisconnectUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSingboxConfigFileManager(@ApplicationContext context: Context): SingboxConfigFileManager =
+        SingboxConfigFileManager(context)
 }

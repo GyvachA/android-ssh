@@ -67,8 +67,10 @@ sealed class ProxySpec {
 sealed class Transport {
     @Serializable
     data object TCP : Transport()
+
     @Serializable
     data class WS(val path: String = "/", val hostHeader: String = "") : Transport()
+
     @Serializable
     data class GRPC(val serviceName: String = "default") : Transport()
 }

@@ -36,7 +36,14 @@ fun SingboxConfigCard(
     BaseCard(
         modifier = modifier,
         onClick = onCardClick,
-        border = if (config.isActive) BorderStroke(dimensionResource(R.dimen.small_stroke), MaterialTheme.colorScheme.inversePrimary) else null
+        border = if (config.isActive) {
+            BorderStroke(
+                dimensionResource(R.dimen.small_stroke),
+                MaterialTheme.colorScheme.inversePrimary
+            )
+        } else {
+            null
+        }
     ) {
         Row(
             modifier = Modifier.padding(dimensionResource(R.dimen.medium_padding)),
@@ -54,11 +61,15 @@ fun SingboxConfigCard(
                 )
                 Text(
                     text = config.getAddress(),
-                    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
                 )
                 Text(
                     text = "${config.type}",
-                    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
                 )
             }
 
@@ -77,20 +88,19 @@ fun SingboxConfigCard(
                     }
                 }
             )
-
         }
     }
 }
 
 @Preview
 @Composable
-fun SingboxConfigCardPreview() {
+private fun SingboxConfigCardPreview() {
     SingboxConfigCard(
         config = ProxyConfig(
             0,
             "Alias",
             ProxyType.VLESS,
-            ProxySpec.Vless("123.0.0.1", 22, "uuid"),
+            @Suppress("MagicNumber") ProxySpec.Vless("123.0.0.1", 22, "uuid"),
             isActive = true
         ),
         onCardClick = {}

@@ -22,7 +22,6 @@ fun MenuWithIcon(
     icon: ImageVector = Icons.Filled.MoreVert,
     content: @Composable ColumnScope.() -> Unit
 ) {
-
     Box(modifier = modifier) {
         IconButton(onClick = onMenuClick) {
             Icon(

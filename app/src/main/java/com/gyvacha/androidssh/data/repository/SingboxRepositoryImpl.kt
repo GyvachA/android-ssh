@@ -30,23 +30,33 @@ class SingboxRepositoryImpl(
 
     override suspend fun start(configPath: String) {
         return withContext(Dispatchers.IO) {
-            if (serviceStatus.value == Status.Started || serviceStatus.value == Status.Starting || serviceStatus.value == Status.Restarting) return@withContext
+            if (serviceStatus.value == Status.Started ||
+                serviceStatus.value == Status.Starting ||
+                serviceStatus.value == Status.Restarting
+            ) {
+                return@withContext
+            }
             registerLogReceiver()
             startIntent = Intent(context, SingboxService::class.java).apply {
                 putExtra(SingboxService.EXTRA_CONFIG_PATH, configPath)
             }
-            Log.d("SingboxService", "startIntent ${startIntent.toString()}")
+            Log.d("SingboxService", "startIntent $startIntent")
             startIntent?.let { ContextCompat.startForegroundService(context, it) }
         }
-
     }
 
     override suspend fun stop() {
         return withContext(Dispatchers.IO) {
-            if (serviceStatus.value == Status.Stopped || serviceStatus.value == Status.Stopping ||startIntent == null) return@withContext
-            val stopIntent = Intent(context, SingboxActionReceiver::class.java).apply {
-                action = ACTION_STOP
+            if (serviceStatus.value == Status.Stopped ||
+                serviceStatus.value == Status.Stopping ||
+                startIntent == null
+            ) {
+                return@withContext
             }
+            val stopIntent = Intent(context, SingboxActionReceiver::class.java)
+                .apply {
+                    action = ACTION_STOP
+                }
             context.sendBroadcast(stopIntent)
             unregisterLogReceiver()
         }
@@ -62,7 +72,9 @@ class SingboxRepositoryImpl(
         }
         val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Context.RECEIVER_NOT_EXPORTED
-        } else 0
+        } else {
+            0
+        }
         context.registerReceiver(
             logReceiver,
             IntentFilter(SingboxService.ACTION_LOG),

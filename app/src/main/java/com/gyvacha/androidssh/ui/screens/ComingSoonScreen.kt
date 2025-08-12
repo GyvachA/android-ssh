@@ -19,9 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.gyvacha.androidssh.R
 
 @Composable
-fun ComingSoonScreen() {
+fun ComingSoonScreen(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -41,7 +41,7 @@ fun ComingSoonScreen() {
 
 @Composable
 @Preview
-fun ComingSoonScreenPreview() {
+private fun ComingSoonScreenPreview() {
     Surface {
         ComingSoonScreen()
     }

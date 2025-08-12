@@ -18,9 +18,9 @@ import com.gyvacha.androidssh.R
 
 @Composable
 fun BottomFabSaveActions(
-    modifier: Modifier = Modifier,
     onSave: () -> Unit,
     onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
     isSaveButtonActive: Boolean = true,
 ) {
     Box(

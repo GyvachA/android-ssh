@@ -27,7 +27,7 @@ fun HostEntity.toDomain() = Host(
 )
 fun Host.toEntity() = HostEntity(
     hostId = hostId,
-    alias =alias,
+    alias = alias,
     hostNameOrIp = hostNameOrIp,
     port = port,
     userName = userName,
@@ -35,7 +35,6 @@ fun Host.toEntity() = HostEntity(
     sshKey = sshKey,
     authType = authType.name
 )
-
 
 enum class SshAuthType {
     PASSWORD,

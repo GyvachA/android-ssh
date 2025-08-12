@@ -2,9 +2,8 @@ package com.gyvacha.androidssh.domain.model.navigation
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
-sealed interface AppNavigation: NavigationTarget {
+sealed interface AppNavigation : NavigationTarget {
 
     @Serializable
     data object SettingsRoute : AppNavigation {
@@ -20,17 +19,17 @@ sealed interface AppNavigation: NavigationTarget {
         ) : AppNavigation
 
         @Serializable
-        data object Hosts: AppNavigation
+        data object Hosts : AppNavigation
 
         @Serializable
         data class EditHost(
             val hostId: Int? = null
-        ): AppNavigation
+        ) : AppNavigation
     }
 
     @Serializable
     data object XrayRoute : AppNavigation {
         @Serializable
-        data object Xray: AppNavigation
+        data object Xray : AppNavigation
     }
 }

@@ -3,6 +3,7 @@ package com.gyvacha.androidssh.utils
 import android.content.Context
 import androidx.core.content.edit
 import com.google.crypto.tink.Aead
+import com.google.crypto.tink.RegistryConfiguration
 import com.google.crypto.tink.aead.AesGcmKeyManager
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import java.security.SecureRandom
@@ -14,6 +15,7 @@ object DatabaseKeyManager {
     private const val KEYSET_NAME = "encrypted_passphrase_key"
     private const val PREF_NAME = "host_db"
     private const val PREF_DATABASE_PASSPHRASE = "encrypted_db_passphrase"
+    private const val BYTE_ARRAY_SIZE = 32
 
     fun getOrCreateSecretKey(context: Context): ByteArray {
         val aead = getOrCreateAead(context)
@@ -24,7 +26,7 @@ object DatabaseKeyManager {
         return if (encrypted != null) {
             aead.decrypt(android.util.Base64.decode(encrypted, android.util.Base64.DEFAULT), null)
         } else {
-            val passphrase = ByteArray(32).also {
+            val passphrase = ByteArray(BYTE_ARRAY_SIZE).also {
                 SecureRandom().nextBytes(it)
             }
             val ciphertext = aead.encrypt(passphrase, null)
@@ -45,7 +47,6 @@ object DatabaseKeyManager {
             .withMasterKeyUri(MASTER_KEY_URI)
             .build()
             .keysetHandle
-
-        return handle.getPrimitive(Aead::class.java)
+        return handle.getPrimitive(RegistryConfiguration.get(), Aead::class.java)
     }
 }

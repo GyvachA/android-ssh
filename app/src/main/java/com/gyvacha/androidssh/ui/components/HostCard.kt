@@ -29,9 +29,9 @@ import com.gyvacha.androidssh.domain.model.SshAuthType
 @Composable
 fun HostCard(
     host: Host,
-    modifier: Modifier = Modifier,
     onStartTerminal: () -> Unit,
     onCardClick: () -> Unit,
+    modifier: Modifier = Modifier,
     onEditHost: ((Host) -> Unit)? = null,
     onDeleteHost: ((Host) -> Unit)? = null,
 ) {
@@ -58,7 +58,9 @@ fun HostCard(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
                     text = "${host.hostNameOrIp}:${host.port}, ${host.userName}"
                 )
             }
@@ -101,7 +103,7 @@ fun HostCard(
 
 @Composable
 @Preview
-fun HostCardPreview() {
+private fun HostCardPreview() {
     HostCard(
         Host(
             hostId = 0,

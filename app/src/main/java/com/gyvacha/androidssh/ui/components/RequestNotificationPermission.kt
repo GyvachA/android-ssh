@@ -9,37 +9,42 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
 @Composable
 fun RequestNotificationPermission(
-    onGranted: () -> Unit
+    onGrant: () -> Unit
 ) {
+    val latestOnClick by rememberUpdatedState(onGrant)
     val context = LocalContext.current
-    val permission = if (Build.VERSION.SDK_INT >= 33)
+    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.POST_NOTIFICATIONS
-    else null
+    } else {
+        null
+    }
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            onGranted()
+            latestOnClick()
         }
     }
 
     LaunchedEffect(Unit) {
         if (permission == null) {
-            onGranted()
+            latestOnClick()
         } else {
             val hasPermission = ContextCompat.checkSelfPermission(
                 context, permission
             ) == PackageManager.PERMISSION_GRANTED
 
             if (hasPermission) {
-                onGranted()
+                latestOnClick()
             } else {
                 launcher.launch(permission)
             }
@@ -49,24 +54,24 @@ fun RequestNotificationPermission(
 
 @Composable
 fun RequestVpnPermission(
-    onGranted: () -> Unit
+    onGrant: () -> Unit
 ) {
+    val latestOnClick by rememberUpdatedState(onGrant)
     val context = LocalContext.current
     val prepareIntent = remember { VpnService.prepare(context) }
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            onGranted()
+            latestOnClick()
         }
     }
 
     LaunchedEffect(Unit) {
         if (prepareIntent == null) {
-            onGranted()
+            latestOnClick()
         } else {
             launcher.launch(prepareIntent)
         }
     }
 }
-

@@ -1,8 +1,8 @@
 package com.gyvacha.androidssh.utils
 
 import android.net.Uri
-import com.gyvacha.androidssh.domain.model.ProxySpec
 import androidx.core.net.toUri
+import com.gyvacha.androidssh.domain.model.ProxySpec
 import com.gyvacha.androidssh.domain.model.Transport
 
 object ParseProxyConfig {
@@ -27,6 +27,7 @@ object ParseProxyConfig {
                     transport = transport
                 )
             }
+
             "vmess" -> {
                 val uuid = uri.userInfo ?: ""
                 val alterId = uri.getQueryParameter("alterId")?.toIntOrNull() ?: 0
@@ -41,8 +42,14 @@ object ParseProxyConfig {
                     transport = transport
                 )
             }
+
             "trojan" -> {
-                val password = if (uri.userInfo.isNullOrBlank()) uri.getQueryParameter("password") ?: "" else uri.userInfo
+                val password = if (uri.userInfo.isNullOrBlank()) {
+                    uri.getQueryParameter("password")
+                        ?: ""
+                } else {
+                    uri.userInfo
+                }
                 val sni = uri.getQueryParameter("sni")
                 ProxySpec.Trojan(
                     server = server,
@@ -51,9 +58,15 @@ object ParseProxyConfig {
                     sni = sni
                 )
             }
+
             "shadowsocks" -> {
                 val method = uri.getQueryParameter("method") ?: ""
-                val password = if (uri.userInfo.isNullOrBlank()) uri.getQueryParameter("password") ?: "" else uri.userInfo
+                val password = if (uri.userInfo.isNullOrBlank()) {
+                    uri.getQueryParameter("password")
+                        ?: ""
+                } else {
+                    uri.userInfo
+                }
                 ProxySpec.Shadowsocks(
                     server = server,
                     port = port,
@@ -61,8 +74,10 @@ object ParseProxyConfig {
                     password = password ?: ""
                 )
             }
+
             "socks" -> {
-                val username = if (uri.userInfo.isNullOrBlank()) uri.getQueryParameter("username") else uri.userInfo
+                val username =
+                    if (uri.userInfo.isNullOrBlank()) uri.getQueryParameter("username") else uri.userInfo
                 val password = uri.getQueryParameter("password")
                 ProxySpec.Socks(
                     server = server,
@@ -71,8 +86,10 @@ object ParseProxyConfig {
                     password = password
                 )
             }
+
             "http" -> {
-                val username = if (uri.userInfo.isNullOrBlank()) uri.getQueryParameter("username") else uri.userInfo
+                val username =
+                    if (uri.userInfo.isNullOrBlank()) uri.getQueryParameter("username") else uri.userInfo
                 val password = uri.getQueryParameter("password")
                 ProxySpec.Http(
                     server = server,
@@ -81,10 +98,10 @@ object ParseProxyConfig {
                     password = password
                 )
             }
+
             else -> null
         }
     }
-
 
     private fun parseTransport(uri: Uri): Transport {
         return when (uri.getQueryParameter("transport")?.lowercase()) {
@@ -92,9 +109,11 @@ object ParseProxyConfig {
                 path = uri.getQueryParameter("path") ?: "/",
                 hostHeader = uri.getQueryParameter("hostHeader") ?: ""
             )
+
             "grpc" -> Transport.GRPC(
                 serviceName = uri.getQueryParameter("serviceName") ?: "default"
             )
+
             else -> Transport.TCP
         }
     }

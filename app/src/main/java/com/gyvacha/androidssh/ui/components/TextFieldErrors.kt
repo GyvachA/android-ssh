@@ -10,7 +10,7 @@ enum class TextFieldErrors {
 }
 
 @Composable
-fun getTextFieldErrorMessage(errorType: TextFieldErrors?) = when(errorType) {
+fun getTextFieldErrorMessage(errorType: TextFieldErrors?) = when (errorType) {
     TextFieldErrors.STRING_LENGTH_ERROR -> stringResource(R.string.string_len_error)
     TextFieldErrors.STRING_BLANK_ERROR -> stringResource(R.string.string_blank_error)
     else -> null

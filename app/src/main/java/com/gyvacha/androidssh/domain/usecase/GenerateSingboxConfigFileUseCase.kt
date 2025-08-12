@@ -14,7 +14,7 @@ class GenerateSingboxConfigFileUseCase(
 ) {
     suspend operator fun invoke(): File {
         return withContext(Dispatchers.IO) {
-            val config = repository.getActiveConfig() ?: throw IllegalStateException("No active config")
+            val config = repository.getActiveConfig() ?: error("No active config")
             val json = SingboxConfigSerializer.serialize(config.toEntity())
             fileManager.writeToFile(json)
         }

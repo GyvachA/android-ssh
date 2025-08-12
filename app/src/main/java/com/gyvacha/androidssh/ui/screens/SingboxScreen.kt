@@ -133,13 +133,11 @@ fun SingboxScreen(
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.import_from_qr_code)) },
                                 onClick = {
-
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.add_manually)) },
                                 onClick = {
-
                                 }
                             )
                         }
@@ -157,7 +155,6 @@ fun SingboxScreen(
                 ) {
                     Button(
                         onClick = {
-
                         }
                     ) {
                         Text(stringResource(R.string.ping))

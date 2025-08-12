@@ -1,0 +1,88 @@
+Compose:
+  ComposableAnnotationNaming:
+    active: true
+  ComposableNaming:
+    active: true
+  ComposableParamOrder:
+    active: true
+  CompositionLocalAllowlist:
+    active: true
+    allowedCompositionLocals: LocalMessageNotifier
+  CompositionLocalNaming:
+    active: true
+  ContentEmitterReturningValues:
+    active: true
+  DefaultsVisibility:
+    active: true
+  LambdaParameterInRestartableEffect:
+    active: true
+  ModifierClickableOrder:
+    active: true
+  ModifierComposable:
+    active: true
+  ModifierMissing:
+    active: true
+  ModifierNaming:
+    active: true
+  ModifierNotUsedAtRoot:
+    active: true
+  ModifierReused:
+    active: true
+  ModifierWithoutDefault:
+    active: true
+  MultipleEmitters:
+    active: true
+  MutableParams:
+    active: true
+  MutableStateParam:
+    active: true
+  PreviewAnnotationNaming:
+    active: true
+  PreviewPublic:
+    active: true
+  RememberMissing:
+    active: true
+  RememberContentMissing:
+    active: true
+  UnstableCollections:
+    active: true
+  ViewModelForwarding:
+    active: true
+  ViewModelInjection:
+    active: true
+
+naming:
+  FunctionNaming:
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Z][A-Za-z0-9]*'
+
+complexity:
+  TooManyFunctions:
+    ignoreAnnotatedFunctions: ['Preview']
+    thresholdInClasses: 31
+    thresholdInObjects: 31
+  LongParameterList:
+    functionThreshold: 15
+    constructorThreshold: 15
+    ignoreDefaultParameters: true
+  LongMethod:
+    threshold: 300
+  CyclomaticComplexMethod:
+    threshold: 30
+  NestedBlockDepth:
+    threshold: 10
+
+style:
+  MagicNumber:
+    active: true
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview']
+  ReturnCount:
+    max: 6
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false

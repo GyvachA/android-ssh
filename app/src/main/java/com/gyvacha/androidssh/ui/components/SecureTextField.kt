@@ -21,9 +21,9 @@ fun SecureTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
+    onVisibilityClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isPasswordVisible: Boolean = false,
-    onVisibilityClick: () -> Unit
+    isPasswordVisible: Boolean = false
 ) {
     TextFieldBase(
         value = value,
@@ -39,7 +39,13 @@ fun SecureTextField(
             IconButton(onClick = onVisibilityClick) {
                 Icon(
                     imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                    contentDescription = if (isPasswordVisible) stringResource(R.string.password_hide) else stringResource(R.string.password_show)
+                    contentDescription = if (isPasswordVisible) {
+                        stringResource(
+                            R.string.password_hide
+                        )
+                    } else {
+                        stringResource(R.string.password_show)
+                    }
                 )
             }
         },

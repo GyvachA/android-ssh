@@ -30,11 +30,13 @@ class SshApp : Application() {
         workingDir.mkdirs()
         val tempDir = cacheDir
         tempDir.mkdirs()
-        Libbox.setup(SetupOptions().also {
-            it.basePath = baseDir.path
-            it.workingPath = workingDir.path
-            it.tempPath = tempDir.path
-        })
+        Libbox.setup(
+            SetupOptions().also {
+                it.basePath = baseDir.path
+                it.workingPath = workingDir.path
+                it.tempPath = tempDir.path
+            }
+        )
         Libbox.redirectStderr(File(workingDir, "stderr.log").path)
     }
 }

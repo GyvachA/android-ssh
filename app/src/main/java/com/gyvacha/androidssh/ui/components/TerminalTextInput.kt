@@ -69,6 +69,6 @@ fun TerminalTextInput(
 
 @Composable
 @Preview
-fun TerminalTextInputPreview() {
+private fun TerminalTextInputPreview() {
     TerminalTextInput("Hello", {}, {})
 }

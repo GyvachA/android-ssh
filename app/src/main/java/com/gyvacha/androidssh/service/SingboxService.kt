@@ -42,21 +42,6 @@ import java.net.InetAddress
 
 class SingboxService : VpnService() {
 
-    companion object {
-        const val EXTRA_CONFIG_PATH = "config_path"
-        const val EXTRA_LOG_LINE = "log_line"
-        const val ACTION_LOG = "singbox_log_broadcast"
-        const val NOTIFICATION_CHANNEL = "singbox_channel"
-        const val NOTIFICATION_ID = 1001
-        const val ACTION_STOP = "singbox_stop"
-        const val ACTION_RESTART = "singbox_restart"
-
-        private val _serviceStatus = MutableStateFlow(Status.Stopped)
-        val serviceStatus: StateFlow<Status> = _serviceStatus.asStateFlow()
-
-        private const val SINGBOX_SERVICE_TAG = "SingboxService"
-    }
-
     private var boxService: BoxService? = null
     private var commandServer: CommandServer? = null
     private var tunInterface: ParcelFileDescriptor? = null
@@ -83,7 +68,7 @@ class SingboxService : VpnService() {
         }
 
         override fun setSystemProxyEnabled(isEnabled: Boolean) {
-            // Android VPN не использует системный прокси
+            return
         }
     }
 
@@ -92,7 +77,9 @@ class SingboxService : VpnService() {
             protect(fd)
         }
 
-        override fun clearDNSCache() {}
+        override fun clearDNSCache() {
+            return
+        }
 
         override fun closeDefaultInterfaceMonitor(listener: InterfaceUpdateListener?) {
             Log.d(SINGBOX_SERVICE_TAG, "Closing default interface monitor")
@@ -169,7 +156,11 @@ class SingboxService : VpnService() {
                             val excludePrefix = IpPrefix(inetAddress, ipPrefix.prefix())
                             builder.excludeRoute(excludePrefix)
                         } catch (e: Exception) {
-                            Log.e(SINGBOX_SERVICE_TAG, "Error excluding IPv4 route: ${ipPrefix.address()}/${ipPrefix.prefix()}", e)
+                            Log.e(
+                                SINGBOX_SERVICE_TAG,
+                                "Error excluding IPv4 route: ${ipPrefix.address()}/${ipPrefix.prefix()}",
+                                e
+                            )
                         }
                     }
 
@@ -181,7 +172,11 @@ class SingboxService : VpnService() {
                             val excludePrefix = IpPrefix(inetAddress, ipPrefix.prefix())
                             builder.excludeRoute(excludePrefix)
                         } catch (e: Exception) {
-                            Log.e(SINGBOX_SERVICE_TAG, "Error excluding IPv6 route: ${ipPrefix.address()}/${ipPrefix.prefix()}", e)
+                            Log.e(
+                                SINGBOX_SERVICE_TAG,
+                                "Error excluding IPv6 route: ${ipPrefix.address()}/${ipPrefix.prefix()}",
+                                e
+                            )
                         }
                     }
                 } else {
@@ -321,7 +316,7 @@ class SingboxService : VpnService() {
 
             ACTION_RESTART -> {
                 scope.launch {
-                    restartService(intent)
+                    restartService()
                 }
                 return START_STICKY
             }
@@ -349,13 +344,13 @@ class SingboxService : VpnService() {
         }
 
         scope.launch {
-            startServiceSingbox(intent)
+            startServiceSingbox()
         }
 
         return START_STICKY
     }
 
-    private suspend fun startServiceSingbox(intent: Intent?) = withContext(Dispatchers.IO) {
+    private suspend fun startServiceSingbox() = withContext(Dispatchers.IO) {
         try {
             _serviceStatus.update { Status.Starting }
 
@@ -416,7 +411,6 @@ class SingboxService : VpnService() {
                 }
 
                 sendLog("Singbox started successfully")
-
             } catch (e: Exception) {
                 Log.e(SINGBOX_SERVICE_TAG, "Error starting BoxService: ${e.localizedMessage}", e)
                 try {
@@ -427,7 +421,6 @@ class SingboxService : VpnService() {
                 stopService()
                 return@withContext
             }
-
         } catch (e: Exception) {
             Log.e(SINGBOX_SERVICE_TAG, "Error in startService: ${e.localizedMessage}", e)
             stopService()
@@ -441,7 +434,7 @@ class SingboxService : VpnService() {
                 workDir.mkdirs()
             }
 
-            val commandServer = CommandServer(commandServerHandler, 300)
+            val commandServer = CommandServer(commandServerHandler, COMMAND_SERVER_MAX_LINES)
             commandServer.start()
             this.commandServer = commandServer
             Log.d(SINGBOX_SERVICE_TAG, "Command server started in ${workDir.absolutePath}")
@@ -450,7 +443,7 @@ class SingboxService : VpnService() {
         }
     }
 
-    private suspend fun restartService(intent: Intent? = null) {
+    private suspend fun restartService() {
         Log.d(SINGBOX_SERVICE_TAG, "Restarting service")
         _serviceStatus.update { Status.Restarting }
 
@@ -466,7 +459,7 @@ class SingboxService : VpnService() {
         tunInterface?.close()
         tunInterface = null
 
-        startServiceSingbox(intent)
+        startServiceSingbox()
     }
 
     private suspend fun stopService() {
@@ -520,7 +513,6 @@ class SingboxService : VpnService() {
         }
     }
 
-
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL,
@@ -539,7 +531,10 @@ class SingboxService : VpnService() {
             action = ACTION_STOP
         }
         val stopPendingIntent = PendingIntent.getBroadcast(
-            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
+            this,
+            0,
+            stopIntent,
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val restartIntent = Intent(this, SingboxActionReceiver::class.java).apply {
@@ -547,7 +542,10 @@ class SingboxService : VpnService() {
             putExtra(EXTRA_CONFIG_PATH, intent?.getStringExtra(EXTRA_CONFIG_PATH))
         }
         val restartPendingIntent = PendingIntent.getBroadcast(
-            this, 1, restartIntent, PendingIntent.FLAG_IMMUTABLE
+            this,
+            1,
+            restartIntent,
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
@@ -584,5 +582,21 @@ class SingboxService : VpnService() {
             stopService()
         }
         super.onRevoke()
+    }
+
+    companion object {
+        const val EXTRA_CONFIG_PATH = "config_path"
+        const val EXTRA_LOG_LINE = "log_line"
+        const val ACTION_LOG = "singbox_log_broadcast"
+        const val NOTIFICATION_CHANNEL = "singbox_channel"
+        const val NOTIFICATION_ID = 1001
+        const val ACTION_STOP = "singbox_stop"
+        const val ACTION_RESTART = "singbox_restart"
+
+        private val _serviceStatus = MutableStateFlow(Status.Stopped)
+        val serviceStatus: StateFlow<Status> = _serviceStatus.asStateFlow()
+
+        private const val SINGBOX_SERVICE_TAG = "SingboxService"
+        private const val COMMAND_SERVER_MAX_LINES = 300
     }
 }

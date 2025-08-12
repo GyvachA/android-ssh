@@ -32,22 +32,21 @@ class SshShellSession(
             writer = BufferedWriter(OutputStreamWriter(shell.outputStream))
             reader = BufferedReader(InputStreamReader(shell.inputStream))
             welcomeFlow = flow {
-                val timeoutMs = 1000L
                 val startTime = System.currentTimeMillis()
 
-                while (System.currentTimeMillis() - startTime < timeoutMs) {
+                while (System.currentTimeMillis() - startTime < WELCOME_OUTPUT_TIMEOUT) {
                     coroutineContext.ensureActive()
                     if (reader.ready()) {
                         val line = reader.readLine() ?: break
                         if (line.isNotBlank()) emit(line)
                     } else {
-                        delay(50)
+                        delay(OUTPUT_READER_DELAY)
                     }
                 }
             }.flowOn(Dispatchers.IO)
         } catch (e: Exception) {
             sshClient.disconnect()
-            throw RuntimeException("Failed to initialize SSH shell session: ${e.message}", e)
+            error("Failed to initialize SSH shell session: $e")
         }
     }
 
@@ -76,5 +75,10 @@ class SshShellSession(
 
     private fun stripAnsi(input: String): String {
         return input.replace(Regex("\u001B\\[[;?\\d]*[a-zA-Z]"), "")
+    }
+
+    companion object {
+        private const val WELCOME_OUTPUT_TIMEOUT = 1000L
+        private const val OUTPUT_READER_DELAY = 50L
     }
 }

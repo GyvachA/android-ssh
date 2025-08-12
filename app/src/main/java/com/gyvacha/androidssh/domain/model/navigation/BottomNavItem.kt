@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.gyvacha.androidssh.R
 
 sealed class BottomNavItem(
-    @StringRes val label: Int,
+    @param:StringRes val label: Int,
     val icon: ImageVector
 ) {
     data object Settings : BottomNavItem(

@@ -5,7 +5,6 @@ import com.gyvacha.androidssh.data.local.entities.ProxyConfigEntity
 import com.gyvacha.androidssh.domain.model.ProxySpec
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 object SingboxConfigSerializer {
@@ -22,11 +21,8 @@ object SingboxConfigSerializer {
             ),
             route = RouteConfig(
                 rules = listOf(
-                    // DNS трафик всегда в DoH
                     RouteRule(protocol = "dns", outbound = "dns-out"),
-                    // Локальные сети в обход прокси
                     RouteRule(ipIsPrivate = true, outbound = "direct"),
-                    // Всё остальное — в прокси
                     RouteRule(network = "tcp,udp", outbound = "proxy")
                 ),
                 final = "proxy"
@@ -37,27 +33,22 @@ object SingboxConfigSerializer {
                         tag = "system",
                         address = "local",
                         detour = "direct",
-//                        serverName = "dns.google"
                     ),
                     DnsServer(
                         tag = "google-doh",
                         address = "https://dns.google/dns-query",
                         detour = "direct",
                         addressResolver = "system"
-//                        serverName = "dns.google"
                     ),
                     DnsServer(
                         tag = "cloudflare-doh",
                         address = "https://cloudflare-dns.com/dns-query",
                         detour = "direct",
                         addressResolver = "system"
-//                        serverName = "cloudflare-dns.com"
                     )
                 ),
                 rules = listOf(
-                    // Локальные домены и приватные зоны — через системный DNS
                     DnsRule(domain = listOf("geosite:private"), server = "direct"),
-                    // Можно добавить быстрый путь для локальных TLD
                     DnsRule(domainSuffix = listOf(".lan", ".local"), server = "direct")
                 ),
                 final = "google-doh",
@@ -85,14 +76,21 @@ object SingboxConfigSerializer {
                 serverPort = spec.port,
                 uuid = spec.uuid,
                 flow = spec.flow,
-                tls = if (spec.port == 443 || spec.flow?.contains("tls") == true || spec.flow?.contains("xtls") == true) {
+                tls = if (spec.port == 443 ||
+                    spec.flow?.contains("tls") == true ||
+                    spec.flow?.contains(
+                        "xtls"
+                    ) == true
+                ) {
                     TlsConfig(
                         enabled = true,
                         serverName = spec.server,
                         insecure = true,
                         alpn = listOf("h2", "http/1.1")
                     )
-                } else null,
+                } else {
+                    null
+                },
             )
 
             is ProxySpec.Vmess -> Outbound(
@@ -109,7 +107,9 @@ object SingboxConfigSerializer {
                         insecure = false,
                         alpn = listOf("h2", "http/1.1")
                     )
-                } else null
+                } else {
+                    null
+                }
             )
 
             is ProxySpec.Trojan -> Outbound(
@@ -154,7 +154,9 @@ object SingboxConfigSerializer {
                 password = spec.password,
                 tls = if (spec.port == 443) {
                     TlsConfig(enabled = true, serverName = spec.server, insecure = false)
-                } else null
+                } else {
+                    null
+                }
             )
         }
     }
@@ -254,11 +256,4 @@ data class SingboxConfig(
     val outbounds: List<Outbound>,
     val route: RouteConfig,
     val dns: DnsConfig? = null
-)
-
-@Serializable
-data class TransportConfig(
-    val type: String,
-    val path: String? = null,
-    @SerialName("service_name") val serviceName: String? = null
 )

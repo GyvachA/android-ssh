@@ -18,8 +18,8 @@ import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.screens.EditHostScreen
 import com.gyvacha.androidssh.ui.screens.HostsScreen
 import com.gyvacha.androidssh.ui.screens.SettingsScreen
-import com.gyvacha.androidssh.ui.screens.TerminalScreen
 import com.gyvacha.androidssh.ui.screens.SingboxScreen
+import com.gyvacha.androidssh.ui.screens.TerminalScreen
 
 @Composable
 fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -57,7 +57,13 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                 EditHostScreen(
                     navController = navController,
                     topAppBarParams = TopAppBarParams(
-                        screenTitle =  if (hostId != null) stringResource(R.string.add_host) else stringResource(R.string.edit_host),
+                        screenTitle = if (hostId != null) {
+                            stringResource(
+                                R.string.add_host
+                            )
+                        } else {
+                            stringResource(R.string.edit_host)
+                        },
                         canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = navController::navigateUp
                     ),
@@ -100,6 +106,5 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                 )
             }
         }
-
     }
 }

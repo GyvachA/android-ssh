@@ -42,7 +42,7 @@ fun SettingsCard(
 
 @Preview
 @Composable
-fun SettingsCardPreview() {
+private fun SettingsCardPreview() {
     SettingsCard(
         title = "Settings",
         onCardClick = {}

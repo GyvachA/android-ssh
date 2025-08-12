@@ -90,7 +90,7 @@ fun GenerateSshKeyDialog(
 
 @Composable
 @Preview
-fun GenerateSshKeyDialogPreview() {
+private fun GenerateSshKeyDialogPreview() {
     GenerateSshKeyDialog(
         onSave = { _, _ -> },
         onDismiss = {},

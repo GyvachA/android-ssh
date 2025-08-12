@@ -46,10 +46,11 @@ fun SettingsScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        topBar = { TopAppBarWithBackButton(topAppBarParams) }
+        topBar = { TopAppBarWithBackButton(topAppBarParams) },
+        modifier = modifier
     ) { padding ->
         Column(
-            modifier = modifier.padding(padding)
+            modifier = Modifier.padding(padding)
                 .padding(dimensionResource(R.dimen.medium_padding))
                 .verticalScroll(scrollState)
         ) {
@@ -67,7 +68,7 @@ fun SettingsScreen(
             ModalBottomSheet(
                 sheetState = sshKeysSheetState,
                 onDismissRequest = { viewModel.updateSshKeyExtended(false) },
-                modifier = modifier.padding(
+                modifier = Modifier.padding(
                     top = padding.calculateTopPadding(),
                 )
             ) {
@@ -78,7 +79,6 @@ fun SettingsScreen(
                 ) {
                     BaseCard(
                         onClick = {
-
                         }
                     ) {
                         Row(
@@ -109,7 +109,6 @@ fun SettingsScreen(
                             SshKeyCard(
                                 sshKey = sshKey,
                                 onClick = {
-
                                 },
                                 actionButtonImage = Icons.AutoMirrored.Filled.ArrowForwardIos,
                                 actionButtonDesc = stringResource(R.string.choose_ssh_key)

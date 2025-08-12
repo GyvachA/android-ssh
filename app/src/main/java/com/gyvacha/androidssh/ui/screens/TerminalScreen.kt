@@ -83,6 +83,6 @@ fun TerminalScreen(
 
 @Composable
 @Preview
-fun TerminalScreenPreview() {
+private fun TerminalScreenPreview() {
     TerminalScreen(0, TopAppBarParams.PREVIEW)
 }

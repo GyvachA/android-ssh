@@ -4,9 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.gyvacha.androidssh.data.converter.ProxySpecConverter
 import com.gyvacha.androidssh.domain.model.ProxySpec
 import com.gyvacha.androidssh.domain.model.ProxyType
-import com.gyvacha.androidssh.data.converter.ProxySpecConverter
 
 @Entity(tableName = "proxy_configs")
 @TypeConverters(ProxySpecConverter::class)

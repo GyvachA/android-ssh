@@ -21,7 +21,7 @@ fun TopAppBarWithBackButton(topAppBarParams: TopAppBarParams, modifier: Modifier
         modifier = modifier,
         navigationIcon = {
             if (topAppBarParams.canNavigateBack) {
-                IconButton(onClick = topAppBarParams.navigateUp ) {
+                IconButton(onClick = topAppBarParams.navigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = stringResource(R.string.back_button)

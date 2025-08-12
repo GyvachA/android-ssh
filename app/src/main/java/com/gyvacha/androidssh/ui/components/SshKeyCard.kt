@@ -34,9 +34,9 @@ import kotlinx.coroutines.launch
 fun SshKeyCard(
     onClick: () -> Unit,
     sshKey: SshKey,
-    modifier: Modifier = Modifier,
     actionButtonImage: ImageVector,
     actionButtonDesc: String?,
+    modifier: Modifier = Modifier,
     isShowMenu: Boolean = false,
     onDeleteSshKey: ((SshKey) -> Unit)? = null
 ) {
@@ -65,8 +65,10 @@ fun SshKeyCard(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "pub key: ${sshKey.publicKey.take(20)}...",
-                    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                    text = "pub key: ${sshKey.getPublicKeyPreview()}",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
                 )
             }
 
@@ -116,7 +118,7 @@ fun SshKeyCard(
 
 @Composable
 @Preview
-fun SshKeyCardPreview() {
+private fun SshKeyCardPreview() {
     SshKeyCard(
         sshKey = SshKey(
             alias = "Preview",

@@ -52,7 +52,7 @@ object SshKeyGenerator {
                 val base64 = Base64.getEncoder().encodeToString(byteStream.toByteArray())
                 "ssh-rsa $base64"
             }
-            else -> throw IllegalStateException("Unsupported key algorithm: ${keyPair.public.algorithm}")
+            else -> error("Unsupported key algorithm: ${keyPair.public.algorithm}")
         }
     }
 

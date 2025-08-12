@@ -8,4 +8,5 @@
     <dimen name="card_corner">16dp</dimen>
     <dimen name="large_round_corner">32dp</dimen>
     <dimen name="small_stroke">2dp</dimen>
+    <dimen name="small_round_corner">8dp</dimen>
 </resources>

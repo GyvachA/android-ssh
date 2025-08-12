@@ -35,12 +35,15 @@ fun DropdownMenuBase(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-
     val shape = MaterialTheme.shapes.small
     val borderColor = if (expanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
 
     Column(modifier = modifier.fillMaxWidth()) {
-        Text(text = label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,7 +66,13 @@ fun DropdownMenuBase(
                 )
                 Icon(
                     imageVector = if (!expanded) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
-                    contentDescription = if (!expanded) stringResource(R.string.open_options) else stringResource(R.string.close_options)
+                    contentDescription = if (!expanded) {
+                        stringResource(
+                            R.string.open_options
+                        )
+                    } else {
+                        stringResource(R.string.close_options)
+                    }
                 )
             }
             DropdownMenu(

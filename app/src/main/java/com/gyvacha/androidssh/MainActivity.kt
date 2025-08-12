@@ -10,7 +10,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.gyvacha.androidssh.ui.screens.MainScreen
 import com.gyvacha.androidssh.ui.theme.AndroidSshTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -23,7 +22,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             AndroidSshTheme {
                 LaunchedEffect(Unit) {
-                    delay(1000)
                     keepSplash = false
                 }
                 AndroidSshApp()

@@ -24,10 +24,18 @@ fun TextFieldBase(
     isError: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    label: @Composable() (() -> Unit)? = null,
-    leadingIcon: @Composable() (() -> Unit)? = null,
-    trailingIcon: @Composable() (() -> Unit)? = null,
-    supportingText: @Composable() (() -> Unit)? = null,
+    label:
+    @Composable()
+    (() -> Unit)? = null,
+    leadingIcon:
+    @Composable()
+    (() -> Unit)? = null,
+    trailingIcon:
+    @Composable()
+    (() -> Unit)? = null,
+    supportingText:
+    @Composable()
+    (() -> Unit)? = null,
     textStyle: TextStyle = LocalTextStyle.current,
     shape: Shape = OutlinedTextFieldDefaults.shape,
     readOnly: Boolean = false,

@@ -15,7 +15,8 @@ import androidx.room.PrimaryKey
             childColumns = arrayOf("ssh_key_id"),
             onDelete = ForeignKey.SET_NULL,
             onUpdate = ForeignKey.CASCADE
-        )],
+        )
+    ],
     indices = [Index(value = ["ssh_key_id"])]
 )
 data class HostEntity(

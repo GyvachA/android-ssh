@@ -181,7 +181,6 @@ class EditHostViewModel @Inject constructor(
         updateIsFormValid()
     }
 
-
     fun getHostWithSshKey(newHostId: Int) {
         viewModelScope.launch {
             val hostWithSshKey = getHostWithSshKeyUseCase(newHostId)
@@ -253,9 +252,9 @@ class EditHostViewModel @Inject constructor(
 
     private fun updateIsFormValid() {
         val isFormValid = _uiState.value.hostWithSshKey.host.alias.isNotBlank() &&
-                _uiState.value.hostWithSshKey.host.port != 0 &&
-                _uiState.value.hostWithSshKey.host.hostNameOrIp.isNotBlank() &&
-                _uiState.value.hostWithSshKey.host.userName.isNotBlank()
+            _uiState.value.hostWithSshKey.host.port != 0 &&
+            _uiState.value.hostWithSshKey.host.hostNameOrIp.isNotBlank() &&
+            _uiState.value.hostWithSshKey.host.userName.isNotBlank()
         _uiState.update { it.copy(isFormValid = isFormValid) }
     }
 }

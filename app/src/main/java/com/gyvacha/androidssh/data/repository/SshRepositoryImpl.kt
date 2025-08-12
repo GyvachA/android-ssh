@@ -26,38 +26,33 @@ class SshRepositoryImpl : SshRepository {
         passphrase: String?
     ): Flow<String>? {
         return withContext(Dispatchers.IO) {
-            try {
-                sshSession?.close()
-                val sshClient = SSHClient().apply {
-                    connectTimeout = 10000
-                    timeout = 10000
-                    addHostKeyVerifier(PromiscuousVerifier())
-                    connect(host, port)
-                    var passwordFinder: PasswordFinder? = null
-                    if (passphrase != null) {
-                        passwordFinder = object : PasswordFinder {
-                            override fun reqPassword(resource: Resource<*>?): CharArray {
-                                return passphrase.toCharArray()
-                            }
+            sshSession?.close()
+            val sshClient = SSHClient().apply {
+                connectTimeout = CONNECTION_TIMEOUT
+                timeout = CONNECTION_TIMEOUT
+                addHostKeyVerifier(PromiscuousVerifier())
+                connect(host, port)
+                var passwordFinder: PasswordFinder? = null
+                if (passphrase != null) {
+                    passwordFinder = object : PasswordFinder {
+                        override fun reqPassword(resource: Resource<*>?): CharArray {
+                            return passphrase.toCharArray()
+                        }
 
-                            override fun shouldRetry(resource: Resource<*>?): Boolean {
-                                return false
-                            }
+                        override fun shouldRetry(resource: Resource<*>?): Boolean {
+                            return false
                         }
                     }
-                    val keyProvider = loadKeys(
-                        privateKey,
-                        publicKey,
-                        passwordFinder
-                    )
-                    authPublickey(username, keyProvider)
                 }
-                sshSession = SshShellSession(sshClient)
-                sshSession?.welcomeFlow
-            } catch (e: Exception) {
-                throw e
+                val keyProvider = loadKeys(
+                    privateKey,
+                    publicKey,
+                    passwordFinder
+                )
+                authPublickey(username, keyProvider)
             }
-
+            sshSession = SshShellSession(sshClient)
+            sshSession?.welcomeFlow
         }
     }
 
@@ -70,8 +65,8 @@ class SshRepositoryImpl : SshRepository {
         return withContext(Dispatchers.IO) {
             sshSession?.close()
             val sshClient = SSHClient().apply {
-                connectTimeout = 10000
-                timeout = 10000
+                connectTimeout = CONNECTION_TIMEOUT
+                timeout = CONNECTION_TIMEOUT
                 addHostKeyVerifier(PromiscuousVerifier())
                 connect(host, port)
                 authPassword(username, password)
@@ -87,7 +82,11 @@ class SshRepositoryImpl : SshRepository {
     }
 
     override fun executeCommand(command: String): Flow<String> = flow {
-        if (sshSession == null) throw IllegalStateException("Ssh session didn't initialized")
+        if (sshSession == null) error("Ssh session didn't initialized")
         emitAll(sshSession!!.executeCommand(command))
+    }
+
+    companion object {
+        private const val CONNECTION_TIMEOUT = 5000
     }
 }

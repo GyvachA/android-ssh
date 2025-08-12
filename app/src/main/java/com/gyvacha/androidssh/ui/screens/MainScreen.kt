@@ -22,7 +22,7 @@ import com.gyvacha.androidssh.utils.LocalMessageNotifier
 import com.gyvacha.androidssh.utils.SnackbarNotifier
 
 @Composable
-fun MainScreen() {
+fun MainScreen(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
@@ -33,13 +33,14 @@ fun MainScreen() {
     )
     val shouldShowBottomBar = bottomBarShowScreenList.any {
         currentDestination?.hasRoute(it::class) ?: false
-    } // TODO: Дерьмовая реализация, постоянно по циклу шатаемся
+    } // FIX: Дерьмовая реализация, постоянно по циклу шатаемся
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val snackbarNotifier = remember { SnackbarNotifier(snackbarHostState, coroutineScope) }
     CompositionLocalProvider(LocalMessageNotifier provides snackbarNotifier) {
         Scaffold(
+            modifier = modifier,
             contentWindowInsets = WindowInsets.safeDrawing,
             bottomBar = {
                 if (shouldShowBottomBar) {

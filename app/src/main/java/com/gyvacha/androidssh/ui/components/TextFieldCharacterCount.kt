@@ -14,12 +14,14 @@ import androidx.compose.ui.text.input.KeyboardType
 fun TextFieldCharacterCount(
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
     maxLength: Int,
     isError: Boolean,
+    modifier: Modifier = Modifier,
     errorMessage: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-    label: @Composable() (() -> Unit)? = null,
+    label:
+    @Composable()
+    (() -> Unit)? = null,
 ) {
     TextFieldBase(
         value = value,

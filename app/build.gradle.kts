@@ -5,16 +5,26 @@ plugins {
     alias(libs.plugins.androidHilt)
     alias(libs.plugins.serializationKotlin)
     alias(libs.plugins.kotlinCompose)
+    alias(libs.plugins.detekt)
+}
+
+detekt {
+    toolVersion = libs.versions.detekt.asProvider().get()
+    parallel = true
+    config.setFrom(files("${rootDir}/config/detekt/detekt.yml"))
+    allRules = false
+    buildUponDefaultConfig = true
+    autoCorrect = true
 }
 
 android {
     namespace = "com.gyvacha.androidssh"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.gyvacha.androidssh"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -34,17 +44,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.6.1"
     }
     packaging {
         resources {
@@ -88,6 +92,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    detektPlugins(libs.detekt.compose)
+    detektPlugins(libs.detekt.formatting)
 }
 java {
     toolchain {
