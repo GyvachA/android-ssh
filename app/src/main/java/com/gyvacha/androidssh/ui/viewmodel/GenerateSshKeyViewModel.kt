@@ -22,7 +22,7 @@ class GenerateSshKeyViewModel @Inject constructor(
     private val generateSshKeyUseCase: GenerateSshKeyUseCase,
     private val insertSshKeyUseCase: InsertSshKeyUseCase,
 ) : ViewModel() {
-    val _uiState = MutableStateFlow(GenerateSshKeyUiState())
+    private val _uiState = MutableStateFlow(GenerateSshKeyUiState())
     val uiState = _uiState.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<GenerateSshKeyViewEvent>()

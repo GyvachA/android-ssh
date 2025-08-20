@@ -44,6 +44,7 @@ import java.io.File
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.security.KeyStore
+import kotlin.io.encoding.Base64
 
 class SingboxService : VpnService() {
 
@@ -99,7 +100,8 @@ class SingboxService : VpnService() {
                             val addresses = InetAddress.getAllByName(domain)
 
                             if (addresses.isNotEmpty()) {
-                                val result = addresses.mapNotNull { it.hostAddress }.joinToString("\n")
+                                val result =
+                                    addresses.mapNotNull { it.hostAddress }.joinToString("\n")
 
                                 Log.d("LocalDNSTransport", "Resolved $domain to: $result")
 
@@ -113,7 +115,11 @@ class SingboxService : VpnService() {
                         Log.e("LocalDNSTransport", "DNS lookup failed for $domain: ${e.message}")
                         ctx?.errorCode(3)
                     } catch (e: Exception) {
-                        Log.e("LocalDNSTransport", "Unexpected error during DNS lookup for $domain", e)
+                        Log.e(
+                            "LocalDNSTransport",
+                            "Unexpected error during DNS lookup for $domain",
+                            e
+                        )
                         ctx?.errorCode(2)
                     }
                 }
@@ -133,9 +139,9 @@ class SingboxService : VpnService() {
                 while (aliases.hasMoreElements()) {
                     val cert = keyStore.getCertificate(aliases.nextElement())
                     certificates.add(
-                        "-----BEGIN CERTIFICATE-----\n"
-                                + kotlin.io.encoding.Base64.encode(cert.encoded)
-                                + "\n-----END CERTIFICATE-----"
+                        "-----BEGIN CERTIFICATE-----\n" +
+                                Base64.encode(cert.encoded) +
+                                "\n-----END CERTIFICATE-----"
                     )
                 }
             }
