@@ -140,8 +140,8 @@ class SingboxService : VpnService() {
                     val cert = keyStore.getCertificate(aliases.nextElement())
                     certificates.add(
                         "-----BEGIN CERTIFICATE-----\n" +
-                                Base64.encode(cert.encoded) +
-                                "\n-----END CERTIFICATE-----"
+                            Base64.encode(cert.encoded) +
+                            "\n-----END CERTIFICATE-----"
                     )
                 }
             }
