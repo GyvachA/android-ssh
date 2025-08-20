@@ -121,7 +121,6 @@ class SingboxService : VpnService() {
                 override fun raw(): Boolean {
                     return false
                 }
-
             }
         }
 
@@ -134,7 +133,9 @@ class SingboxService : VpnService() {
                 while (aliases.hasMoreElements()) {
                     val cert = keyStore.getCertificate(aliases.nextElement())
                     certificates.add(
-                        "-----BEGIN CERTIFICATE-----\n" + kotlin.io.encoding.Base64.encode(cert.encoded) + "\n-----END CERTIFICATE-----"
+                        "-----BEGIN CERTIFICATE-----\n"
+                                + kotlin.io.encoding.Base64.encode(cert.encoded)
+                                + "\n-----END CERTIFICATE-----"
                     )
                 }
             }
@@ -152,7 +153,6 @@ class SingboxService : VpnService() {
                 override fun next(): String? {
                     return certificatesIterator.next()
                 }
-
             }
         }
 

@@ -111,9 +111,7 @@ fun SettingsScreen(
                         items(sshKeys) { sshKey ->
                             SshKeyCard(
                                 sshKey = sshKey,
-                                onClick = {
-
-                                },
+                                onClick = {},
                                 actionButtonImage = Icons.AutoMirrored.Filled.ArrowForwardIos,
                                 actionButtonDesc = stringResource(R.string.choose_ssh_key)
                             )

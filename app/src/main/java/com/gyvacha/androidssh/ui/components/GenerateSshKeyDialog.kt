@@ -44,6 +44,7 @@ fun GenerateSshKeyDialog(
                 GenerateSshKeyViewEvent.SshKeyCreateFailure -> messageNotifier?.showSnackbar(
                     messageSshKeyCreateError
                 )
+
                 GenerateSshKeyViewEvent.SshKeyCreated -> messageNotifier?.showSnackbar(
                     messageSshKeyCreated
                 )
@@ -67,7 +68,11 @@ fun GenerateSshKeyDialog(
                     },
                     maxLength = 30,
                     isError = uiState.sshKeyAlias.isBlank(),
-                    errorMessage = if (uiState.sshKeyAlias.isBlank()) stringResource(R.string.string_blank_error) else null
+                    errorMessage = if (uiState.sshKeyAlias.isBlank()) {
+                        stringResource(R.string.string_blank_error)
+                    } else {
+                        null
+                    }
                 )
                 DropdownMenuBase(
                     selectedOption = uiState.sshKeyAlgorithm,
@@ -98,7 +103,7 @@ fun GenerateSshKeyDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    viewModel.generateSshKey{
+                    viewModel.generateSshKey {
                         onSave(it)
                     }
                 },
