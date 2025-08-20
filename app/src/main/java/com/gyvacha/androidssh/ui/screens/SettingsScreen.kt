@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.components.BaseCard
+import com.gyvacha.androidssh.ui.components.GenerateSshKeyDialog
 import com.gyvacha.androidssh.ui.components.SettingsCard
 import com.gyvacha.androidssh.ui.components.SshKeyCard
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
@@ -50,7 +51,8 @@ fun SettingsScreen(
         modifier = modifier
     ) { padding ->
         Column(
-            modifier = Modifier.padding(padding)
+            modifier = Modifier
+                .padding(padding)
                 .padding(dimensionResource(R.dimen.medium_padding))
                 .verticalScroll(scrollState)
         ) {
@@ -62,7 +64,7 @@ fun SettingsScreen(
             )
         }
 
-        if (uiState.extendedSshKeys) {
+        if (uiState.extendedSshKeys && !uiState.isShowGenerateSshKeyDialog) {
             val sshKeys by viewModel.sshKeys.collectAsStateWithLifecycle()
 
             ModalBottomSheet(
@@ -79,6 +81,7 @@ fun SettingsScreen(
                 ) {
                     BaseCard(
                         onClick = {
+                            viewModel.updateShowGenerateSshKeyDialog(true)
                         }
                     ) {
                         Row(
@@ -109,6 +112,7 @@ fun SettingsScreen(
                             SshKeyCard(
                                 sshKey = sshKey,
                                 onClick = {
+
                                 },
                                 actionButtonImage = Icons.AutoMirrored.Filled.ArrowForwardIos,
                                 actionButtonDesc = stringResource(R.string.choose_ssh_key)
@@ -117,6 +121,13 @@ fun SettingsScreen(
                     }
                 }
             }
+        }
+
+        if (uiState.isShowGenerateSshKeyDialog) {
+            GenerateSshKeyDialog(
+                onSave = { viewModel.updateShowGenerateSshKeyDialog(false) },
+                onDismiss = { viewModel.updateShowGenerateSshKeyDialog(false) }
+            )
         }
     }
 }

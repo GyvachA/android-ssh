@@ -19,12 +19,21 @@ object ParseProxyConfig {
                 val uuid = uri.userInfo ?: ""
                 val flow = uri.getQueryParameter("flow")
                 val transport = parseTransport(uri)
+                val realityPublicKey = uri.getQueryParameter("pbk")
+                val realityShortId = uri.getQueryParameter("sid")
+                val realityFingerprint = uri.getQueryParameter("fp") ?: "chrome"
+                val realityServerName = uri.getQueryParameter("sni")
+
                 ProxySpec.Vless(
                     server = server,
                     port = port,
                     uuid = uuid,
                     flow = flow,
-                    transport = transport
+                    transport = transport,
+                    realityPublicKey = realityPublicKey,
+                    realityShortId = realityShortId,
+                    realityFingerprint = realityFingerprint,
+                    realityServerName = realityServerName
                 )
             }
 

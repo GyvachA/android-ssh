@@ -22,9 +22,12 @@ import com.gyvacha.androidssh.utils.toList
 import io.nekohasekai.libbox.BoxService
 import io.nekohasekai.libbox.CommandServer
 import io.nekohasekai.libbox.CommandServerHandler
+import io.nekohasekai.libbox.ExchangeContext
 import io.nekohasekai.libbox.InterfaceUpdateListener
 import io.nekohasekai.libbox.Libbox
+import io.nekohasekai.libbox.LocalDNSTransport
 import io.nekohasekai.libbox.PlatformInterface
+import io.nekohasekai.libbox.StringIterator
 import io.nekohasekai.libbox.SystemProxyStatus
 import io.nekohasekai.libbox.TunOptions
 import kotlinx.coroutines.CoroutineScope
@@ -39,6 +42,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.InetAddress
+import java.net.UnknownHostException
+import java.security.KeyStore
 
 class SingboxService : VpnService() {
 
@@ -75,6 +80,80 @@ class SingboxService : VpnService() {
     private val platformInterface = object : PlatformInterface {
         override fun autoDetectInterfaceControl(fd: Int) {
             protect(fd)
+        }
+
+        override fun localDNSTransport(): LocalDNSTransport {
+            return object : LocalDNSTransport {
+                override fun exchange(
+                    ctx: ExchangeContext?,
+                    message: ByteArray?
+                ) {
+                    Log.d("LocalDNSTransport", "exchange method called")
+                }
+
+                override fun lookup(ctx: ExchangeContext?, network: String?, domain: String?) {
+                    try {
+                        if (domain != null && ctx != null) {
+                            Log.d("LocalDNSTransport", "Looking up domain: $domain")
+
+                            val addresses = InetAddress.getAllByName(domain)
+
+                            if (addresses.isNotEmpty()) {
+                                val result = addresses.mapNotNull { it.hostAddress }.joinToString("\n")
+
+                                Log.d("LocalDNSTransport", "Resolved $domain to: $result")
+
+                                ctx.success(result)
+                            } else {
+                                Log.w("LocalDNSTransport", "No addresses found for $domain")
+                                ctx.errorCode(3)
+                            }
+                        }
+                    } catch (e: UnknownHostException) {
+                        Log.e("LocalDNSTransport", "DNS lookup failed for $domain: ${e.message}")
+                        ctx?.errorCode(3)
+                    } catch (e: Exception) {
+                        Log.e("LocalDNSTransport", "Unexpected error during DNS lookup for $domain", e)
+                        ctx?.errorCode(2)
+                    }
+                }
+
+                override fun raw(): Boolean {
+                    return false
+                }
+
+            }
+        }
+
+        override fun systemCertificates(): StringIterator {
+            val certificates = mutableListOf<String>()
+            val keyStore = KeyStore.getInstance("AndroidCAStore")
+            if (keyStore != null) {
+                keyStore.load(null, null)
+                val aliases = keyStore.aliases()
+                while (aliases.hasMoreElements()) {
+                    val cert = keyStore.getCertificate(aliases.nextElement())
+                    certificates.add(
+                        "-----BEGIN CERTIFICATE-----\n" + kotlin.io.encoding.Base64.encode(cert.encoded) + "\n-----END CERTIFICATE-----"
+                    )
+                }
+            }
+            return object : StringIterator {
+                val certificatesIterator = certificates.iterator()
+
+                override fun hasNext(): Boolean {
+                    return certificatesIterator.hasNext()
+                }
+
+                override fun len(): Int {
+                    return 0
+                }
+
+                override fun next(): String? {
+                    return certificatesIterator.next()
+                }
+
+            }
         }
 
         override fun clearDNSCache() {

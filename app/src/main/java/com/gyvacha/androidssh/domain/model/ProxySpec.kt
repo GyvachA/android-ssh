@@ -12,7 +12,11 @@ sealed class ProxySpec {
         val port: Int,
         val uuid: String,
         val flow: String? = null,
-        val transport: Transport = Transport.TCP
+        val transport: Transport = Transport.TCP,
+        val realityPublicKey: String? = null,
+        val realityShortId: String? = null,
+        val realityFingerprint: String? = null,
+        val realityServerName: String? = null
     ) : ProxySpec()
 
     @Serializable

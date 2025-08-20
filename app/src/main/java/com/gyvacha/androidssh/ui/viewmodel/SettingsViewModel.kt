@@ -30,4 +30,12 @@ class SettingsViewModel @Inject constructor(
             )
         }
     }
+
+    fun updateShowGenerateSshKeyDialog(newState: Boolean) {
+        _uiState.update {
+            it.copy(
+                isShowGenerateSshKeyDialog = newState
+            )
+        }
+    }
 }

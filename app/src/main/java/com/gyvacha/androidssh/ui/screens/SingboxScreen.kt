@@ -67,6 +67,14 @@ fun SingboxScreen(
         }
     }
 
+    LaunchedEffect(uiState.isVPNPermissionGranted, uiState.isNotificationPermissionGranted) {
+        if (uiState.isVPNPermissionGranted && uiState.isNotificationPermissionGranted) {
+            viewModel.startSingbox()
+            viewModel.updateIsVPNPermGranted(false)
+            viewModel.updateIsNotificationPermGranted(false)
+        }
+    }
+
     val errorParsing = stringResource(R.string.error_get_config_from_copyboard)
 
     if (uiState.requestPermission) {
@@ -79,9 +87,6 @@ fun SingboxScreen(
             RequestVpnPermission {
                 viewModel.updateIsVPNPermGranted(true)
             }
-        }
-        if (uiState.isVPNPermissionGranted && uiState.isNotificationPermissionGranted) {
-            viewModel.startSingbox()
         }
         viewModel.updateRequestPermission(false)
     }

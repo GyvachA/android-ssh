@@ -9,7 +9,7 @@ sealed class EditHostViewEvent {
     data object DatabaseExceptionCaught : EditHostViewEvent()
 }
 
-sealed class SingboxViewEvent {
-    data object RequestNotificationPermission : SingboxViewEvent()
-    data object RequestVPNPermission : SingboxViewEvent()
+sealed class GenerateSshKeyViewEvent {
+    data object SshKeyCreated : GenerateSshKeyViewEvent()
+    data object SshKeyCreateFailure : GenerateSshKeyViewEvent()
 }

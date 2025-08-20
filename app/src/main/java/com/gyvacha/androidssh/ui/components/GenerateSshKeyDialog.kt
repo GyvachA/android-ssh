@@ -7,30 +7,49 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gyvacha.androidssh.R
+import com.gyvacha.androidssh.domain.model.SshKey
+import com.gyvacha.androidssh.ui.utils.GenerateSshKeyViewEvent
+import com.gyvacha.androidssh.ui.viewmodel.GenerateSshKeyViewModel
+import com.gyvacha.androidssh.utils.LocalMessageNotifier
 import com.gyvacha.androidssh.utils.SshKeyGenerator
 
 @Composable
 fun GenerateSshKeyDialog(
-    onSave: (String, String) -> Unit,
+    onSave: (SshKey) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: GenerateSshKeyViewModel = hiltViewModel()
 ) {
-    var sshKeyAlias by rememberSaveable { mutableStateOf("Host Key") }
-    var sshKeyAlgorithm by rememberSaveable { mutableStateOf(SshKeyGenerator.Algorithm.ALGORITHM_ED25519.title) }
-    var sshKeyAlgorithmMenuExpanded by rememberSaveable { mutableStateOf(false) }
     val algorithmList = listOf(
         SshKeyGenerator.Algorithm.ALGORITHM_ED25519.title,
         SshKeyGenerator.Algorithm.ALGORITHM_RSA.title
     )
-    var saveButtonEnabled by rememberSaveable { mutableStateOf(true) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val messageNotifier = LocalMessageNotifier.current
+    val messageSshKeyCreated = stringResource(R.string.ssh_key_created)
+    val messageSshKeyCreateError = stringResource(R.string.ssh_key_create_failure)
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                GenerateSshKeyViewEvent.SshKeyCreateFailure -> messageNotifier?.showSnackbar(
+                    messageSshKeyCreateError
+                )
+                GenerateSshKeyViewEvent.SshKeyCreated -> messageNotifier?.showSnackbar(
+                    messageSshKeyCreated
+                )
+            }
+        }
+    }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -41,40 +60,49 @@ fun GenerateSshKeyDialog(
             ) {
                 TextFieldCharacterCount(
                     label = { Text(stringResource(R.string.alias)) },
-                    value = sshKeyAlias,
+                    value = uiState.sshKeyAlias,
                     onValueChange = {
-                        saveButtonEnabled = it.isNotBlank()
-                        sshKeyAlias = it
+                        viewModel.updateSaveButtonEnabled(it.isNotBlank())
+                        viewModel.updateSshKeyAlias(it)
                     },
                     maxLength = 30,
-                    isError = sshKeyAlias.isBlank(),
-                    errorMessage = if (sshKeyAlias.isBlank()) stringResource(R.string.string_blank_error) else null
+                    isError = uiState.sshKeyAlias.isBlank(),
+                    errorMessage = if (uiState.sshKeyAlias.isBlank()) stringResource(R.string.string_blank_error) else null
                 )
                 DropdownMenuBase(
-                    selectedOption = sshKeyAlgorithm,
-                    onDismiss = { sshKeyAlgorithmMenuExpanded = false },
-                    expanded = sshKeyAlgorithmMenuExpanded,
-                    onMenuClick = { sshKeyAlgorithmMenuExpanded = true },
+                    selectedOption = uiState.sshKeyAlgorithm,
+                    onDismiss = { viewModel.updateSshKeyAlgorithmMenuExpanded(false) },
+                    expanded = uiState.sshKeyAlgorithmMenuExpanded,
+                    onMenuClick = { viewModel.updateSshKeyAlgorithmMenuExpanded(true) },
                     label = stringResource(R.string.algorithm),
                 ) {
                     algorithmList.forEach { algorithm ->
                         DropdownMenuItem(
                             text = { Text(algorithm) },
                             onClick = {
-                                sshKeyAlgorithm = algorithm
-                                sshKeyAlgorithmMenuExpanded = false
+                                viewModel.updateSshKeyAlgorithm(algorithm)
+                                viewModel.updateSshKeyAlgorithmMenuExpanded(false)
                             }
                         )
                     }
                 }
+                SecureTextField(
+                    value = uiState.sshKeyPassphrase,
+                    onValueChange = viewModel::updateSshKeyPassphrase,
+                    label = stringResource(R.string.password),
+                    onVisibilityClick = { viewModel.updatePassphraseVisible(!uiState.isPassphraseVisible) },
+                    isPasswordVisible = uiState.isPassphraseVisible
+                )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onSave(sshKeyAlias, sshKeyAlgorithm)
+                    viewModel.generateSshKey{
+                        onSave(it)
+                    }
                 },
-                enabled = saveButtonEnabled
+                enabled = uiState.saveButtonEnabled
             ) {
                 Text(stringResource(R.string.save))
             }
@@ -92,7 +120,7 @@ fun GenerateSshKeyDialog(
 @Preview
 private fun GenerateSshKeyDialogPreview() {
     GenerateSshKeyDialog(
-        onSave = { _, _ -> },
+        onSave = {},
         onDismiss = {},
     )
 }

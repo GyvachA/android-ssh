@@ -56,7 +56,6 @@ import com.gyvacha.androidssh.ui.components.getTextFieldErrorMessage
 import com.gyvacha.androidssh.ui.utils.EditHostViewEvent
 import com.gyvacha.androidssh.ui.viewmodel.EditHostViewModel
 import com.gyvacha.androidssh.utils.LocalMessageNotifier
-import com.gyvacha.androidssh.utils.SshKeyGenerator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -336,13 +335,10 @@ fun EditHostScreen(
 
         if (uiState.isShowGenerateSshKeyDialog) {
             GenerateSshKeyDialog(
-                onSave = { alias, algorithm ->
+                onSave = { sshKey ->
                     viewModel.updateShowGenerateSshKeyDialog(false)
                     viewModel.updateShowBottomSheet(false)
-                    viewModel.generateSshKey(
-                        algorithm = SshKeyGenerator.Algorithm.entries.first { it.title == algorithm },
-                        alias = alias
-                    )
+                    viewModel.updateSshKey(sshKey)
                 },
                 onDismiss = { viewModel.updateShowGenerateSshKeyDialog(false) }
             )

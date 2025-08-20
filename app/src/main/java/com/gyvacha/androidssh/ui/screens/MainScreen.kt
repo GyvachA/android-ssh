@@ -33,7 +33,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     )
     val shouldShowBottomBar = bottomBarShowScreenList.any {
         currentDestination?.hasRoute(it::class) ?: false
-    } // FIX: Дерьмовая реализация, постоянно по циклу шатаемся
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()

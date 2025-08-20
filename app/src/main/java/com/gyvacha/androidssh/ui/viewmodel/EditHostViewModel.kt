@@ -7,16 +7,13 @@ import com.gyvacha.androidssh.domain.model.Host
 import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
 import com.gyvacha.androidssh.domain.model.SshKey
-import com.gyvacha.androidssh.domain.usecase.GenerateSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
-import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.state.AddHostUiState
 import com.gyvacha.androidssh.ui.utils.EditHostViewEvent
-import com.gyvacha.androidssh.utils.SshKeyGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,8 +29,6 @@ import javax.inject.Inject
 class EditHostViewModel @Inject constructor(
     private val insertHostUseCase: InsertHostUseCase,
     private val updateHostUseCase: UpdateHostUseCase,
-    private val insertSshKeyUseCase: InsertSshKeyUseCase,
-    private val generateSshKeyUseCase: GenerateSshKeyUseCase,
     private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase,
     getSshKeysUseCase: GetSshKeysUseCase
 ) : ViewModel() {
@@ -46,33 +41,6 @@ class EditHostViewModel @Inject constructor(
 
     val sshKeys = getSshKeysUseCase()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    fun generateSshKey(
-        algorithm: SshKeyGenerator.Algorithm,
-        alias: String,
-        passphrase: String? = null
-    ) {
-        viewModelScope.launch {
-            runCatching {
-                val sshKey = generateSshKeyUseCase(algorithm, passphrase).copy(alias = alias)
-                val sshKeyId = insertSshKeyUseCase(sshKey)
-                updateSshKey(
-                    SshKey(
-                        sshKeyId = sshKeyId.toInt(),
-                        alias = alias,
-                        publicKey = sshKey.publicKey,
-                        privateKey = sshKey.privateKey
-                    )
-                )
-            }
-                .onSuccess {
-                    _eventFlow.emit(EditHostViewEvent.SshKeyCreated)
-                }
-                .onFailure { err ->
-                    _eventFlow.emit(EditHostViewEvent.SshKeyCreateFailure)
-                }
-        }
-    }
 
     fun updateShowBottomSheet(newState: Boolean) {
         _uiState.update {

@@ -3,6 +3,7 @@ package com.gyvacha.androidssh.utils
 import android.util.Log
 import com.gyvacha.androidssh.data.local.entities.ProxyConfigEntity
 import com.gyvacha.androidssh.domain.model.ProxySpec
+import com.gyvacha.androidssh.domain.model.Transport
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -62,55 +63,99 @@ object SingboxConfigSerializer {
             prettyPrint = true
         }
 
-        val jsonString = json.encodeToString(singboxConfig)
+        val jsonString = json.encodeToString(SingboxConfig.serializer(), singboxConfig)
         Log.d("SingboxConfigSerializer", "Generated config:\n$jsonString")
         return jsonString
     }
 
     private fun buildOutbound(spec: ProxySpec): Outbound {
         return when (spec) {
-            is ProxySpec.Vless -> Outbound(
-                type = "vless",
-                tag = "proxy",
-                server = spec.server,
-                serverPort = spec.port,
-                uuid = spec.uuid,
-                flow = spec.flow,
-                tls = if (spec.port == 443 ||
-                    spec.flow?.contains("tls") == true ||
-                    spec.flow?.contains(
-                        "xtls"
-                    ) == true
-                ) {
-                    TlsConfig(
-                        enabled = true,
-                        serverName = spec.server,
-                        insecure = true,
-                        alpn = listOf("h2", "http/1.1")
+            is ProxySpec.Vless -> {
+                if (spec.realityPublicKey != null && spec.realityShortId != null) {
+                    Outbound(
+                        type = "vless",
+                        tag = "proxy",
+                        server = spec.server,
+                        serverPort = spec.port,
+                        uuid = spec.uuid,
+                        flow = spec.flow,
+                        tls = TlsConfig(
+                            enabled = true,
+                            serverName = spec.realityServerName ?: spec.server,
+                            insecure = false,
+                            reality = RealityConfig(
+                                enabled = true,
+                                publicKey = spec.realityPublicKey,
+                                shortId = spec.realityShortId
+                            ),
+                            utls = UtlsConfig(
+                                enabled = true,
+                                fingerprint = spec.realityFingerprint ?: "chrome"
+                            )
+                        )
                     )
                 } else {
-                    null
-                },
-            )
-
-            is ProxySpec.Vmess -> Outbound(
-                type = "vmess",
-                tag = "proxy",
-                server = spec.server,
-                serverPort = spec.port,
-                uuid = spec.uuid,
-                security = "auto",
-                tls = if (spec.port == 443) {
-                    TlsConfig(
-                        enabled = true,
-                        serverName = spec.server,
-                        insecure = false,
-                        alpn = listOf("h2", "http/1.1")
+                    Outbound(
+                        type = "vless",
+                        tag = "proxy",
+                        server = spec.server,
+                        serverPort = spec.port,
+                        uuid = spec.uuid,
+                        flow = spec.flow,
+                        tls = if (spec.port == 443 ||
+                            spec.flow?.contains("tls") == true ||
+                            spec.flow?.contains("xtls") == true
+                        ) {
+                            TlsConfig(
+                                enabled = true,
+                                serverName = spec.server,
+                                insecure = false,
+                                alpn = listOf("h2", "http/1.1")
+                            )
+                        } else {
+                            null
+                        },
                     )
-                } else {
-                    null
                 }
-            )
+            }
+
+            is ProxySpec.Vmess -> {
+                val transportConfig = when (spec.transport) {
+                    is Transport.WS -> TransportConfig(
+                        type = "ws",
+                        path = spec.transport.path,
+                        headers = mapOf("Host" to spec.transport.hostHeader).takeIf {
+                            spec.transport.hostHeader.isNotBlank()
+                        }
+                    )
+                    is Transport.GRPC -> TransportConfig(
+                        type = "grpc",
+                        serviceName = spec.transport.serviceName
+                    )
+                    else -> null
+                }
+
+                Outbound(
+                    type = "vmess",
+                    tag = "proxy",
+                    server = spec.server,
+                    serverPort = spec.port,
+                    uuid = spec.uuid,
+                    security = spec.security,
+                    alterId = spec.alterId,
+                    transport = transportConfig,
+                    tls = if (spec.port == 443) {
+                        TlsConfig(
+                            enabled = true,
+                            serverName = spec.server,
+                            insecure = false,
+                            alpn = listOf("h2", "http/1.1")
+                        )
+                    } else {
+                        null
+                    }
+                )
+            }
 
             is ProxySpec.Trojan -> Outbound(
                 type = "trojan",
@@ -167,7 +212,22 @@ data class TlsConfig(
     val enabled: Boolean,
     @SerialName("server_name") val serverName: String,
     val insecure: Boolean = false,
-    val alpn: List<String>? = null
+    val alpn: List<String>? = null,
+    val reality: RealityConfig? = null,
+    val utls: UtlsConfig? = null
+)
+
+@Serializable
+data class RealityConfig(
+    val enabled: Boolean,
+    @SerialName("public_key") val publicKey: String,
+    @SerialName("short_id") val shortId: String
+)
+
+@Serializable
+data class UtlsConfig(
+    val enabled: Boolean,
+    val fingerprint: String
 )
 
 @Serializable
@@ -192,6 +252,8 @@ data class Outbound(
     val security: String? = null,
     val username: String? = null,
     val version: String? = null,
+    @SerialName("alter_id") val alterId: Int? = null,
+    val transport: TransportConfig? = null,
     val tls: TlsConfig? = null
 )
 
@@ -202,11 +264,12 @@ data class TunInbound(
     @SerialName("interface_name") val interfaceName: String = "tun0",
     @SerialName("inet4_address") val inet4Address: List<String> = listOf("172.19.0.1/28"),
     @SerialName("inet6_address") val inet6Address: List<String> = listOf("fd00::1/126"),
-    val mtu: Int = 1500,
+    val mtu: Int = 1400,
     @SerialName("auto_route") val autoRoute: Boolean = true,
     val sniff: Boolean = true,
     @SerialName("sniff_override_destination") val sniffOverrideDestination: Boolean = true,
-    @SerialName("domain_strategy") val domainStrategy: String = "prefer_ipv4"
+    @SerialName("domain_strategy") val domainStrategy: String = "prefer_ipv4",
+    val stack: String = "gvisor"
 )
 
 @Serializable
@@ -256,4 +319,12 @@ data class SingboxConfig(
     val outbounds: List<Outbound>,
     val route: RouteConfig,
     val dns: DnsConfig? = null
+)
+
+@Serializable
+data class TransportConfig(
+    val type: String,
+    val path: String? = null,
+    val headers: Map<String, String>? = null,
+    @SerialName("service_name") val serviceName: String? = null
 )
