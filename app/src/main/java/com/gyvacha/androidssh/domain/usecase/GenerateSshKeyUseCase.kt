@@ -9,7 +9,7 @@ class GenerateSshKeyUseCase @Inject constructor(
     private val repository: SshKeyRepository
 ) {
 
-    suspend operator fun invoke(algorithm: SshKeyGenerator.Algorithm, passphrase: String? = null): SshKey {
+    suspend operator fun invoke(algorithm: SshKeyGenerator.Companion.Algorithm, passphrase: String? = null): SshKey {
         return repository.generateSshKey(algorithm, passphrase)
     }
 }

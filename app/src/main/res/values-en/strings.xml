@@ -57,4 +57,7 @@
     <string name="stop_singbox">Stop singbox</string>
     <string name="singbox_service_starting">Service starting...</string>
     <string name="singbox_service_started">Service started</string>
+    <string name="private_key">Private key</string>
+    <string name="add_ssh_key">Add SSH Key</string>
+    <string name="public_key">Public key</string>
 </resources>

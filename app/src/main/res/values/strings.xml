@@ -60,4 +60,7 @@
     <string name="stop_singbox">Остановить singbox</string>
     <string name="singbox_service_starting">Сервис запускается…</string>
     <string name="singbox_service_started">Сервис запущен</string>
+    <string name="private_key">Приватный ключ</string>
+    <string name="add_ssh_key">Добавить SSH ключ</string>
+    <string name="public_key">Публичный ключ</string>
 </resources>

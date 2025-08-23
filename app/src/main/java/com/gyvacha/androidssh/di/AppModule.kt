@@ -23,6 +23,7 @@ import com.gyvacha.androidssh.domain.usecase.GetConfigsUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostsUseCase
+import com.gyvacha.androidssh.domain.usecase.GetSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
@@ -38,6 +39,7 @@ import com.gyvacha.androidssh.domain.usecase.StartSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.StopSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
+import com.gyvacha.androidssh.domain.usecase.UpdateSshKeyUseCase
 import com.gyvacha.androidssh.utils.SingboxConfigFileManager
 import dagger.Module
 import dagger.Provides
@@ -149,6 +151,14 @@ object AppModule {
     @Provides
     fun provideInsertSshKeyUseCase(repository: SshKeyRepository): InsertSshKeyUseCase =
         InsertSshKeyUseCase(repository)
+
+    @Provides
+    fun provideUpdateSshKeyUseCaseUseCase(repository: SshKeyRepository): UpdateSshKeyUseCase =
+        UpdateSshKeyUseCase(repository)
+
+    @Provides
+    fun provideGetSshKeyUseCaseUseCaseUseCase(repository: SshKeyRepository): GetSshKeyUseCase =
+        GetSshKeyUseCase(repository)
 
     @Provides
     fun provideGenerateSshKeyUseCase(repository: SshKeyRepository): GenerateSshKeyUseCase =

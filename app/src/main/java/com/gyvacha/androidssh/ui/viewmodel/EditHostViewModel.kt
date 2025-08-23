@@ -8,7 +8,6 @@ import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
 import com.gyvacha.androidssh.domain.model.SshKey
 import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
-import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
@@ -17,10 +16,8 @@ import com.gyvacha.androidssh.ui.utils.EditHostViewEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,8 +26,7 @@ import javax.inject.Inject
 class EditHostViewModel @Inject constructor(
     private val insertHostUseCase: InsertHostUseCase,
     private val updateHostUseCase: UpdateHostUseCase,
-    private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase,
-    getSshKeysUseCase: GetSshKeysUseCase
+    private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase
 ) : ViewModel() {
 
     private val _eventFlow = MutableSharedFlow<EditHostViewEvent>()
@@ -38,9 +34,6 @@ class EditHostViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(AddHostUiState())
     val uiState = _uiState.asStateFlow()
-
-    val sshKeys = getSshKeysUseCase()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun updateShowBottomSheet(newState: Boolean) {
         _uiState.update {

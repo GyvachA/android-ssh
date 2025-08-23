@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.data.repository
 
+import android.util.Log
 import com.gyvacha.androidssh.data.local.dao.SshKeyDao
 import com.gyvacha.androidssh.domain.model.SshKey
 import com.gyvacha.androidssh.domain.model.toDomain
@@ -27,26 +28,40 @@ class SshKeyRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getSshKey(sshKeyId: Int): SshKey {
+        return withContext(Dispatchers.IO) {
+            sshKeyDao.getSshKey(sshKeyId).toDomain()
+        }
+    }
+
     override suspend fun deleteSshKey(sshKey: SshKey) {
         withContext(Dispatchers.IO) {
             sshKeyDao.deleteSshKey(sshKey.toEntity())
         }
     }
 
-    override suspend fun generateSshKey(algorithm: SshKeyGenerator.Algorithm, passphrase: String?): SshKey {
+    override suspend fun updateSshKey(sshKey: SshKey) {
+        withContext(Dispatchers.IO) {
+            sshKeyDao.updateSshKey(sshKey.toEntity())
+        }
+    }
+
+    override suspend fun generateSshKey(algorithm: SshKeyGenerator.Companion.Algorithm, passphrase: String?): SshKey {
         return withContext(Dispatchers.IO) {
             val keyPair = when (algorithm) {
-                SshKeyGenerator.Algorithm.ALGORITHM_RSA -> {
-                    SshKeyGenerator.generateRsaKeyPair()
+                SshKeyGenerator.Companion.Algorithm.ALGORITHM_RSA -> {
+                    SshKeyGenerator().generateRsaKeyPair()
                 }
-                SshKeyGenerator.Algorithm.ALGORITHM_ED25519 -> {
-                    SshKeyGenerator.generateEd25519KeyPair()
+                SshKeyGenerator.Companion.Algorithm.ALGORITHM_ED25519 -> {
+                    SshKeyGenerator().generateEd25519KeyPair()
                 }
             }
+            Log.d("KEYS", SshKeyGenerator().convertToOpenSshPublicKey(keyPair))
+            Log.d("KEYS", SshKeyGenerator().privateKeyPem(keyPair, passphrase))
             SshKey(
                 alias = "Generated key pair",
-                publicKey = SshKeyGenerator.convertToOpenSshPublicKey(keyPair),
-                privateKey = SshKeyGenerator.privateKeyPem(keyPair, passphrase)
+                publicKey = SshKeyGenerator().convertToOpenSshPublicKey(keyPair),
+                privateKey = SshKeyGenerator().privateKeyPem(keyPair, passphrase)
             )
         }
     }

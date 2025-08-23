@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.components
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -23,7 +24,9 @@ fun SecureTextField(
     label: String,
     onVisibilityClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isPasswordVisible: Boolean = false
+    isPasswordVisible: Boolean = false,
+    isError: Boolean = false,
+    errorMessage: String? = null,
 ) {
     TextFieldBase(
         value = value,
@@ -34,6 +37,7 @@ fun SecureTextField(
             autoCorrectEnabled = false,
             keyboardType = KeyboardType.Password
         ),
+        isError = isError,
         label = { Text(label) },
         trailingIcon = {
             IconButton(onClick = onVisibilityClick) {
@@ -49,5 +53,12 @@ fun SecureTextField(
                 )
             }
         },
+        supportingText = {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (errorMessage != null) Text(text = errorMessage)
+            }
+        }
     )
 }

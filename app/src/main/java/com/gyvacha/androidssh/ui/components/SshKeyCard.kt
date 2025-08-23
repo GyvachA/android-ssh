@@ -34,9 +34,9 @@ import kotlinx.coroutines.launch
 fun SshKeyCard(
     onClick: () -> Unit,
     sshKey: SshKey,
-    actionButtonImage: ImageVector,
-    actionButtonDesc: String?,
     modifier: Modifier = Modifier,
+    actionButtonImage: ImageVector? = null,
+    actionButtonDesc: String? = null,
     isShowMenu: Boolean = false,
     onDeleteSshKey: ((SshKey) -> Unit)? = null
 ) {
@@ -85,6 +85,7 @@ fun SshKeyCard(
                                     clipboardService.setText("SSH key", sshKey.publicKey)
                                     snackbarNotifier?.showSnackbar(keyCopiedText)
                                 }
+                                expandedMenu = false
                             }
                         )
                         DropdownMenuItem(
@@ -94,6 +95,7 @@ fun SshKeyCard(
                                     clipboardService.setText("SSH key", sshKey.privateKey)
                                     snackbarNotifier?.showSnackbar(keyCopiedText)
                                 }
+                                expandedMenu = false
                             }
                         )
                         if (onDeleteSshKey != null) {
@@ -101,16 +103,19 @@ fun SshKeyCard(
                                 text = { Text(stringResource(R.string.delete)) },
                                 onClick = {
                                     onDeleteSshKey(sshKey)
+                                    expandedMenu = false
                                 }
                             )
                         }
                     }
                 )
             }
-            IconButton(
-                onClick = onClick
-            ) {
-                Icon(imageVector = actionButtonImage, contentDescription = actionButtonDesc)
+            if (actionButtonImage != null) {
+                IconButton(
+                    onClick = onClick
+                ) {
+                    Icon(imageVector = actionButtonImage, contentDescription = actionButtonDesc)
+                }
             }
         }
     }

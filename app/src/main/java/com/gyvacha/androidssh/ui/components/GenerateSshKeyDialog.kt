@@ -29,8 +29,8 @@ fun GenerateSshKeyDialog(
     viewModel: GenerateSshKeyViewModel = hiltViewModel()
 ) {
     val algorithmList = listOf(
-        SshKeyGenerator.Algorithm.ALGORITHM_ED25519.title,
-        SshKeyGenerator.Algorithm.ALGORITHM_RSA.title
+        SshKeyGenerator.Companion.Algorithm.ALGORITHM_ED25519.title,
+        SshKeyGenerator.Companion.Algorithm.ALGORITHM_RSA.title
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

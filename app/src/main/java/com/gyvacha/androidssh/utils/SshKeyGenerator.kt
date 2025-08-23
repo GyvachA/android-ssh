@@ -1,6 +1,7 @@
 package com.gyvacha.androidssh.utils
 
 import org.bouncycastle.asn1.pkcs.RSAPublicKey
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter
 import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder
 import java.io.ByteArrayOutputStream
@@ -8,22 +9,25 @@ import java.io.DataOutputStream
 import java.io.StringWriter
 import java.security.KeyPair
 import java.security.KeyPairGenerator
+import java.security.SecureRandom
 import java.util.Base64
 
-object SshKeyGenerator {
-    enum class Algorithm(val title: String) {
-        ALGORITHM_RSA("RSA"),
-        ALGORITHM_ED25519("Ed25519")
+class SshKeyGenerator {
+    companion object {
+        enum class Algorithm(val title: String) {
+            ALGORITHM_RSA("RSA"),
+            ALGORITHM_ED25519("Ed25519")
+        }
     }
 
     fun generateRsaKeyPair(keySize: Int = 2048): KeyPair {
-        val keyGen = KeyPairGenerator.getInstance("RSA", "BC")
-        keyGen.initialize(keySize)
+        val keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider())
+        keyGen.initialize(keySize, SecureRandom.getInstanceStrong())
         return keyGen.generateKeyPair()
     }
 
     fun generateEd25519KeyPair(): KeyPair {
-        val keyGen = KeyPairGenerator.getInstance("Ed25519", "BC")
+        val keyGen = KeyPairGenerator.getInstance("Ed25519", BouncyCastleProvider())
         return keyGen.generateKeyPair()
     }
 

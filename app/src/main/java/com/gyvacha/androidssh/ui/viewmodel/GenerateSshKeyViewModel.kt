@@ -68,7 +68,9 @@ class GenerateSshKeyViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 val sshKey = generateSshKeyUseCase(
-                    algorithm = SshKeyGenerator.Algorithm.entries.first { it.title == _uiState.value.sshKeyAlgorithm },
+                    algorithm = SshKeyGenerator.Companion.Algorithm.entries.first {
+                        it.title == _uiState.value.sshKeyAlgorithm
+                    },
                     passphrase = _uiState.value.sshKeyPassphrase.ifBlank {
                         null
                     }

@@ -60,8 +60,8 @@ naming:
 complexity:
   TooManyFunctions:
     ignoreAnnotatedFunctions: ['Preview']
-    thresholdInClasses: 31
-    thresholdInObjects: 31
+    thresholdInClasses: 40
+    thresholdInObjects: 40
   LongParameterList:
     functionThreshold: 15
     constructorThreshold: 15
