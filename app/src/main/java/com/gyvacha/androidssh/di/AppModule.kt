@@ -7,11 +7,13 @@ import com.gyvacha.androidssh.data.local.dao.ProxyConfigDao
 import com.gyvacha.androidssh.data.local.dao.SshKeyDao
 import com.gyvacha.androidssh.data.repository.HostRepositoryImpl
 import com.gyvacha.androidssh.data.repository.ProxyConfigRepositoryImpl
+import com.gyvacha.androidssh.data.repository.QrScannerRepositoryImpl
 import com.gyvacha.androidssh.data.repository.SingboxRepositoryImpl
 import com.gyvacha.androidssh.data.repository.SshKeyRepositoryImpl
 import com.gyvacha.androidssh.data.repository.SshRepositoryImpl
 import com.gyvacha.androidssh.domain.repository.HostRepository
 import com.gyvacha.androidssh.domain.repository.ProxyConfigRepository
+import com.gyvacha.androidssh.domain.repository.QrScannerRepository
 import com.gyvacha.androidssh.domain.repository.SingboxRepository
 import com.gyvacha.androidssh.domain.repository.SshKeyRepository
 import com.gyvacha.androidssh.domain.repository.SshRepository
@@ -30,6 +32,7 @@ import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxLogsUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxStateUseCase
+import com.gyvacha.androidssh.domain.usecase.ScanImageUseCase
 import com.gyvacha.androidssh.domain.usecase.SetActiveConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.SshConnectViaKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.SshConnectViaPwdUseCase
@@ -60,6 +63,11 @@ object AppModule {
     @Singleton
     fun provideSshKeyRepository(sshKeyDao: SshKeyDao): SshKeyRepository =
         SshKeyRepositoryImpl(sshKeyDao)
+
+    @Provides
+    @Singleton
+    fun provideQrScannerRepositor(@ApplicationContext context: Context): QrScannerRepository =
+        QrScannerRepositoryImpl(context)
 
     @Provides
     @Singleton
@@ -167,6 +175,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideSshRepository(): SshRepository = SshRepositoryImpl()
+
+    @Provides
+    fun provideScanImageUseCase(repository: QrScannerRepository): ScanImageUseCase =
+        ScanImageUseCase(repository)
 
     @Provides
     fun provideSshConnectViaKey(repository: SshRepository): SshConnectViaKeyUseCase =

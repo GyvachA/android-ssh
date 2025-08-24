@@ -24,6 +24,8 @@ lifecycleService = "2.9.2"
 detekt = "1.23.8"
 detekt-compose = "0.4.27"
 detekt-formatting = "1.23.8"
+barcode-scanning = "17.3.0"
+camerax = "1.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +60,11 @@ google-crypto-tink = { group = "com.google.crypto.tink", name = "tink-android", 
 androidx-lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "lifecycleService" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt-formatting" }
+mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "barcode-scanning" }
+camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camerax" }
+camera = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
+camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
+camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
 
 
 [plugins]

@@ -17,6 +17,7 @@ import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.screens.EditHostScreen
 import com.gyvacha.androidssh.ui.screens.HostsScreen
+import com.gyvacha.androidssh.ui.screens.QrScannerScreen
 import com.gyvacha.androidssh.ui.screens.SettingsScreen
 import com.gyvacha.androidssh.ui.screens.SingboxScreen
 import com.gyvacha.androidssh.ui.screens.TerminalScreen
@@ -98,11 +99,17 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
         navigation<AppNavigation.XrayRoute>(startDestination = AppNavigation.XrayRoute.Xray) {
             composable<AppNavigation.XrayRoute.Xray> {
                 SingboxScreen(
+                    navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.label_singbox),
                         canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = navController::navigateUp
                     )
+                )
+            }
+            composable<AppNavigation.XrayRoute.ImportFromQR> {
+                QrScannerScreen(
+                    navController = navController
                 )
             }
         }

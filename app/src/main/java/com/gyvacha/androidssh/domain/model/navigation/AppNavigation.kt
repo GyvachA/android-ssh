@@ -31,5 +31,8 @@ sealed interface AppNavigation : NavigationTarget {
     data object XrayRoute : AppNavigation {
         @Serializable
         data object Xray : AppNavigation
+
+        @Serializable
+        data object ImportFromQR : AppNavigation
     }
 }

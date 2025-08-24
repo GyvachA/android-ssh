@@ -7,12 +7,13 @@ import com.gyvacha.androidssh.domain.model.Transport
 
 object ParseProxyConfig {
 
-    fun parseProxyUri(uriString: String): ProxySpec? {
+    fun parseProxyUri(uriString: String): Pair<String, ProxySpec>? {
         val uri = uriString.toUri()
         val scheme = uri.scheme?.lowercase() ?: return null
 
         val server = uri.host ?: return null
         val port = uri.port.takeIf { it != -1 } ?: return null
+        val alias = uri.fragment ?: "Proxy Config"
 
         return when (scheme) {
             "vless" -> {
@@ -24,7 +25,7 @@ object ParseProxyConfig {
                 val realityFingerprint = uri.getQueryParameter("fp") ?: "chrome"
                 val realityServerName = uri.getQueryParameter("sni")
 
-                ProxySpec.Vless(
+                val proxySpec = ProxySpec.Vless(
                     server = server,
                     port = port,
                     uuid = uuid,
@@ -35,6 +36,7 @@ object ParseProxyConfig {
                     realityFingerprint = realityFingerprint,
                     realityServerName = realityServerName
                 )
+                Pair(alias, proxySpec)
             }
 
             "vmess" -> {
@@ -42,7 +44,7 @@ object ParseProxyConfig {
                 val alterId = uri.getQueryParameter("alterId")?.toIntOrNull() ?: 0
                 val security = uri.getQueryParameter("security") ?: "auto"
                 val transport = parseTransport(uri)
-                ProxySpec.Vmess(
+                val proxySpec = ProxySpec.Vmess(
                     server = server,
                     port = port,
                     uuid = uuid,
@@ -50,6 +52,7 @@ object ParseProxyConfig {
                     security = security,
                     transport = transport
                 )
+                Pair(alias, proxySpec)
             }
 
             "trojan" -> {
@@ -60,12 +63,13 @@ object ParseProxyConfig {
                     uri.userInfo
                 }
                 val sni = uri.getQueryParameter("sni")
-                ProxySpec.Trojan(
+                val proxySpec = ProxySpec.Trojan(
                     server = server,
                     port = port,
                     password = password ?: "",
                     sni = sni
                 )
+                Pair(alias, proxySpec)
             }
 
             "shadowsocks" -> {
@@ -76,36 +80,39 @@ object ParseProxyConfig {
                 } else {
                     uri.userInfo
                 }
-                ProxySpec.Shadowsocks(
+                val proxySpec = ProxySpec.Shadowsocks(
                     server = server,
                     port = port,
                     method = method,
                     password = password ?: ""
                 )
+                Pair(alias, proxySpec)
             }
 
             "socks" -> {
                 val username =
                     if (uri.userInfo.isNullOrBlank()) uri.getQueryParameter("username") else uri.userInfo
                 val password = uri.getQueryParameter("password")
-                ProxySpec.Socks(
+                val proxySpec = ProxySpec.Socks(
                     server = server,
                     port = port,
                     username = username,
                     password = password
                 )
+                Pair(alias, proxySpec)
             }
 
             "http" -> {
                 val username =
                     if (uri.userInfo.isNullOrBlank()) uri.getQueryParameter("username") else uri.userInfo
                 val password = uri.getQueryParameter("password")
-                ProxySpec.Http(
+                val proxySpec = ProxySpec.Http(
                     server = server,
                     port = port,
                     username = username,
                     password = password
                 )
+                Pair(alias, proxySpec)
             }
 
             else -> null

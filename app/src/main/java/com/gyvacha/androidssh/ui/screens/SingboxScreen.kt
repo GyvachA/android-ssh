@@ -30,11 +30,13 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.ProxyConfig
 import com.gyvacha.androidssh.domain.model.ProxySpec
 import com.gyvacha.androidssh.domain.model.ProxyType
 import com.gyvacha.androidssh.domain.model.Status
+import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.components.MenuWithIcon
 import com.gyvacha.androidssh.ui.components.RequestNotificationPermission
@@ -51,6 +53,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SingboxScreen(
     topAppBarParams: TopAppBarParams,
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: SingboxViewModel = hiltViewModel()
 ) {
@@ -111,11 +114,13 @@ fun SingboxScreen(
                                 onClick = {
                                     clipboardScope.launch {
                                         val clipboardText = clipboardService.getText()
-                                        val proxySpec = clipboardText?.let { parseProxyUri(it) }
-                                        if (proxySpec != null) {
+                                        val proxy = clipboardText?.let { parseProxyUri(it) }
+                                        if (proxy != null) {
+                                            val alias = proxy.first
+                                            val proxySpec = proxy.second
                                             val proxyConfig = ProxyConfig(
                                                 id = 0,
-                                                alias = "Import from config",
+                                                alias = alias,
                                                 type = when (proxySpec) {
                                                     is ProxySpec.Vless -> ProxyType.VLESS
                                                     is ProxySpec.Vmess -> ProxyType.VMESS
@@ -138,11 +143,14 @@ fun SingboxScreen(
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.import_from_qr_code)) },
                                 onClick = {
+                                    navController.navigate(AppNavigation.XrayRoute.ImportFromQR)
+                                    viewModel.updateExpandedTopAppBarMenu(false)
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.add_manually)) },
                                 onClick = {
+                                    viewModel.updateExpandedTopAppBarMenu(false)
                                 }
                             )
                         }
