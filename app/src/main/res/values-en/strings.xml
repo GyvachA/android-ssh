@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">android-ssh</string>
     <string name="label_settings">Settings</string>
-    <string name="label_xray">XRAY</string>
     <string name="label_servers">Hosts</string>
     <string name="back_button">Back</string>
     <string name="comming_soon">Soon…</string>
@@ -46,12 +44,10 @@
     <string name="edit">Edit</string>
     <string name="ssh_keys">SSH keys</string>
     <string name="edit_host">Edit host</string>
-    <string name="label_singbox">Singbox</string>
     <string name="add_manually">Add manually</string>
     <string name="import_from_qr_code">Import from QR-code</string>
     <string name="import_from_copy_buffer">Import from copy buffer</string>
     <string name="error_get_config_from_copyboard">Error while importing from copy buffer</string>
-    <string name="ping">ping</string>
     <string name="start_singbox">Start singbox</string>
     <string name="grant_permissions">Allow notifications</string>
     <string name="stop_singbox">Stop singbox</string>

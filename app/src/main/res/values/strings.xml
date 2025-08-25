@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">android-ssh</string>
+    <string name="app_name" translatable="false">Simple SSH</string>
 
     <!--    Bottom navigation bar    -->
     <string name="label_settings">Настройки</string>
-    <string name="label_xray">XRAY</string>
+    <string name="label_xray" translatable="false">XRAY</string>
     <string name="label_servers">Хосты</string>
     <string name="back_button">Назад</string>
     <string name="comming_soon">Скоро…</string>
@@ -49,12 +49,12 @@
     <string name="edit">Редактировать</string>
     <string name="ssh_keys">SSH ключи</string>
     <string name="edit_host">Редактировать хост</string>
-    <string name="label_singbox">Singbox</string>
+    <string name="label_singbox" translatable="false">Singbox</string>
     <string name="add_manually">Добавить вручную</string>
     <string name="import_from_qr_code">Импорт из QR-кода</string>
     <string name="import_from_copy_buffer">Импорт из буфера обмена</string>
     <string name="error_get_config_from_copyboard">Ошибка при извлечении из буфера обмена</string>
-    <string name="ping">ping</string>
+    <string name="ping" translatable="false">ping</string>
     <string name="start_singbox">Запустить singbox</string>
     <string name="grant_permissions">Разрешить уведомления</string>
     <string name="stop_singbox">Остановить singbox</string>

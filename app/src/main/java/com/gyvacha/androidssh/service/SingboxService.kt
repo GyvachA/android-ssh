@@ -602,7 +602,7 @@ class SingboxService : VpnService() {
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL,
             "Singbox Service",
-            NotificationManager.IMPORTANCE_LOW
+            NotificationManager.IMPORTANCE_HIGH
         ).apply {
             description = "Used for Singbox foreground service"
             setShowBadge(false)
@@ -636,8 +636,8 @@ class SingboxService : VpnService() {
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
             .setContentTitle("Singbox VPN")
             .setContentText(text)
-            .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setOngoing(true)
             .setShowWhen(false)
