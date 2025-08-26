@@ -51,9 +51,16 @@
     <string name="start_singbox">Start singbox</string>
     <string name="grant_permissions">Allow notifications</string>
     <string name="stop_singbox">Stop singbox</string>
-    <string name="singbox_service_starting">Service starting...</string>
+    <string name="singbox_service_starting">Service starting…</string>
     <string name="singbox_service_started">Service started</string>
     <string name="private_key">Private key</string>
     <string name="add_ssh_key">Add SSH Key</string>
     <string name="public_key">Public key</string>
+    <string name="proxy_type">Proxy type</string>
+    <string name="transport">Transport</string>
+    <string name="method_cipher">Method (cipher)</string>
+    <string name="security">Security</string>
+    <string name="server_name">Server name</string>
+    <string name="add_proxy_config">Add config</string>
+    <string name="edit_proxy_config">Edit config</string>
 </resources>

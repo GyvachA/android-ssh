@@ -5,12 +5,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class ProxySpec {
+    abstract val server: String
+    abstract val port: Int
+
     @Serializable
     @SerialName("vless")
     data class Vless(
-        val server: String,
-        val port: Int,
+        override val server: String,
+        override val port: Int,
         val uuid: String,
+        val encryption: String = "none",
         val flow: String? = null,
         val transport: Transport = Transport.TCP,
         val realityPublicKey: String? = null,
@@ -22,48 +26,54 @@ sealed class ProxySpec {
     @Serializable
     @SerialName("trojan")
     data class Trojan(
-        val server: String,
-        val port: Int,
+        override val server: String,
+        override val port: Int,
         val password: String,
-        val sni: String? = null
+        val sni: String? = null,
+        val alpn: List<String>? = null
     ) : ProxySpec()
 
     @Serializable
     @SerialName("vmess")
     data class Vmess(
-        val server: String,
-        val port: Int,
+        override val server: String,
+        override val port: Int,
         val uuid: String,
         val alterId: Int = 0,
         val security: String = "auto",
-        val transport: Transport = Transport.TCP
+        val transport: Transport = Transport.TCP,
+        val sni: String? = null,
+        val name: String? = null
     ) : ProxySpec()
 
     @Serializable
     @SerialName("shadowsocks")
     data class Shadowsocks(
-        val server: String,
-        val port: Int,
+        override val server: String,
+        override val port: Int,
         val method: String,
-        val password: String
+        val password: String,
+        val plugin: String? = null
     ) : ProxySpec()
 
     @Serializable
     @SerialName("socks")
     data class Socks(
-        val server: String,
-        val port: Int,
+        override val server: String,
+        override val port: Int,
         val username: String? = null,
-        val password: String? = null
+        val password: String? = null,
+        val version: Int = 5
     ) : ProxySpec()
 
     @Serializable
     @SerialName("http")
     data class Http(
-        val server: String,
-        val port: Int,
+        override val server: String,
+        override val port: Int,
         val username: String? = null,
-        val password: String? = null
+        val password: String? = null,
+        val https: Boolean = false
     ) : ProxySpec()
 }
 
@@ -77,4 +87,22 @@ sealed class Transport {
 
     @Serializable
     data class GRPC(val serviceName: String = "default") : Transport()
+}
+
+fun ProxySpec.withServer(newServer: String): ProxySpec = when (this) {
+    is ProxySpec.Vless -> copy(server = newServer)
+    is ProxySpec.Vmess -> copy(server = newServer)
+    is ProxySpec.Trojan -> copy(server = newServer)
+    is ProxySpec.Shadowsocks -> copy(server = newServer)
+    is ProxySpec.Socks -> copy(server = newServer)
+    is ProxySpec.Http -> copy(server = newServer)
+}
+
+fun ProxySpec.withPort(newPort: Int): ProxySpec = when (this) {
+    is ProxySpec.Vless -> copy(port = newPort)
+    is ProxySpec.Vmess -> copy(port = newPort)
+    is ProxySpec.Trojan -> copy(port = newPort)
+    is ProxySpec.Shadowsocks -> copy(port = newPort)
+    is ProxySpec.Socks -> copy(port = newPort)
+    is ProxySpec.Http -> copy(port = newPort)
 }

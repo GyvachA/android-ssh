@@ -71,6 +71,21 @@ object SingboxConfigSerializer {
     private fun buildOutbound(spec: ProxySpec): Outbound {
         return when (spec) {
             is ProxySpec.Vless -> {
+                val transportConfig = when (spec.transport) {
+                    is Transport.WS -> TransportConfig(
+                        type = "ws",
+                        path = spec.transport.path,
+                        headers = mapOf("Host" to spec.transport.hostHeader).takeIf {
+                            spec.transport.hostHeader.isNotBlank()
+                        }
+                    )
+                    is Transport.GRPC -> TransportConfig(
+                        type = "grpc",
+                        serviceName = spec.transport.serviceName
+                    )
+                    else -> null
+                }
+
                 if (spec.realityPublicKey != null && spec.realityShortId != null) {
                     Outbound(
                         type = "vless",
@@ -79,6 +94,7 @@ object SingboxConfigSerializer {
                         serverPort = spec.port,
                         uuid = spec.uuid,
                         flow = spec.flow,
+                        transport = transportConfig,
                         tls = TlsConfig(
                             enabled = true,
                             serverName = spec.realityServerName ?: spec.server,
@@ -102,19 +118,17 @@ object SingboxConfigSerializer {
                         serverPort = spec.port,
                         uuid = spec.uuid,
                         flow = spec.flow,
-                        tls = if (spec.port == 443 ||
-                            spec.flow?.contains("tls") == true ||
-                            spec.flow?.contains("xtls") == true
-                        ) {
+                        transport = transportConfig,
+                        tls = if (spec.port == 443) {
                             TlsConfig(
                                 enabled = true,
-                                serverName = spec.server,
+                                serverName = spec.realityServerName ?: spec.server,
                                 insecure = false,
                                 alpn = listOf("h2", "http/1.1")
                             )
                         } else {
                             null
-                        },
+                        }
                     )
                 }
             }
@@ -141,13 +155,12 @@ object SingboxConfigSerializer {
                     server = spec.server,
                     serverPort = spec.port,
                     uuid = spec.uuid,
-                    security = spec.security,
                     alterId = spec.alterId,
                     transport = transportConfig,
-                    tls = if (spec.port == 443) {
+                    tls = if (spec.port == 443 || spec.sni != null) {
                         TlsConfig(
                             enabled = true,
-                            serverName = spec.server,
+                            serverName = spec.sni ?: spec.server,
                             insecure = false,
                             alpn = listOf("h2", "http/1.1")
                         )
@@ -167,7 +180,7 @@ object SingboxConfigSerializer {
                     enabled = true,
                     serverName = spec.sni ?: spec.server,
                     insecure = false,
-                    alpn = listOf("h2", "http/1.1")
+                    alpn = spec.alpn ?: listOf("h2", "http/1.1")
                 )
             )
 
@@ -177,7 +190,7 @@ object SingboxConfigSerializer {
                 server = spec.server,
                 serverPort = spec.port,
                 method = spec.method,
-                password = spec.password
+                password = spec.password,
             )
 
             is ProxySpec.Socks -> Outbound(
@@ -185,7 +198,7 @@ object SingboxConfigSerializer {
                 tag = "proxy",
                 server = spec.server,
                 serverPort = spec.port,
-                version = "5",
+                version = spec.version.toString(),
                 username = spec.username,
                 password = spec.password
             )
@@ -197,8 +210,12 @@ object SingboxConfigSerializer {
                 serverPort = spec.port,
                 username = spec.username,
                 password = spec.password,
-                tls = if (spec.port == 443) {
-                    TlsConfig(enabled = true, serverName = spec.server, insecure = false)
+                tls = if (spec.https || spec.port == 443) {
+                    TlsConfig(
+                        enabled = true,
+                        serverName = spec.server,
+                        insecure = false
+                    )
                 } else {
                     null
                 }
@@ -249,7 +266,6 @@ data class Outbound(
     val flow: String? = null,
     val password: String? = null,
     val method: String? = null,
-    val security: String? = null,
     val username: String? = null,
     val version: String? = null,
     @SerialName("alter_id") val alterId: Int? = null,

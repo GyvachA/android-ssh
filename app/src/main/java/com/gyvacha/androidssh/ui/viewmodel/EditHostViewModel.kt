@@ -11,7 +11,7 @@ import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
-import com.gyvacha.androidssh.ui.state.AddHostUiState
+import com.gyvacha.androidssh.ui.state.EditHostUiState
 import com.gyvacha.androidssh.ui.utils.EditHostViewEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,7 +32,7 @@ class EditHostViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<EditHostViewEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private val _uiState = MutableStateFlow(AddHostUiState())
+    private val _uiState = MutableStateFlow(EditHostUiState())
     val uiState = _uiState.asStateFlow()
 
     fun updateShowBottomSheet(newState: Boolean) {

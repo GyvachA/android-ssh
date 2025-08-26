@@ -63,4 +63,29 @@
     <string name="private_key">Приватный ключ</string>
     <string name="add_ssh_key">Добавить SSH ключ</string>
     <string name="public_key">Публичный ключ</string>
+    <string name="proxy_type">Тип прокси</string>
+    <string name="vless" translatable="false">vless</string>
+    <string name="trojan" translatable="false">trojan</string>
+    <string name="vmess" translatable="false">vmess</string>
+    <string name="shadowsocks" translatable="false">shadowsocks</string>
+    <string name="socks" translatable="false">socks</string>
+    <string name="http" translatable="false">http</string>
+    <string name="transport">Транспорт</string>
+    <string name="tcp" translatable="false">TCP</string>
+    <string name="ws" translatable="false">WS</string>
+    <string name="grpc" translatable="false">gRPC</string>
+    <string name="ws_path" translatable="false">WS Path</string>
+    <string name="ws_host_header" translatable="false">WS Host Header</string>
+    <string name="grpc_service_name" translatable="false">gRPC Service Name</string>
+    <string name="method_cipher">Метод (шифр)</string>
+    <string name="sni" translatable="false">SNI</string>
+    <string name="security">Безопасность</string>
+    <string name="alter_id" translatable="false">AlterID</string>
+    <string name="uuid" translatable="false">UUID</string>
+    <string name="flow" translatable="false">Flow</string>
+    <string name="short_id" translatable="false">Short ID</string>
+    <string name="fingerprint" translatable="false">Fingerprint</string>
+    <string name="server_name">Имя сервера</string>
+    <string name="add_proxy_config">Добавить конфиг</string>
+    <string name="edit_proxy_config">Изменить конфиг</string>
 </resources>

@@ -5,7 +5,7 @@ import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
 import com.gyvacha.androidssh.ui.components.TextFieldErrors
 
-data class AddHostUiState(
+data class EditHostUiState(
     val hostWithSshKey: HostWithSshKey = HostWithSshKey(
         host = Host(
             hostId = -1,

@@ -25,6 +25,7 @@ import com.gyvacha.androidssh.domain.usecase.GetConfigsUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetHostsUseCase
+import com.gyvacha.androidssh.domain.usecase.GetProxyConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.GetSshKeysUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertConfigUseCase
@@ -92,6 +93,10 @@ object AppModule {
     @Provides
     fun provideInsertConfigUseCase(repository: ProxyConfigRepository): InsertConfigUseCase =
         InsertConfigUseCase(repository)
+
+    @Provides
+    fun provideGetProxyConfigUseCase(repository: ProxyConfigRepository): GetProxyConfigUseCase =
+        GetProxyConfigUseCase(repository)
 
     @Provides
     fun provideSetActiveConfigUseCase(repository: ProxyConfigRepository): SetActiveConfigUseCase =

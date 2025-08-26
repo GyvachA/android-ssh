@@ -34,5 +34,10 @@ sealed interface AppNavigation : NavigationTarget {
 
         @Serializable
         data object ImportFromQR : AppNavigation
+
+        @Serializable
+        data class EditProxyConfig(
+            val proxyConfigId: Long? = null
+        ) : AppNavigation
     }
 }

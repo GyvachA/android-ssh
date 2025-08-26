@@ -16,6 +16,7 @@ import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.screens.EditHostScreen
+import com.gyvacha.androidssh.ui.screens.EditProxyConfigScreen
 import com.gyvacha.androidssh.ui.screens.HostsScreen
 import com.gyvacha.androidssh.ui.screens.QrScannerScreen
 import com.gyvacha.androidssh.ui.screens.SettingsScreen
@@ -110,6 +111,24 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
             composable<AppNavigation.XrayRoute.ImportFromQR> {
                 QrScannerScreen(
                     navController = navController
+                )
+            }
+            composable<AppNavigation.XrayRoute.EditProxyConfig> { backstackEntry ->
+                val proxyConfigId = backstackEntry.toRoute<AppNavigation.XrayRoute.EditProxyConfig>().proxyConfigId
+                EditProxyConfigScreen(
+                    navController = navController,
+                    topAppBarParams = TopAppBarParams(
+                        screenTitle = if (proxyConfigId != null) {
+                            stringResource(
+                                R.string.edit_proxy_config
+                            )
+                        } else {
+                            stringResource(R.string.add_proxy_config)
+                        },
+                        canNavigateBack = navController.previousBackStackEntry != null,
+                        navigateUp = navController::navigateUp
+                    ),
+                    proxyConfigId = proxyConfigId
                 )
             }
         }

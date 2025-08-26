@@ -10,4 +10,5 @@ interface ProxyConfigRepository {
     suspend fun setActiveConfig(config: ProxyConfig)
     fun getConfigs(): Flow<List<ProxyConfig>>
     suspend fun delete(config: ProxyConfig)
+    suspend fun getProxyConfig(proxyConfigId: Long): ProxyConfig?
 }

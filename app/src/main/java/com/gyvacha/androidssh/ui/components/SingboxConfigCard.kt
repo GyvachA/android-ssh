@@ -31,6 +31,7 @@ fun SingboxConfigCard(
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier,
     onDeleteConfig: ((ProxyConfig) -> Unit)? = null,
+    onUpdateConfig: ((Long) -> Unit)? = null,
 ) {
     var expandedMenu by rememberSaveable { mutableStateOf(false) }
     BaseCard(
@@ -83,6 +84,16 @@ fun SingboxConfigCard(
                             text = { Text(stringResource(R.string.delete)) },
                             onClick = {
                                 onDeleteConfig(config)
+                                expandedMenu = false
+                            }
+                        )
+                    }
+                    if (onUpdateConfig != null) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.edit)) },
+                            onClick = {
+                                onUpdateConfig(config.id)
+                                expandedMenu = false
                             }
                         )
                     }

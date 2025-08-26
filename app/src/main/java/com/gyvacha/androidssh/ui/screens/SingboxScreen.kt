@@ -150,6 +150,7 @@ fun SingboxScreen(
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.add_manually)) },
                                 onClick = {
+                                    navController.navigate(AppNavigation.XrayRoute.EditProxyConfig())
                                     viewModel.updateExpandedTopAppBarMenu(false)
                                 }
                             )
@@ -216,6 +217,9 @@ fun SingboxScreen(
                     },
                     onDeleteConfig = {
                         viewModel.deleteConfig(config)
+                    },
+                    onUpdateConfig = {
+                        navController.navigate(AppNavigation.XrayRoute.EditProxyConfig(it))
                     }
                 )
             }

@@ -26,6 +26,9 @@ interface ProxyConfigDao {
     @Query("SELECT * FROM proxy_configs WHERE is_active = 1")
     suspend fun getActive(): ProxyConfigEntity?
 
+    @Query("SELECT * FROM proxy_configs WHERE id = :proxyConfigId")
+    suspend fun getProxyConfig(proxyConfigId: Long): ProxyConfigEntity?
+
     @Query("SELECT * FROM proxy_configs")
     fun getConfigs(): Flow<List<ProxyConfigEntity>>
 

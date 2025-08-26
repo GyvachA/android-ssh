@@ -20,6 +20,12 @@ class ProxyConfigRepositoryImpl(
         }
     }
 
+    override suspend fun getProxyConfig(proxyConfigId: Long): ProxyConfig? {
+        return withContext(Dispatchers.IO) {
+            dao.getProxyConfig(proxyConfigId)?.toModel()
+        }
+    }
+
     override suspend fun insert(config: ProxyConfig) {
         return withContext(Dispatchers.IO) {
             dao.insert(config.toEntity())
