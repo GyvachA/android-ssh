@@ -33,6 +33,7 @@ import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxLogsUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxStateUseCase
+import com.gyvacha.androidssh.domain.usecase.PingActiveProxyUseCase
 import com.gyvacha.androidssh.domain.usecase.ScanImageUseCase
 import com.gyvacha.androidssh.domain.usecase.SetActiveConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.SshConnectViaKeyUseCase
@@ -97,6 +98,10 @@ object AppModule {
     @Provides
     fun provideGetProxyConfigUseCase(repository: ProxyConfigRepository): GetProxyConfigUseCase =
         GetProxyConfigUseCase(repository)
+
+    @Provides
+    fun providePingActiveProxyUseCase(repository: ProxyConfigRepository): PingActiveProxyUseCase =
+        PingActiveProxyUseCase(repository)
 
     @Provides
     fun provideSetActiveConfigUseCase(repository: ProxyConfigRepository): SetActiveConfigUseCase =

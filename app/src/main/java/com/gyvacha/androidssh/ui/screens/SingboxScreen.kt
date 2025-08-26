@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.gyvacha.androidssh.R
+import com.gyvacha.androidssh.domain.model.PingResult
 import com.gyvacha.androidssh.domain.model.ProxyConfig
 import com.gyvacha.androidssh.domain.model.ProxySpec
 import com.gyvacha.androidssh.domain.model.ProxyType
@@ -169,12 +170,17 @@ fun SingboxScreen(
                 ) {
                     Button(
                         onClick = {
+                            viewModel.requestPing()
                         }
                     ) {
                         Text(stringResource(R.string.ping))
                     }
                     Text(
-                        "ping ms",
+                        text = when (uiState.pingResult) {
+                            is PingResult.Idle -> "Idle"
+                            is PingResult.Success -> "${(uiState.pingResult as PingResult.Success).ms} ms"
+                            is PingResult.Failure -> "Error: ${(uiState.pingResult as PingResult.Failure).error}"
+                        },
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = dimensionResource(R.dimen.small_padding))

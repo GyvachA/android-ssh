@@ -9,6 +9,7 @@ import com.gyvacha.androidssh.domain.usecase.GetConfigsUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxLogsUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxStateUseCase
+import com.gyvacha.androidssh.domain.usecase.PingActiveProxyUseCase
 import com.gyvacha.androidssh.domain.usecase.SetActiveConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.StartSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.StopSingboxUseCase
@@ -30,6 +31,7 @@ class SingboxViewModel @Inject constructor(
     private val startSingboxUseCase: StartSingboxUseCase,
     private val stopSingboxUseCase: StopSingboxUseCase,
     private val generateSingboxConfigFileUseCase: GenerateSingboxConfigFileUseCase,
+    private val pingUseCase: PingActiveProxyUseCase,
     observeSingboxLogsUseCase: ObserveSingboxLogsUseCase,
     observeSingboxStateUseCase: ObserveSingboxStateUseCase,
     getConfigsUseCase: GetConfigsUseCase
@@ -47,6 +49,17 @@ class SingboxViewModel @Inject constructor(
             it.copy(
                 expandedTopAppBarMenu = newExpanded
             )
+        }
+    }
+
+    fun requestPing() {
+        viewModelScope.launch {
+            val result = pingUseCase()
+            _uiState.update {
+                it.copy(
+                    pingResult = result
+                )
+            }
         }
     }
 
