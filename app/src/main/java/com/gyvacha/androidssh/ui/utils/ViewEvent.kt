@@ -13,3 +13,9 @@ sealed class GenerateSshKeyViewEvent {
     data object SshKeyCreated : GenerateSshKeyViewEvent()
     data object SshKeyCreateFailure : GenerateSshKeyViewEvent()
 }
+
+sealed class SingboxViewEvent {
+    data object ServiceStared : SingboxViewEvent()
+    data object ServiceStartError : SingboxViewEvent()
+    data object ServiceErrorNoActiveConfig : SingboxViewEvent()
+}

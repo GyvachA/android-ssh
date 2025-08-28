@@ -4,6 +4,7 @@ import org.bouncycastle.asn1.pkcs.RSAPublicKey
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter
 import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder
+import org.bouncycastle.util.io.pem.PemObject
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.io.StringWriter
@@ -20,7 +21,7 @@ class SshKeyGenerator {
         }
     }
 
-    fun generateRsaKeyPair(keySize: Int = 2048): KeyPair {
+    fun generateRsaKeyPair(keySize: Int = 4096): KeyPair {
         val keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider())
         keyGen.initialize(keySize, SecureRandom.getInstanceStrong())
         return keyGen.generateKeyPair()
@@ -63,14 +64,16 @@ class SshKeyGenerator {
     fun privateKeyPem(keyPair: KeyPair, passphrase: String? = null): String {
         val sw = StringWriter()
         val pemWriter = JcaPEMWriter(sw)
+        val pkcs8Encoded = keyPair.private.encoded
         if (passphrase != null) {
             val encryptor = JcePEMEncryptorBuilder("AES-256-CFB")
                 .setProvider("BC")
                 .build(passphrase.toCharArray())
-            pemWriter.writeObject(keyPair.private, encryptor)
+            pemWriter.writeObject(PemObject("PRIVATE KEY", pkcs8Encoded), encryptor)
         } else {
-            pemWriter.writeObject(keyPair.private)
+            pemWriter.writeObject(PemObject("PRIVATE KEY", pkcs8Encoded))
         }
+
         pemWriter.close()
         return sw.toString()
     }

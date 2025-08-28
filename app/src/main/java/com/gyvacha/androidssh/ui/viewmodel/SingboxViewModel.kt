@@ -14,9 +14,12 @@ import com.gyvacha.androidssh.domain.usecase.SetActiveConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.StartSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.StopSingboxUseCase
 import com.gyvacha.androidssh.ui.state.SingboxUiState
+import com.gyvacha.androidssh.ui.utils.SingboxViewEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -36,6 +39,8 @@ class SingboxViewModel @Inject constructor(
     observeSingboxStateUseCase: ObserveSingboxStateUseCase,
     getConfigsUseCase: GetConfigsUseCase
 ) : ViewModel() {
+    private val _eventFlow = MutableSharedFlow<SingboxViewEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
     private val _uiState = MutableStateFlow(SingboxUiState())
     val uiState = _uiState.asStateFlow()
     val singboxState = observeSingboxStateUseCase()
@@ -83,8 +88,19 @@ class SingboxViewModel @Inject constructor(
 
     fun startSingbox() {
         viewModelScope.launch {
-            generateSingboxConfigFileUseCase()
-            startSingboxUseCase()
+            runCatching {
+                generateSingboxConfigFileUseCase()
+                startSingboxUseCase()
+            }
+                .onSuccess {
+                    _eventFlow.emit(SingboxViewEvent.ServiceStared)
+                }
+                .onFailure { e ->
+                    when (e) {
+                        is IllegalStateException -> _eventFlow.emit(SingboxViewEvent.ServiceErrorNoActiveConfig)
+                        else -> _eventFlow.emit(SingboxViewEvent.ServiceStartError)
+                    }
+                }
         }
     }
 

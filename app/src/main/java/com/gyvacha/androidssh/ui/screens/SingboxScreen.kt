@@ -1,6 +1,5 @@
 package com.gyvacha.androidssh.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -44,11 +43,11 @@ import com.gyvacha.androidssh.ui.components.RequestNotificationPermission
 import com.gyvacha.androidssh.ui.components.RequestVpnPermission
 import com.gyvacha.androidssh.ui.components.SingboxConfigCard
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
+import com.gyvacha.androidssh.ui.utils.SingboxViewEvent
 import com.gyvacha.androidssh.ui.viewmodel.SingboxViewModel
 import com.gyvacha.androidssh.utils.ClipboardService
 import com.gyvacha.androidssh.utils.LocalMessageNotifier
 import com.gyvacha.androidssh.utils.ParseProxyConfig.parseProxyUri
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
@@ -61,13 +60,30 @@ fun SingboxScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val configs by viewModel.configs.collectAsStateWithLifecycle()
     val clipboardScope = rememberCoroutineScope()
+    val messageNotifier = LocalMessageNotifier.current
     val clipboardService = ClipboardService(LocalClipboard.current)
     val snackbarManager = LocalMessageNotifier.current
     val singboxState by viewModel.singboxState.collectAsStateWithLifecycle()
 
+    val serviceErrorNoActiveConfig = stringResource(R.string.no_active_config)
+    val serviceStartError = stringResource(R.string.service_start_error)
+    val serviceStarted = stringResource(R.string.singbox_service_started)
+
     LaunchedEffect(Unit) {
-        viewModel.singboxLogs.collectLatest {
-            Log.d("SingboxService LOGS", it)
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                SingboxViewEvent.ServiceErrorNoActiveConfig -> messageNotifier?.showSnackbar(
+                    serviceErrorNoActiveConfig
+                )
+
+                SingboxViewEvent.ServiceStared -> messageNotifier?.showSnackbar(
+                    serviceStarted
+                )
+
+                SingboxViewEvent.ServiceStartError -> messageNotifier?.showSnackbar(
+                    serviceStartError
+                )
+            }
         }
     }
 

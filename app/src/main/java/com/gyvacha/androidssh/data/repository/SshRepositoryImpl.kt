@@ -2,11 +2,13 @@ package com.gyvacha.androidssh.data.repository
 
 import com.gyvacha.androidssh.domain.repository.SshRepository
 import com.gyvacha.androidssh.utils.SshShellSession
+import com.hierynomus.sshj.key.KeyAlgorithms
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import net.schmizz.sshj.DefaultConfig
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier
 import net.schmizz.sshj.userauth.password.PasswordFinder
@@ -25,9 +27,15 @@ class SshRepositoryImpl : SshRepository {
         publicKey: String,
         passphrase: String?
     ): Flow<String>? {
+        val config = DefaultConfig()
+        config.keyAlgorithms = listOf(
+            KeyAlgorithms.RSASHA256(),
+            KeyAlgorithms.RSASHA512(),
+            KeyAlgorithms.EdDSA25519()
+        )
         return withContext(Dispatchers.IO) {
             sshSession?.close()
-            val sshClient = SSHClient().apply {
+            val sshClient = SSHClient(config).apply {
                 connectTimeout = CONNECTION_TIMEOUT
                 timeout = CONNECTION_TIMEOUT
                 addHostKeyVerifier(PromiscuousVerifier())

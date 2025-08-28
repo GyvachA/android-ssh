@@ -88,4 +88,6 @@
     <string name="server_name">Имя сервера</string>
     <string name="add_proxy_config">Добавить конфиг</string>
     <string name="edit_proxy_config">Изменить конфиг</string>
+    <string name="no_active_config">Нет активного конфига</string>
+    <string name="service_start_error">Ошибка при запуске сервиса</string>
 </resources>

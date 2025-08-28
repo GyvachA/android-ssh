@@ -75,6 +75,7 @@ fun HostCard(
                                 text = { Text(stringResource(R.string.edit)) },
                                 onClick = {
                                     onEditHost(host)
+                                    expandedMenu = false
                                 }
                             )
                         }
@@ -83,6 +84,7 @@ fun HostCard(
                                 text = { Text(stringResource(R.string.delete)) },
                                 onClick = {
                                     onDeleteHost(host)
+                                    expandedMenu = false
                                 }
                             )
                         }
