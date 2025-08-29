@@ -8,6 +8,8 @@ import androidx.compose.ui.res.stringResource
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.ProxySpec
 import com.gyvacha.androidssh.ui.components.TextFieldCharacterCount
+import com.gyvacha.androidssh.ui.components.TextFieldErrors
+import com.gyvacha.androidssh.ui.components.getTextFieldErrorMessage
 
 @Composable
 fun TrojanConfigForm(
@@ -22,9 +24,10 @@ fun TrojanConfigForm(
         TextFieldCharacterCount(
             value = config.password,
             onValueChange = { onUpdate(config.copy(password = it)) },
-            label = { Text(stringResource(R.string.password)) },
+            label = { Text(stringResource(R.string.password) + "*") },
             maxLength = maxTextLength,
-            isError = config.password.isBlank()
+            isError = config.password.isBlank(),
+            errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR)
         )
 
         TextFieldCharacterCount(

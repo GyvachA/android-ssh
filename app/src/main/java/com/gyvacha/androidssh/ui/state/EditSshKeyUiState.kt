@@ -11,4 +11,13 @@ data class EditSshKeyUiState(
     val isPassphraseVisible: Boolean = false,
     val isPrivateKeyVisible: Boolean = false,
     val isSaveButtonEnabled: Boolean = false,
-)
+) {
+    fun validate(): EditSshKeyUiState {
+        val aliasValid = sshKey.alias.isNotBlank()
+        val privateKeyValid = sshKey.privateKey.isNotBlank()
+        val publicKeyValid = sshKey.publicKey.isNotBlank()
+        return copy(
+            isSaveButtonEnabled = aliasValid && privateKeyValid && publicKeyValid
+        )
+    }
+}

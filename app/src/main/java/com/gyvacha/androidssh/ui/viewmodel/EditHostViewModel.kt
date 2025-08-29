@@ -10,7 +10,6 @@ import com.gyvacha.androidssh.domain.model.SshKey
 import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
-import com.gyvacha.androidssh.ui.components.TextFieldErrors
 import com.gyvacha.androidssh.ui.state.EditHostUiState
 import com.gyvacha.androidssh.ui.utils.EditHostViewEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,7 +48,7 @@ class EditHostViewModel @Inject constructor(
                 hostWithSshKey = it.hostWithSshKey.copy(
                     sshKey = sshKey
                 ),
-            )
+            ).validate()
         }
     }
 
@@ -69,64 +68,56 @@ class EditHostViewModel @Inject constructor(
                         authType = newAuthType
                     )
                 ),
-            )
+            ).validate()
         }
     }
 
-    fun updateAlias(newAlias: String, isError: TextFieldErrors?) {
+    fun updateAlias(newAlias: String) {
         _uiState.update {
             it.copy(
                 hostWithSshKey = it.hostWithSshKey.copy(
                     host = it.hostWithSshKey.host.copy(
                         alias = newAlias
                     )
-                ),
-                isAliasError = isError
-            )
+                )
+            ).validate()
         }
-        updateIsFormValid()
     }
 
-    fun updateHostNameOrIp(newHostNameOrIp: String, isError: TextFieldErrors?) {
+    fun updateHostNameOrIp(newHostNameOrIp: String) {
         _uiState.update {
             it.copy(
                 hostWithSshKey = it.hostWithSshKey.copy(
                     host = it.hostWithSshKey.host.copy(
                         hostNameOrIp = newHostNameOrIp
                     )
-                ),
-                isHostNameOrIpError = isError
-            )
+                )
+            ).validate()
         }
-        updateIsFormValid()
     }
 
-    fun updatePort(newPort: String, isError: TextFieldErrors?) {
+    fun updatePort(newPort: String) {
         _uiState.update {
             it.copy(
                 hostWithSshKey = it.hostWithSshKey.copy(
                     host = it.hostWithSshKey.host.copy(
                         port = newPort.toInt()
                     )
-                ),
-                isPortError = isError
-            )
+                )
+            ).validate()
         }
-        updateIsFormValid()
     }
 
-    fun updateUserName(newUserName: String, isError: TextFieldErrors?) {
+    fun updateUserName(newUserName: String) {
         _uiState.update {
             it.copy(
                 hostWithSshKey = it.hostWithSshKey.copy(
                     host = it.hostWithSshKey.host.copy(
                         userName = newUserName
                     )
-                ),
-                isUserNameError = isError
-            )
+                )
+            ).validate()
         }
-        updateIsFormValid()
     }
 
     fun updatePassword(newPassword: String) {
@@ -137,9 +128,8 @@ class EditHostViewModel @Inject constructor(
                         password = newPassword
                     )
                 ),
-            )
+            ).validate()
         }
-        updateIsFormValid()
     }
 
     fun getHostWithSshKey(newHostId: Int) {
@@ -207,15 +197,7 @@ class EditHostViewModel @Inject constructor(
 
     private fun updateHostWithSshKey(newHostWithSshKey: HostWithSshKey) {
         _uiState.update {
-            it.copy(hostWithSshKey = newHostWithSshKey)
+            it.copy(hostWithSshKey = newHostWithSshKey).validate()
         }
-    }
-
-    private fun updateIsFormValid() {
-        val isFormValid = _uiState.value.hostWithSshKey.host.alias.isNotBlank() &&
-            _uiState.value.hostWithSshKey.host.port != 0 &&
-            _uiState.value.hostWithSshKey.host.hostNameOrIp.isNotBlank() &&
-            _uiState.value.hostWithSshKey.host.userName.isNotBlank()
-        _uiState.update { it.copy(isFormValid = isFormValid) }
     }
 }

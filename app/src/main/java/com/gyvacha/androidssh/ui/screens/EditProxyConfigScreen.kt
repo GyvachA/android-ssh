@@ -115,7 +115,7 @@ fun EditProxyConfigScreen(
                 },
                 isError = uiState.proxyConfig.alias.isBlank(),
                 errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR),
-                label = { Text(text = stringResource(R.string.alias)) },
+                label = { Text(text = stringResource(R.string.alias) + "*") },
                 maxLength = maxTextLength
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
@@ -127,7 +127,7 @@ fun EditProxyConfigScreen(
                 },
                 isError = uiState.proxyConfig.config.server.isBlank(),
                 errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR),
-                label = { Text(text = stringResource(R.string.address)) },
+                label = { Text(text = stringResource(R.string.address) + "*") },
                 maxLength = maxTextLength
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
@@ -139,7 +139,7 @@ fun EditProxyConfigScreen(
                     viewModel.updatePort(newPort)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text(text = stringResource(R.string.port)) },
+                label = { Text(text = stringResource(R.string.port) + "*") },
                 maxLength = 5,
                 isError = false
             )

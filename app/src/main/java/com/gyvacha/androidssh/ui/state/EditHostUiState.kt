@@ -3,7 +3,6 @@ package com.gyvacha.androidssh.ui.state
 import com.gyvacha.androidssh.domain.model.Host
 import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
-import com.gyvacha.androidssh.ui.components.TextFieldErrors
 
 data class EditHostUiState(
     val hostWithSshKey: HostWithSshKey = HostWithSshKey(
@@ -19,11 +18,16 @@ data class EditHostUiState(
         sshKey = null
     ),
     val isPasswordVisible: Boolean = false,
-    val isAliasError: TextFieldErrors? = null,
-    val isHostNameOrIpError: TextFieldErrors? = null,
-    val isPortError: TextFieldErrors? = null,
-    val isUserNameError: TextFieldErrors? = null,
     val isFormValid: Boolean = false,
     val isShowBottomSheet: Boolean = false,
     val isShowGenerateSshKeyDialog: Boolean = false,
-)
+) {
+    fun validate(): EditHostUiState {
+        val aliasValid = hostWithSshKey.host.alias.isNotBlank()
+        val serverValid = hostWithSshKey.host.hostNameOrIp.isNotBlank()
+        val userNameValid = hostWithSshKey.host.userName.isNotBlank()
+        return copy(
+            isFormValid = aliasValid && serverValid && userNameValid
+        )
+    }
+}

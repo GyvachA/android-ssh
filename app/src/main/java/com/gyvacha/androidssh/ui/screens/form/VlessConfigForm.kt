@@ -8,6 +8,8 @@ import androidx.compose.ui.res.stringResource
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.ProxySpec
 import com.gyvacha.androidssh.ui.components.TextFieldCharacterCount
+import com.gyvacha.androidssh.ui.components.TextFieldErrors
+import com.gyvacha.androidssh.ui.components.getTextFieldErrorMessage
 
 @Composable
 fun VlessConfigForm(
@@ -22,9 +24,10 @@ fun VlessConfigForm(
         TextFieldCharacterCount(
             value = config.uuid,
             onValueChange = { onUpdate(config.copy(uuid = it)) },
-            label = { Text(stringResource(R.string.uuid)) },
+            label = { Text(stringResource(R.string.uuid) + "*") },
             maxLength = maxTextLength,
-            isError = config.uuid.isBlank()
+            isError = config.uuid.isBlank(),
+            errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR)
         )
 
         TextFieldCharacterCount(

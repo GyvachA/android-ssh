@@ -30,9 +30,8 @@ class EditSshKeyViewModel @Inject constructor(
                 sshKey = it.sshKey.copy(
                     passphrase = newPassphrase
                 ),
-            )
+            ).validate()
         }
-        updateIsSaveButtonEnabled()
     }
 
     fun updateAlias(newAlias: String) {
@@ -41,9 +40,8 @@ class EditSshKeyViewModel @Inject constructor(
                 sshKey = it.sshKey.copy(
                     alias = newAlias
                 ),
-            )
+            ).validate()
         }
-        updateIsSaveButtonEnabled()
     }
 
     fun updatePublicKey(newPublicKey: String) {
@@ -52,9 +50,8 @@ class EditSshKeyViewModel @Inject constructor(
                 sshKey = it.sshKey.copy(
                     publicKey = newPublicKey
                 ),
-            )
+            ).validate()
         }
-        updateIsSaveButtonEnabled()
     }
 
     fun updatePrivateKey(newPrivateKey: String) {
@@ -63,9 +60,8 @@ class EditSshKeyViewModel @Inject constructor(
                 sshKey = it.sshKey.copy(
                     privateKey = newPrivateKey
                 ),
-            )
+            ).validate()
         }
-        updateIsSaveButtonEnabled()
     }
 
     fun updatePassphraseVisible(newState: Boolean) {
@@ -88,7 +84,7 @@ class EditSshKeyViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 sshKey = sshKey
-            )
+            ).validate()
         }
     }
 
@@ -108,17 +104,6 @@ class EditSshKeyViewModel @Inject constructor(
     fun insertSshKey() {
         viewModelScope.launch {
             insertSshKeyUseCase(_uiState.value.sshKey)
-        }
-    }
-
-    private fun updateIsSaveButtonEnabled() {
-        val isEnabled = _uiState.value.sshKey.privateKey.isNotBlank() &&
-            _uiState.value.sshKey.publicKey.isNotBlank() &&
-            _uiState.value.sshKey.alias.isNotBlank()
-        _uiState.update {
-            it.copy(
-                isSaveButtonEnabled = isEnabled
-            )
         }
     }
 }

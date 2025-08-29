@@ -132,13 +132,11 @@ fun EditHostScreen(
             TextFieldCharacterCount(
                 value = uiState.hostWithSshKey.host.alias,
                 onValueChange = {
-                    var isError: TextFieldErrors? = null
-                    if (it.isBlank()) isError = TextFieldErrors.STRING_BLANK_ERROR
-                    viewModel.updateAlias(it, isError)
+                    viewModel.updateAlias(it)
                 },
-                isError = uiState.isAliasError != null,
-                errorMessage = getTextFieldErrorMessage(uiState.isAliasError),
-                label = { Text(text = stringResource(R.string.alias)) },
+                isError = uiState.hostWithSshKey.host.alias.isBlank(),
+                errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR),
+                label = { Text(text = stringResource(R.string.alias) + "*") },
                 maxLength = maxTextLength
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
@@ -146,17 +144,11 @@ fun EditHostScreen(
                 value = uiState.hostWithSshKey.host.hostNameOrIp,
                 onValueChange = {
                     val newHostNameOrIp = it.trim()
-                    var isError: TextFieldErrors? = null
-                    if (newHostNameOrIp.length > maxTextLength) {
-                        isError =
-                            TextFieldErrors.STRING_LENGTH_ERROR
-                    }
-                    if (newHostNameOrIp.isBlank()) isError = TextFieldErrors.STRING_BLANK_ERROR
-                    viewModel.updateHostNameOrIp(newHostNameOrIp, isError)
+                    viewModel.updateHostNameOrIp(newHostNameOrIp)
                 },
-                isError = uiState.isHostNameOrIpError != null,
-                errorMessage = getTextFieldErrorMessage(uiState.isHostNameOrIpError),
-                label = { Text(text = stringResource(R.string.address)) },
+                isError = uiState.hostWithSshKey.host.hostNameOrIp.isBlank(),
+                errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR),
+                label = { Text(text = stringResource(R.string.address) + "*") },
                 maxLength = maxTextLength
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
@@ -165,39 +157,24 @@ fun EditHostScreen(
                 onValueChange = {
                     var newPort = it.filter { char -> char.isDigit() }
                     if (newPort.isBlank()) newPort = "0"
-                    var isError: TextFieldErrors? = null
-                    if (newPort.length > 5) isError = TextFieldErrors.STRING_LENGTH_ERROR
-                    viewModel.updatePort(
-                        newPort,
-                        isError
-                    )
+                    viewModel.updatePort(newPort)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text(text = stringResource(R.string.port)) },
+                label = { Text(text = stringResource(R.string.port) + "*") },
                 maxLength = 5,
-                isError = uiState.isPortError != null,
-                errorMessage = getTextFieldErrorMessage(uiState.isPortError)
+                isError = false,
+                errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR)
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
             TextFieldCharacterCount(
                 value = uiState.hostWithSshKey.host.userName,
                 onValueChange = {
-                    val newUsername = it
-                    var isError: TextFieldErrors? = null
-                    if (newUsername.length > maxTextLength) {
-                        isError =
-                            TextFieldErrors.STRING_LENGTH_ERROR
-                    }
-                    if (newUsername.isBlank()) isError = TextFieldErrors.STRING_BLANK_ERROR
-                    viewModel.updateUserName(
-                        newUsername,
-                        isError
-                    )
+                    viewModel.updateUserName(it)
                 },
-                label = { Text(text = stringResource(R.string.user_name)) },
+                label = { Text(text = stringResource(R.string.user_name) + "*") },
                 maxLength = maxTextLength,
-                isError = uiState.isUserNameError != null,
-                errorMessage = getTextFieldErrorMessage(uiState.isUserNameError)
+                isError = uiState.hostWithSshKey.host.userName.isBlank(),
+                errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR)
             )
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
             Text(stringResource(R.string.auth_method))

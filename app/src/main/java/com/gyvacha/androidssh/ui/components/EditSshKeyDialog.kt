@@ -41,7 +41,7 @@ fun EditSshKeyDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TextFieldCharacterCount(
-                    label = { Text(stringResource(R.string.alias)) },
+                    label = { Text(stringResource(R.string.alias) + "*") },
                     value = uiState.sshKey.alias,
                     onValueChange = {
                         viewModel.updateAlias(it)
@@ -55,7 +55,7 @@ fun EditSshKeyDialog(
                     }
                 )
                 TextFieldBase(
-                    label = { Text(stringResource(R.string.public_key)) },
+                    label = { Text(stringResource(R.string.public_key) + "*") },
                     value = uiState.sshKey.publicKey,
                     onValueChange = {
                         viewModel.updatePublicKey(it)
@@ -74,15 +74,11 @@ fun EditSshKeyDialog(
                 SecureTextField(
                     value = uiState.sshKey.privateKey,
                     onValueChange = viewModel::updatePrivateKey,
-                    label = stringResource(R.string.private_key),
+                    label = stringResource(R.string.private_key) + "*",
                     onVisibilityClick = { viewModel.updatePrivateKeyVisible(!uiState.isPrivateKeyVisible) },
                     isPasswordVisible = uiState.isPrivateKeyVisible,
                     isError = uiState.sshKey.privateKey.isBlank(),
-                    errorMessage = if (uiState.sshKey.privateKey.isBlank()) {
-                        stringResource(R.string.string_blank_error)
-                    } else {
-                        null
-                    }
+                    errorMessage = stringResource(R.string.string_blank_error)
                 )
                 SecureTextField(
                     value = uiState.sshKey.passphrase ?: "",

@@ -37,7 +37,7 @@ fun TextFieldCharacterCount(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                if (errorMessage != null) Text(text = errorMessage) else Spacer(modifier = Modifier)
+                if (errorMessage != null && isError) Text(text = errorMessage) else Spacer(modifier = Modifier)
                 Text(text = "${value.length} / $maxLength")
             }
         }
