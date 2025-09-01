@@ -1,63 +1,66 @@
 package com.gyvacha.androidssh.utils
 
+import com.jcraft.jsch.ChannelShell
+import com.jcraft.jsch.Session
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import net.schmizz.sshj.SSHClient
-import net.schmizz.sshj.connection.channel.direct.Session
 import java.io.BufferedReader
 import java.io.BufferedWriter
-import java.io.Closeable
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import java.nio.charset.StandardCharsets
 import kotlin.coroutines.coroutineContext
 
 class SshShellSession(
-    private val sshClient: SSHClient,
+    private val session: Session,
     private val prompt: String = "__CMD_DONE__${System.currentTimeMillis()}"
-) : Closeable {
-    private var session: Session
-    private var shell: Session.Shell
-    private var writer: BufferedWriter
-    private var reader: BufferedReader
-    var welcomeFlow: Flow<String>
+) : AutoCloseable {
+
+    private val channel: ChannelShell
+    private val writer: BufferedWriter
+    private val reader: BufferedReader
+
+    val welcomeFlow: Flow<String>
 
     init {
-        try {
-            session = sshClient.startSession().apply { allocateDefaultPTY() }
-            shell = session.startShell()
-            writer = BufferedWriter(OutputStreamWriter(shell.outputStream))
-            reader = BufferedReader(InputStreamReader(shell.inputStream))
-            welcomeFlow = flow {
-                val startTime = System.currentTimeMillis()
+        channel = session.openChannel("shell") as ChannelShell
+        val inputStream = channel.inputStream
+        val outputStream = channel.outputStream
 
-                while (System.currentTimeMillis() - startTime < WELCOME_OUTPUT_TIMEOUT) {
-                    coroutineContext.ensureActive()
-                    if (reader.ready()) {
-                        val line = reader.readLine() ?: break
-                        if (line.isNotBlank()) emit(line)
-                    } else {
-                        delay(OUTPUT_READER_DELAY)
+        reader = BufferedReader(InputStreamReader(inputStream, StandardCharsets.UTF_8))
+        writer = BufferedWriter(OutputStreamWriter(outputStream, StandardCharsets.UTF_8))
+
+        channel.connect(CONNECTION_TIMEOUT)
+
+        welcomeFlow = flow {
+            val startTime = System.currentTimeMillis()
+            while (System.currentTimeMillis() - startTime < WELCOME_TIMEOUT) {
+                coroutineContext.ensureActive()
+                if (reader.ready()) {
+                    val line = reader.readLine() ?: break
+                    if (line.isNotBlank()) {
+                        val output = stripAnsi(line).replace(prompt, "")
+                        emit(output)
                     }
+                } else {
+                    delay(OUTPUT_DELAY)
                 }
-            }.flowOn(Dispatchers.IO)
-        } catch (e: Exception) {
-            sshClient.disconnect()
-            error("Failed to initialize SSH shell session: $e")
-        }
+            }
+        }.flowOn(Dispatchers.IO)
     }
 
     fun executeCommand(command: String): Flow<String> = flow {
-        sendRaw(command)
+        sendRaw("$command; echo $prompt")
         var line: String?
         while (reader.readLine().also { line = it } != null) {
             coroutineContext.ensureActive()
-            val currentLine = stripAnsi(line ?: "")
-            if (currentLine.contains(prompt)) break
-            emit(currentLine)
+            val cleaned = stripAnsi(line ?: "")
+            if (cleaned.contains(prompt)) break
+            emit(cleaned)
         }
     }.flowOn(Dispatchers.IO)
 
@@ -67,18 +70,17 @@ class SshShellSession(
         writer.flush()
     }
 
-    override fun close() {
-        shell.close()
-        session.close()
-        sshClient.disconnect()
-    }
+    private fun stripAnsi(input: String): String =
+        input.replace(Regex("\u001B\\[[;?\\d]*[a-zA-Z]"), "")
 
-    private fun stripAnsi(input: String): String {
-        return input.replace(Regex("\u001B\\[[;?\\d]*[a-zA-Z]"), "")
+    override fun close() {
+        channel.disconnect()
+        session.disconnect()
     }
 
     companion object {
-        private const val WELCOME_OUTPUT_TIMEOUT = 1000L
-        private const val OUTPUT_READER_DELAY = 50L
+        private const val CONNECTION_TIMEOUT = 5000
+        private const val WELCOME_TIMEOUT = 1000L
+        private const val OUTPUT_DELAY = 50L
     }
 }

@@ -1,6 +1,5 @@
 package com.gyvacha.androidssh.data.repository
 
-import android.util.Log
 import com.gyvacha.androidssh.data.local.dao.SshKeyDao
 import com.gyvacha.androidssh.domain.model.SshKey
 import com.gyvacha.androidssh.domain.model.toDomain
@@ -48,20 +47,19 @@ class SshKeyRepositoryImpl @Inject constructor(
 
     override suspend fun generateSshKey(algorithm: SshKeyGenerator.Companion.Algorithm, passphrase: String?): SshKey {
         return withContext(Dispatchers.IO) {
+            val generator = SshKeyGenerator()
             val keyPair = when (algorithm) {
-                SshKeyGenerator.Companion.Algorithm.ALGORITHM_RSA -> {
-                    SshKeyGenerator().generateRsaKeyPair()
-                }
-                SshKeyGenerator.Companion.Algorithm.ALGORITHM_ED25519 -> {
-                    SshKeyGenerator().generateEd25519KeyPair()
-                }
+                SshKeyGenerator.Companion.Algorithm.ALGORITHM_RSA -> generator.generateRsaKeyPair()
+                SshKeyGenerator.Companion.Algorithm.ALGORITHM_ED25519 -> generator.generateEd25519KeyPair()
             }
-            Log.d("KEYS", SshKeyGenerator().convertToOpenSshPublicKey(keyPair))
-            Log.d("KEYS", SshKeyGenerator().privateKeyPem(keyPair, passphrase))
+
+            val publicKey = generator.convertToOpenSshPublicKey(keyPair)
+            val privateKey = generator.privateKeyPem(keyPair, passphrase)
+
             SshKey(
                 alias = "Generated key pair",
-                publicKey = SshKeyGenerator().convertToOpenSshPublicKey(keyPair),
-                privateKey = SshKeyGenerator().privateKeyPem(keyPair, passphrase)
+                publicKey = publicKey,
+                privateKey = privateKey
             )
         }
     }

@@ -1,6 +1,5 @@
 package com.gyvacha.androidssh.utils
 
-import android.util.Log
 import com.gyvacha.androidssh.data.local.entities.ProxyConfigEntity
 import com.gyvacha.androidssh.domain.model.ProxySpec
 import com.gyvacha.androidssh.domain.model.Transport
@@ -64,7 +63,6 @@ object SingboxConfigSerializer {
         }
 
         val jsonString = json.encodeToString(SingboxConfig.serializer(), singboxConfig)
-        Log.d("SingboxConfigSerializer", "Generated config:\n$jsonString")
         return jsonString
     }
 

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.gyvacha.androidssh.domain.model.Status
 import com.gyvacha.androidssh.domain.repository.SingboxRepository
@@ -40,7 +39,6 @@ class SingboxRepositoryImpl(
             startIntent = Intent(context, SingboxService::class.java).apply {
                 putExtra(SingboxService.EXTRA_CONFIG_PATH, configPath)
             }
-            Log.d("SingboxService", "startIntent $startIntent")
             startIntent?.let { ContextCompat.startForegroundService(context, it) }
         }
     }

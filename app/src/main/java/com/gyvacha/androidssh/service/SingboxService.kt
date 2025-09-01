@@ -95,19 +95,13 @@ class SingboxService : VpnService() {
                 override fun lookup(ctx: ExchangeContext?, network: String?, domain: String?) {
                     try {
                         if (domain != null && ctx != null) {
-                            Log.d("LocalDNSTransport", "Looking up domain: $domain")
-
                             val addresses = InetAddress.getAllByName(domain)
 
                             if (addresses.isNotEmpty()) {
                                 val result =
                                     addresses.mapNotNull { it.hostAddress }.joinToString("\n")
-
-                                Log.d("LocalDNSTransport", "Resolved $domain to: $result")
-
                                 ctx.success(result)
                             } else {
-                                Log.w("LocalDNSTransport", "No addresses found for $domain")
                                 ctx.errorCode(3)
                             }
                         }
@@ -464,7 +458,6 @@ class SingboxService : VpnService() {
             }
 
             val configContent = configFile.readText()
-            Log.d(SINGBOX_SERVICE_TAG, "Config content length: ${configContent.length}")
 
             if (configContent.isBlank()) {
                 Log.e(SINGBOX_SERVICE_TAG, "Config file is empty")

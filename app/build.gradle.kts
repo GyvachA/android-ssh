@@ -59,6 +59,7 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+            excludes += "META-INF/DEPENDENCIES"
         }
     }
     compileOptions {
@@ -88,7 +89,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.database.sqlcipher)
-    implementation(libs.hierynomus.sshj)
+    implementation(libs.jsch)
     implementation(libs.bouncycastle.crypto)
     implementation(libs.bouncycastle.pkix)
     implementation(libs.kotlinx.serialization.json)

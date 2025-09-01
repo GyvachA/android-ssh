@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gyvacha.androidssh.domain.model.SshAuthType
@@ -43,6 +44,7 @@ class TerminalViewModel @Inject constructor(
         viewModelScope.launch {
             executeCommandUseCase(command)
                 .catch { err ->
+                    Log.e(this.javaClass.simpleName, err.localizedMessage, err)
                     appendOutputLine("Error: ${err.localizedMessage}")
                 }
                 .collect { output ->
