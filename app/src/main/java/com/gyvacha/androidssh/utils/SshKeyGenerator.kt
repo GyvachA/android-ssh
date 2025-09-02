@@ -7,6 +7,7 @@ import org.bouncycastle.crypto.util.OpenSSHPrivateKeyUtil
 import org.bouncycastle.crypto.util.OpenSSHPublicKeyUtil
 import org.bouncycastle.crypto.util.PrivateKeyFactory
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter
+import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder
 import java.io.StringWriter
 import java.security.KeyPair
 import java.security.KeyPairGenerator
@@ -20,7 +21,6 @@ class SshKeyGenerator {
             ALGORITHM_ED25519("Ed25519")
         }
         private const val CHUNKED_SIZE = 70
-        private const val OFFSET = 70
     }
 
     fun generateRsaKeyPair(keySize: Int = 4096): KeyPair {
@@ -44,11 +44,10 @@ class SshKeyGenerator {
             }
 
             Algorithm.ALGORITHM_ED25519.title -> {
-                val privateParam =
-                    Ed25519PrivateKeyParameters(keyPair.private.encoded, OFFSET)
+                val privateParam = PrivateKeyFactory.createKey(keyPair.private.encoded) as Ed25519PrivateKeyParameters
                 val pubParam = privateParam.generatePublicKey()
                 val pubBytes = OpenSSHPublicKeyUtil.encodePublicKey(pubParam)
-                return "ssh-ed25519 " + Base64.getEncoder().encodeToString(pubBytes)
+                "ssh-ed25519 " + Base64.getEncoder().encodeToString(pubBytes)
             }
 
             else -> error("Unsupported key algorithm: ${keyPair.private.algorithm}")
@@ -63,7 +62,7 @@ class SshKeyGenerator {
                 if (passphrase != null) {
                     pemWriter.writeObject(
                         keyPair.private,
-                        org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder("AES-256-CFB")
+                        JcePEMEncryptorBuilder("AES-256-CFB")
                             .setProvider("BC")
                             .build(passphrase.toCharArray())
                     )
@@ -87,7 +86,7 @@ class SshKeyGenerator {
                     val pemWriter = JcaPEMWriter(sw)
                     pemWriter.writeObject(
                         keyPair.private,
-                        org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder("AES-256-CFB")
+                        JcePEMEncryptorBuilder("AES-256-CFB")
                             .setProvider("BC")
                             .build(passphrase.toCharArray())
                     )

@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -17,6 +19,8 @@ detekt {
     autoCorrect = true
 }
 
+val localProps = gradleLocalProperties(rootDir, providers)
+
 android {
     namespace = "com.gyvacha.androidssh"
     compileSdk = 36
@@ -32,8 +36,23 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        ndk {
-            abiFilters += setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            isUniversalApk = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
+    }
+
+    signingConfigs {
+        create("github") {
+            storeFile = localProps["GITHUB_STORE_FILE"]?.let { rootProject.file(it) }
+            storePassword = localProps["GITHUB_STORE_PASSWORD"] as String?
+            keyAlias = localProps["GITHUB_KEY_ALIAS"] as String?
+            keyPassword = localProps["GITHUB_KEY_PASSWORD"] as String?
         }
     }
 
@@ -45,6 +64,11 @@ android {
             ndk {
                 debugSymbolLevel = "NONE"
             }
+        }
+
+        create("releaseGithub") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("github")
         }
 
         debug {
