@@ -28,33 +28,9 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateShowGenerateSshKeyDialog(newState: Boolean) {
-        _uiState.update {
-            it.copy(
-                isShowGenerateSshKeyDialog = newState
-            )
-        }
-    }
-
-    fun updateShowAddSshKeyDialog(newState: Boolean) {
-        _uiState.update {
-            it.copy(
-                isShowAddSshKeyDialog = newState
-            )
-        }
-    }
-
     fun deleteSshKey(sshKey: SshKey) {
         viewModelScope.launch {
             deleteSshKeyUseCase(sshKey)
-        }
-    }
-
-    fun updateEditSshKey(newSshKeyId: Int?) {
-        _uiState.update {
-            it.copy(
-                editSshKeyId = newSshKeyId
-            )
         }
     }
 }

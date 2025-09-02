@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gyvacha.androidssh.domain.model.SshKey
@@ -82,7 +83,8 @@ class GenerateSshKeyViewModel @Inject constructor(
                         sshKeyId = sshKeyId.toInt(),
                         alias = _uiState.value.sshKeyAlias,
                         publicKey = sshKey.publicKey,
-                        privateKey = sshKey.privateKey
+                        privateKey = sshKey.privateKey,
+                        passphrase = sshKey.passphrase
                     )
                 )
             }
@@ -90,6 +92,7 @@ class GenerateSshKeyViewModel @Inject constructor(
                     _eventFlow.emit(GenerateSshKeyViewEvent.SshKeyCreated)
                 }
                 .onFailure { err ->
+                    Log.e(this::class.simpleName, err.localizedMessage, err)
                     _eventFlow.emit(GenerateSshKeyViewEvent.SshKeyCreateFailure)
                 }
         }

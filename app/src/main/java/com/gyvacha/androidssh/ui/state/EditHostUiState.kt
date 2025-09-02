@@ -7,7 +7,7 @@ import com.gyvacha.androidssh.domain.model.SshAuthType
 data class EditHostUiState(
     val hostWithSshKey: HostWithSshKey = HostWithSshKey(
         host = Host(
-            hostId = -1,
+            hostId = 0,
             alias = "Host",
             hostNameOrIp = "",
             port = 22,

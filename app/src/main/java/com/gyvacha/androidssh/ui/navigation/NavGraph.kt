@@ -10,11 +10,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
+import com.gyvacha.androidssh.ui.components.EditSshKeyDialog
+import com.gyvacha.androidssh.ui.components.GenerateSshKeyDialog
 import com.gyvacha.androidssh.ui.screens.EditHostScreen
 import com.gyvacha.androidssh.ui.screens.EditProxyConfigScreen
 import com.gyvacha.androidssh.ui.screens.HostsScreen
@@ -88,6 +91,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
         navigation<AppNavigation.SettingsRoute>(startDestination = AppNavigation.SettingsRoute.Settings) {
             composable<AppNavigation.SettingsRoute.Settings> {
                 SettingsScreen(
+                    navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.label_settings),
                         canNavigateBack = navController.previousBackStackEntry != null,
@@ -131,6 +135,31 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                     proxyConfigId = proxyConfigId
                 )
             }
+        }
+        dialog<AppNavigation.EditSshKey> { backStackEntry ->
+            val sshKeyId = backStackEntry.toRoute<AppNavigation.EditSshKey>().sshKeyId
+            EditSshKeyDialog(
+                onSave = {
+                    navController.navigateUp()
+                },
+                onDismiss = {
+                    navController.navigateUp()
+                },
+                sshKeyId = sshKeyId
+            )
+        }
+        dialog<AppNavigation.GenerateSshKey> {
+            val parentEntry = navController.previousBackStackEntry
+            val savedStateHandle = parentEntry?.savedStateHandle
+            GenerateSshKeyDialog(
+                onSave = { sshKey ->
+                    savedStateHandle?.set("generated_ssh_key_id", sshKey.sshKeyId)
+                    navController.navigateUp()
+                },
+                onDismiss = {
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }

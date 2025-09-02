@@ -8,6 +8,7 @@ import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
 import com.gyvacha.androidssh.domain.model.SshKey
 import com.gyvacha.androidssh.domain.usecase.GetHostWithSshKeyUseCase
+import com.gyvacha.androidssh.domain.usecase.GetSshKeyUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertHostUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
 import com.gyvacha.androidssh.ui.state.EditHostUiState
@@ -25,7 +26,8 @@ import javax.inject.Inject
 class EditHostViewModel @Inject constructor(
     private val insertHostUseCase: InsertHostUseCase,
     private val updateHostUseCase: UpdateHostUseCase,
-    private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase
+    private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase,
+    private val getSshKeyUseCase: GetSshKeyUseCase
 ) : ViewModel() {
 
     private val _eventFlow = MutableSharedFlow<EditHostViewEvent>()
@@ -49,14 +51,6 @@ class EditHostViewModel @Inject constructor(
                     sshKey = sshKey
                 ),
             ).validate()
-        }
-    }
-
-    fun updateShowGenerateSshKeyDialog(newState: Boolean) {
-        _uiState.update {
-            it.copy(
-                isShowGenerateSshKeyDialog = newState
-            )
         }
     }
 
@@ -166,6 +160,13 @@ class EditHostViewModel @Inject constructor(
                     _eventFlow.emit(EditHostViewEvent.HostUpdated)
                     _eventFlow.emit(EditHostViewEvent.NavigateUp)
                 }
+        }
+    }
+
+    fun updateSshKeyWithId(sshKeyId: Int) {
+        viewModelScope.launch {
+            val sshKey = getSshKeyUseCase(sshKeyId)
+            updateSshKey(sshKey)
         }
     }
 

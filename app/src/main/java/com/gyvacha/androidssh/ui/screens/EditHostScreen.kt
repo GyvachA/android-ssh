@@ -31,13 +31,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.SshAuthType
 import com.gyvacha.androidssh.domain.model.SshKey
+import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 import com.gyvacha.androidssh.ui.components.BottomFabSaveActions
-import com.gyvacha.androidssh.ui.components.GenerateSshKeyDialog
 import com.gyvacha.androidssh.ui.components.SecureTextField
 import com.gyvacha.androidssh.ui.components.SshKeyCard
 import com.gyvacha.androidssh.ui.components.SshKeysBottomSheet
@@ -62,12 +64,25 @@ fun EditHostScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     val messageNotifier = LocalMessageNotifier.current
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val savedStateHandle = navBackStackEntry?.savedStateHandle
+    val isDialogOpen =
+        navBackStackEntry?.destination?.hasRoute<AppNavigation.GenerateSshKey>() == true
 
     val messageHostCreated = stringResource(R.string.host_added_succesfully)
     val messageSshKeyCreated = stringResource(R.string.ssh_key_created)
     val messageHostCreateError = stringResource(R.string.host_create_failure)
     val messageHostUpdated = stringResource(R.string.host_updated)
     val messageSshKeyCreateError = stringResource(R.string.ssh_key_create_failure)
+    LaunchedEffect(savedStateHandle) {
+        savedStateHandle?.getStateFlow<Int?>("generated_ssh_key_id", null)?.collect { key ->
+            key?.let {
+                viewModel.updateSshKeyWithId(it)
+                viewModel.updateShowBottomSheet(false)
+                savedStateHandle.remove<Int>("generated_ssh_key_id")
+            }
+        }
+    }
     LaunchedEffect(Unit) {
         if (hostId != null) {
             viewModel.getHostWithSshKey(hostId)
@@ -243,10 +258,12 @@ fun EditHostScreen(
             }
         }
 
-        if (uiState.isShowBottomSheet && !uiState.isShowGenerateSshKeyDialog) {
+        if (uiState.isShowBottomSheet && !isDialogOpen) {
             SshKeysBottomSheet(
                 onDismissRequest = { viewModel.updateShowBottomSheet(false) },
-                generateSshKeyClick = { viewModel.updateShowGenerateSshKeyDialog(true) }
+                generateSshKeyClick = {
+                    navController.navigate(AppNavigation.GenerateSshKey)
+                }
             ) { sshKey ->
                 SshKeyCard(
                     sshKey = sshKey,
@@ -258,17 +275,6 @@ fun EditHostScreen(
                     actionButtonDesc = stringResource(R.string.choose_ssh_key)
                 )
             }
-        }
-
-        if (uiState.isShowGenerateSshKeyDialog) {
-            GenerateSshKeyDialog(
-                onSave = { sshKey ->
-                    viewModel.updateShowGenerateSshKeyDialog(false)
-                    viewModel.updateShowBottomSheet(false)
-                    viewModel.updateSshKey(sshKey)
-                },
-                onDismiss = { viewModel.updateShowGenerateSshKeyDialog(false) }
-            )
         }
     }
 }

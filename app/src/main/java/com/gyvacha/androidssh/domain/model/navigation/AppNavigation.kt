@@ -40,4 +40,12 @@ sealed interface AppNavigation : NavigationTarget {
             val proxyConfigId: Long? = null
         ) : AppNavigation
     }
+
+    @Serializable
+    data class EditSshKey(
+        val sshKeyId: Int? = null
+    ) : AppNavigation
+
+    @Serializable
+    data object GenerateSshKey
 }
