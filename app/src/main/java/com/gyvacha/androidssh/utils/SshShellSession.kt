@@ -2,69 +2,55 @@ package com.gyvacha.androidssh.utils
 
 import com.jcraft.jsch.ChannelShell
 import com.jcraft.jsch.Session
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
-import kotlin.coroutines.coroutineContext
 
 class SshShellSession(
-    private val session: Session,
-    private val prompt: String = "__CMD_DONE__${System.currentTimeMillis()}"
+    private val session: Session
 ) : AutoCloseable {
 
-    private val channel: ChannelShell
+    private val channel: ChannelShell = session.openChannel("shell") as ChannelShell
     private val writer: BufferedWriter
     private val reader: BufferedReader
 
-    val welcomeFlow: Flow<String>
+    private val _outputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1000)
+    val outputFlow: SharedFlow<String> = _outputFlow.asSharedFlow()
 
     init {
-        channel = session.openChannel("shell") as ChannelShell
         val inputStream = channel.inputStream
         val outputStream = channel.outputStream
-
         reader = BufferedReader(InputStreamReader(inputStream, StandardCharsets.UTF_8))
         writer = BufferedWriter(OutputStreamWriter(outputStream, StandardCharsets.UTF_8))
-
         channel.connect(CONNECTION_TIMEOUT)
 
-        welcomeFlow = flow {
-            val startTime = System.currentTimeMillis()
-            while (System.currentTimeMillis() - startTime < WELCOME_TIMEOUT) {
-                coroutineContext.ensureActive()
+        CoroutineScope(Dispatchers.IO).launch {
+            while (isActive && !channel.isClosed) {
                 if (reader.ready()) {
                     val line = reader.readLine() ?: break
-                    if (line.isNotBlank()) {
-                        val output = stripAnsi(line).replace(prompt, "")
-                        emit(output)
+                    val cleaned = stripAnsi(line).trim()
+                    if (cleaned.isNotEmpty()) {
+                        _outputFlow.emit(cleaned)
                     }
                 } else {
                     delay(OUTPUT_DELAY)
                 }
             }
-        }.flowOn(Dispatchers.IO)
+        }
     }
 
-    fun executeCommand(command: String): Flow<String> = flow {
-        sendRaw("$command; echo $prompt")
-        var line: String?
-        while (reader.readLine().also { line = it } != null) {
-            coroutineContext.ensureActive()
-            val cleaned = stripAnsi(line ?: "")
-            if (cleaned.contains(prompt)) break
-            emit(cleaned)
-        }
-    }.flowOn(Dispatchers.IO)
-
-    private fun sendRaw(command: String) {
+    suspend fun executeCommand(command: String) = withContext(Dispatchers.IO) {
         writer.write(command)
         writer.write("\n")
         writer.flush()
@@ -80,7 +66,6 @@ class SshShellSession(
 
     companion object {
         private const val CONNECTION_TIMEOUT = 5000
-        private const val WELCOME_TIMEOUT = 1000L
         private const val OUTPUT_DELAY = 50L
     }
 }

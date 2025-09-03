@@ -1,6 +1,6 @@
 package com.gyvacha.androidssh.domain.repository
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface SshRepository {
     suspend fun connectViaKey(
@@ -10,8 +10,8 @@ interface SshRepository {
         privateKey: String,
         publicKey: String,
         passphrase: String?
-    ): Flow<String>?
-    suspend fun connectViaPwd(host: String, port: Int, username: String, password: String): Flow<String>?
+    ): SharedFlow<String>
+    suspend fun connectViaPwd(host: String, port: Int, username: String, password: String): SharedFlow<String>
     suspend fun disconnect()
-    fun executeCommand(command: String): Flow<String>
+    suspend fun executeCommand(command: String)
 }

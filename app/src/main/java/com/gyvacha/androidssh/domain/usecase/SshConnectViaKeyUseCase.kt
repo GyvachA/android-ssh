@@ -1,7 +1,7 @@
 package com.gyvacha.androidssh.domain.usecase
 
 import com.gyvacha.androidssh.domain.repository.SshRepository
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 
 class SshConnectViaKeyUseCase @Inject constructor(
@@ -14,7 +14,7 @@ class SshConnectViaKeyUseCase @Inject constructor(
         privateKey: String,
         publicKey: String,
         passphrase: String?
-    ): Flow<String>? {
+    ): SharedFlow<String> {
         return repository.connectViaKey(host, port, username, privateKey, publicKey, passphrase)
     }
 }

@@ -4,9 +4,7 @@ import com.gyvacha.androidssh.domain.repository.SshRepository
 import com.gyvacha.androidssh.utils.SshShellSession
 import com.jcraft.jsch.JSch
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.withContext
 import javax.inject.Singleton
 
@@ -22,7 +20,7 @@ class SshRepositoryImpl : SshRepository {
         privateKey: String,
         publicKey: String,
         passphrase: String?,
-    ): Flow<String>? = withContext(Dispatchers.IO) {
+    ): SharedFlow<String> = withContext(Dispatchers.IO) {
         sshSession?.close()
         val jsch = JSch()
         jsch.addIdentity(
@@ -37,7 +35,7 @@ class SshRepositoryImpl : SshRepository {
         session.connect(CONNECTION_TIMEOUT)
 
         sshSession = SshShellSession(session)
-        sshSession?.welcomeFlow
+        sshSession?.outputFlow ?: error("Ssh session didn't initialized")
     }
 
     override suspend fun connectViaPwd(
@@ -45,7 +43,7 @@ class SshRepositoryImpl : SshRepository {
         port: Int,
         username: String,
         password: String,
-    ): Flow<String>? = withContext(Dispatchers.IO) {
+    ): SharedFlow<String> = withContext(Dispatchers.IO) {
         sshSession?.close()
 
         val jsch = JSch()
@@ -55,7 +53,7 @@ class SshRepositoryImpl : SshRepository {
         session.connect(CONNECTION_TIMEOUT)
 
         sshSession = SshShellSession(session)
-        sshSession?.welcomeFlow
+        sshSession?.outputFlow ?: error("Ssh session didn't initialized")
     }
 
     override suspend fun disconnect() {
@@ -63,9 +61,9 @@ class SshRepositoryImpl : SshRepository {
         sshSession = null
     }
 
-    override fun executeCommand(command: String): Flow<String> = flow {
+    override suspend fun executeCommand(command: String) {
         val session = sshSession ?: error("SSH session not initialized")
-        emitAll(session.executeCommand(command))
+        session.executeCommand(command)
     }
 
     companion object {

@@ -13,7 +13,6 @@ import com.gyvacha.androidssh.ui.state.TerminalUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,13 +42,6 @@ class TerminalViewModel @Inject constructor(
         }
         viewModelScope.launch {
             executeCommandUseCase(command)
-                .catch { err ->
-                    Log.e(this.javaClass.simpleName, err.localizedMessage, err)
-                    appendOutputLine("Error: ${err.localizedMessage}")
-                }
-                .collect { output ->
-                    appendOutputLine(output)
-                }
         }
     }
 
@@ -67,7 +59,7 @@ class TerminalViewModel @Inject constructor(
             _uiState.update { it.copy(hostWithSshKey = hostWithSshKey) }
 
             runCatching {
-                val welcomeText = when (hostWithSshKey.host.authType) {
+                val outputFlow = when (hostWithSshKey.host.authType) {
                     SshAuthType.PASSWORD -> {
                         connectViaPwdUseCase(
                             hostWithSshKey.host.hostNameOrIp,
@@ -87,10 +79,8 @@ class TerminalViewModel @Inject constructor(
                         )
                     }
                 }
-                welcomeText?.catch { err ->
-                    appendOutputLine("Error: ${err.localizedMessage}")
-                }
-                    ?.collect { output ->
+                outputFlow
+                    .collect { output ->
                         appendOutputLine(output)
                     }
             }
