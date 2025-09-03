@@ -67,21 +67,22 @@ class GenerateSshKeyViewModel @Inject constructor(
 
     fun generateSshKey(onSaveSshKey: (SshKey) -> Unit = {}) {
         viewModelScope.launch {
+            val passphrase = _uiState.value.sshKeyPassphrase.ifBlank {
+                null
+            }
             runCatching {
                 val sshKey = generateSshKeyUseCase(
                     algorithm = SshKeyGenerator.Companion.Algorithm.entries.first {
                         it.title == _uiState.value.sshKeyAlgorithm
                     },
-                    passphrase = _uiState.value.sshKeyPassphrase.ifBlank {
-                        null
-                    }
+                    passphrase = passphrase
                 )
                     .copy(alias = _uiState.value.sshKeyAlias)
                 val sshKeyId = insertSshKeyUseCase(sshKey)
                 onSaveSshKey(
                     SshKey(
                         sshKeyId = sshKeyId.toInt(),
-                        alias = _uiState.value.sshKeyAlias,
+                        alias = sshKey.alias,
                         publicKey = sshKey.publicKey,
                         privateKey = sshKey.privateKey,
                         passphrase = sshKey.passphrase

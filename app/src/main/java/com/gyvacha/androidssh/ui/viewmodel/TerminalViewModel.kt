@@ -95,6 +95,7 @@ class TerminalViewModel @Inject constructor(
                     }
             }
                 .onFailure { err ->
+                    Log.e(this::class.simpleName, err.localizedMessage, err)
                     appendOutputLine("Error: ${err.localizedMessage}")
                 }
         }

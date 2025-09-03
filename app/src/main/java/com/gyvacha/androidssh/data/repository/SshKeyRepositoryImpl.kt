@@ -59,7 +59,8 @@ class SshKeyRepositoryImpl @Inject constructor(
             SshKey(
                 alias = "Generated key pair",
                 publicKey = publicKey,
-                privateKey = privateKey
+                privateKey = privateKey,
+                passphrase = passphrase
             )
         }
     }
