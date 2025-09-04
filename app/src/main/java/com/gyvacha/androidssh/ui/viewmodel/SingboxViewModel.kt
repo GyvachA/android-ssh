@@ -7,7 +7,6 @@ import com.gyvacha.androidssh.domain.usecase.DeleteConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.GenerateSingboxConfigFileUseCase
 import com.gyvacha.androidssh.domain.usecase.GetConfigsUseCase
 import com.gyvacha.androidssh.domain.usecase.InsertConfigUseCase
-import com.gyvacha.androidssh.domain.usecase.ObserveSingboxLogsUseCase
 import com.gyvacha.androidssh.domain.usecase.ObserveSingboxStateUseCase
 import com.gyvacha.androidssh.domain.usecase.PingActiveProxyUseCase
 import com.gyvacha.androidssh.domain.usecase.SetActiveConfigUseCase
@@ -35,7 +34,6 @@ class SingboxViewModel @Inject constructor(
     private val stopSingboxUseCase: StopSingboxUseCase,
     private val generateSingboxConfigFileUseCase: GenerateSingboxConfigFileUseCase,
     private val pingUseCase: PingActiveProxyUseCase,
-    observeSingboxLogsUseCase: ObserveSingboxLogsUseCase,
     observeSingboxStateUseCase: ObserveSingboxStateUseCase,
     getConfigsUseCase: GetConfigsUseCase
 ) : ViewModel() {
@@ -44,8 +42,6 @@ class SingboxViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SingboxUiState())
     val uiState = _uiState.asStateFlow()
     val singboxState = observeSingboxStateUseCase()
-    val singboxLogs = observeSingboxLogsUseCase()
-        .stateIn(viewModelScope, SharingStarted.Lazily, "")
     val configs = getConfigsUseCase()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
@@ -53,6 +49,14 @@ class SingboxViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 expandedTopAppBarMenu = newExpanded
+            )
+        }
+    }
+
+    fun updateIsLoading(newLoading: Boolean) {
+        _uiState.update {
+            it.copy(
+                isLoading = newLoading
             )
         }
     }
@@ -88,14 +92,17 @@ class SingboxViewModel @Inject constructor(
 
     fun startSingbox() {
         viewModelScope.launch {
+            updateIsLoading(true)
             runCatching {
                 generateSingboxConfigFileUseCase()
                 startSingboxUseCase()
             }
                 .onSuccess {
+                    updateIsLoading(false)
                     _eventFlow.emit(SingboxViewEvent.ServiceStared)
                 }
                 .onFailure { e ->
+                    updateIsLoading(false)
                     when (e) {
                         is IllegalStateException -> _eventFlow.emit(SingboxViewEvent.ServiceErrorNoActiveConfig)
                         else -> _eventFlow.emit(SingboxViewEvent.ServiceStartError)

@@ -7,5 +7,6 @@ data class SingboxUiState(
     val isNotificationPermissionGranted: Boolean = false,
     val isVPNPermissionGranted: Boolean = false,
     val requestPermission: Boolean = false,
-    val pingResult: PingResult = PingResult.Idle
+    val pingResult: PingResult = PingResult.Idle,
+    val isLoading: Boolean = false
 )

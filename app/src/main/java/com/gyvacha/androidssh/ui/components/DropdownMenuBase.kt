@@ -33,6 +33,7 @@ fun DropdownMenuBase(
     onMenuClick: () -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = MaterialTheme.shapes.small
@@ -49,7 +50,7 @@ fun DropdownMenuBase(
                 .fillMaxWidth()
                 .border(1.dp, borderColor, shape)
                 .clip(shape)
-                .clickable { onMenuClick() }
+                .clickable(enabled = enabled) { onMenuClick() }
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Row(

@@ -29,7 +29,8 @@ fun TerminalTextInput(
     inputValue: String,
     onValueChange: (String) -> Unit,
     onSend: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Surface(
         modifier = modifier.fillMaxWidth()
@@ -45,6 +46,7 @@ fun TerminalTextInput(
                 style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
             )
             TextFieldBase(
+                enabled = enabled,
                 value = inputValue,
                 onValueChange = onValueChange,
                 modifier = Modifier.fillMaxWidth().weight(1f),
@@ -59,6 +61,7 @@ fun TerminalTextInput(
                 shape = ShapeDefaults.ExtraLarge
             )
             IconButton(
+                enabled = enabled,
                 onClick = { onSend() }
             ) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.send))

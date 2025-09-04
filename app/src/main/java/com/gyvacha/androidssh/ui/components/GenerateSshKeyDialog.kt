@@ -2,7 +2,9 @@ package com.gyvacha.androidssh.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -10,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,6 +63,7 @@ fun GenerateSshKeyDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TextFieldCharacterCount(
+                    enabled = !uiState.isLoading,
                     label = { Text(stringResource(R.string.alias)) },
                     value = uiState.sshKeyAlias,
                     onValueChange = {
@@ -75,6 +79,7 @@ fun GenerateSshKeyDialog(
                     }
                 )
                 DropdownMenuBase(
+                    enabled = !uiState.isLoading,
                     selectedOption = uiState.sshKeyAlgorithm,
                     onDismiss = { viewModel.updateSshKeyAlgorithmMenuExpanded(false) },
                     expanded = uiState.sshKeyAlgorithmMenuExpanded,
@@ -92,6 +97,7 @@ fun GenerateSshKeyDialog(
                     }
                 }
                 SecureTextField(
+                    enabled = !uiState.isLoading,
                     value = uiState.sshKeyPassphrase,
                     onValueChange = viewModel::updateSshKeyPassphrase,
                     label = stringResource(R.string.password),
@@ -101,19 +107,28 @@ fun GenerateSshKeyDialog(
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
-                    viewModel.generateSshKey {
-                        onSave(it)
-                    }
-                },
-                enabled = uiState.saveButtonEnabled
-            ) {
-                Text(stringResource(R.string.save))
+            if (!uiState.isLoading) {
+                TextButton(
+                    onClick = {
+                        viewModel.generateSshKey {
+                            onSave(it)
+                        }
+                    },
+                    enabled = uiState.saveButtonEnabled
+                ) {
+                    Text(stringResource(R.string.save))
+                }
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.large_padding))
+                )
             }
         },
         dismissButton = {
-            TextButton(onClick = { onDismiss() }) {
+            TextButton(
+                onClick = { onDismiss() },
+                enabled = !uiState.isLoading
+            ) {
                 Text(stringResource(R.string.cancel))
             }
         },

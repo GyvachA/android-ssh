@@ -18,6 +18,7 @@ fun TextFieldCharacterCount(
     isError: Boolean,
     modifier: Modifier = Modifier,
     errorMessage: String? = null,
+    enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
     label:
     @Composable()
@@ -32,6 +33,7 @@ fun TextFieldCharacterCount(
         modifier = modifier.fillMaxWidth(),
         keyboardOptions = keyboardOptions,
         isError = isError,
+        enabled = enabled,
         supportingText = {
             Row(
                 modifier = Modifier.fillMaxWidth(),

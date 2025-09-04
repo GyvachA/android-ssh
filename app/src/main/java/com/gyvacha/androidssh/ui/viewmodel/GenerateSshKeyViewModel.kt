@@ -70,6 +70,7 @@ class GenerateSshKeyViewModel @Inject constructor(
             val passphrase = _uiState.value.sshKeyPassphrase.ifBlank {
                 null
             }
+            updateIsLoading(true)
             runCatching {
                 val sshKey = generateSshKeyUseCase(
                     algorithm = SshKeyGenerator.Companion.Algorithm.entries.first {
@@ -90,12 +91,20 @@ class GenerateSshKeyViewModel @Inject constructor(
                 )
             }
                 .onSuccess {
+                    updateIsLoading(false)
                     _eventFlow.emit(GenerateSshKeyViewEvent.SshKeyCreated)
                 }
                 .onFailure { err ->
                     Log.e(this::class.simpleName, err.localizedMessage, err)
+                    updateIsLoading(false)
                     _eventFlow.emit(GenerateSshKeyViewEvent.SshKeyCreateFailure)
                 }
+        }
+    }
+
+    private fun updateIsLoading(newLoading: Boolean) {
+        _uiState.update {
+            it.copy(isLoading = newLoading)
         }
     }
 }

@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontFamily
@@ -48,7 +50,8 @@ fun TerminalScreen(
             TerminalTextInput(
                 uiState.terminalInput,
                 onValueChange = viewModel::updateTerminalInput,
-                onSend = viewModel::sendCommand
+                onSend = viewModel::sendCommand,
+                enabled = !uiState.isLoading,
             )
         },
         topBar = {
@@ -57,8 +60,12 @@ fun TerminalScreen(
     ) { padding ->
         Column(
             modifier = Modifier.padding(padding)
-                .fillMaxSize()
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (uiState.isLoading) {
+                CircularProgressIndicator()
+            }
             Box(
                 modifier = Modifier.fillMaxWidth()
                     .weight(1f)

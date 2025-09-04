@@ -27,10 +27,12 @@ fun SecureTextField(
     isPasswordVisible: Boolean = false,
     isError: Boolean = false,
     errorMessage: String? = null,
+    enabled: Boolean = true,
 ) {
     TextFieldBase(
         value = value,
         onValueChange = onValueChange,
+        enabled = enabled,
         modifier = modifier.fillMaxWidth(),
         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions.Default.copy(

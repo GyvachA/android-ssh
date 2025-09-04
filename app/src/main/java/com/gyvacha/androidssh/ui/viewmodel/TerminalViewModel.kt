@@ -53,12 +53,20 @@ class TerminalViewModel @Inject constructor(
         }
     }
 
+    private fun updateIsLoading(newLoading: Boolean) {
+        _uiState.update {
+            it.copy(
+                isLoading = newLoading
+            )
+        }
+    }
+
     fun initSshConnect(hostId: Int) {
         viewModelScope.launch {
-            val hostWithSshKey = getHostWithSshKeyUseCase(hostId)
-            _uiState.update { it.copy(hostWithSshKey = hostWithSshKey) }
-
             runCatching {
+                updateIsLoading(true)
+                val hostWithSshKey = getHostWithSshKeyUseCase(hostId)
+                _uiState.update { it.copy(hostWithSshKey = hostWithSshKey) }
                 val outputFlow = when (hostWithSshKey.host.authType) {
                     SshAuthType.PASSWORD -> {
                         connectViaPwdUseCase(
@@ -79,13 +87,18 @@ class TerminalViewModel @Inject constructor(
                         )
                     }
                 }
+                updateIsLoading(false)
                 outputFlow
                     .collect { output ->
                         appendOutputLine(output)
                     }
             }
+                .onSuccess {
+                    updateIsLoading(false)
+                }
                 .onFailure { err ->
                     Log.e(this::class.simpleName, err.localizedMessage, err)
+                    updateIsLoading(false)
                     appendOutputLine("Error: ${err.localizedMessage}")
                 }
         }

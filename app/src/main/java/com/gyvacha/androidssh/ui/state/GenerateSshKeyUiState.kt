@@ -8,5 +8,6 @@ data class GenerateSshKeyUiState(
     val sshKeyAlgorithmMenuExpanded: Boolean = false,
     val saveButtonEnabled: Boolean = true,
     val sshKeyPassphrase: String = "",
-    val isPassphraseVisible: Boolean = false
+    val isPassphraseVisible: Boolean = false,
+    val isLoading: Boolean = false
 )

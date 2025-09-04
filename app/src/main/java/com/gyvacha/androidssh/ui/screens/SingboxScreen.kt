@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -213,14 +214,17 @@ fun SingboxScreen(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ) {
                         when (singboxState) {
-                            Status.Stopped, Status.Stopping -> Icon(
+                            Status.Stopped -> Icon(
                                 Icons.Filled.PlayArrow,
                                 contentDescription = stringResource(R.string.start_singbox)
                             )
-                            Status.Started, Status.Starting, Status.Restarting -> Icon(
+                            Status.Started -> Icon(
                                 Icons.Filled.Stop,
                                 contentDescription = stringResource(R.string.stop_singbox)
                             )
+                            Status.Stopping, Status.Restarting, Status.Starting -> {
+                                CircularProgressIndicator()
+                            }
                         }
                     }
                 }
