@@ -5,9 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,15 +32,14 @@ fun TerminalScreen(
     modifier: Modifier = Modifier,
     viewModel: TerminalViewModel = hiltViewModel()
 ) {
-    val outputListState = rememberLazyListState()
+    val outputScrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.initSshConnect(hostId)
     }
-    LaunchedEffect(uiState.terminalOutput.size) {
-        val lastIndex = uiState.terminalOutput.lastIndex
-        if (lastIndex > -1) outputListState.animateScrollToItem(uiState.terminalOutput.lastIndex)
+    LaunchedEffect(uiState.terminalOutput) {
+        outputScrollState.animateScrollTo(outputScrollState.maxValue)
     }
 
     Scaffold(
@@ -65,17 +63,12 @@ fun TerminalScreen(
                 modifier = Modifier.fillMaxWidth()
                     .weight(1f)
                     .padding(dimensionResource(R.dimen.medium_padding))
+                    .verticalScroll(outputScrollState)
             ) {
-                LazyColumn(
-                    state = outputListState
-                ) {
-                    items(uiState.terminalOutput) { output ->
-                        Text(
-                            text = output,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
-                        )
-                    }
-                }
+                Text(
+                    text = uiState.terminalOutput,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
+                )
             }
         }
     }

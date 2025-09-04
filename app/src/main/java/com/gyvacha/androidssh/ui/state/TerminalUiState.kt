@@ -5,7 +5,7 @@ import com.gyvacha.androidssh.domain.model.HostWithSshKey
 import com.gyvacha.androidssh.domain.model.SshAuthType
 
 data class TerminalUiState(
-    val terminalOutput: List<String> = emptyList(),
+    val terminalOutput: String = "",
     val terminalInput: String = "",
     val hostWithSshKey: HostWithSshKey = HostWithSshKey(
         sshKey = null,

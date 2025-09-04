@@ -36,10 +36,13 @@ class SshShellSession(
         channel.connect(CONNECTION_TIMEOUT)
 
         CoroutineScope(Dispatchers.IO).launch {
+            val buffer = CharArray(BUFFER_SIZE)
             while (isActive && !channel.isClosed) {
                 if (reader.ready()) {
-                    val line = reader.readLine() ?: break
-                    val cleaned = stripAnsi(line).trim()
+                    val count = reader.read(buffer)
+                    if (count == -1) break
+                    val chunk = String(buffer, 0, count)
+                    val cleaned = stripAnsi(chunk)
                     if (cleaned.isNotEmpty()) {
                         _outputFlow.emit(cleaned)
                     }
@@ -67,5 +70,6 @@ class SshShellSession(
     companion object {
         private const val CONNECTION_TIMEOUT = 5000
         private const val OUTPUT_DELAY = 50L
+        private const val BUFFER_SIZE = 8192
     }
 }
