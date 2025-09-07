@@ -1,6 +1,7 @@
 package com.gyvacha.androidssh.ui.viewmodel
 
 import android.util.Log
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gyvacha.androidssh.domain.model.SshAuthType
@@ -10,6 +11,7 @@ import com.gyvacha.androidssh.domain.usecase.SshConnectViaPwdUseCase
 import com.gyvacha.androidssh.domain.usecase.SshDisconnectUseCase
 import com.gyvacha.androidssh.domain.usecase.SshExecuteCommandUseCase
 import com.gyvacha.androidssh.ui.state.TerminalUiState
+import com.gyvacha.androidssh.utils.parseAnsiToAnnotatedString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +27,7 @@ class TerminalViewModel @Inject constructor(
     private val connectViaSshKeyUseCase: SshConnectViaKeyUseCase,
     private val disconnectUseCase: SshDisconnectUseCase
 ) : ViewModel() {
-
+    private val outputBuilder = AnnotatedString.Builder()
     private val _uiState = MutableStateFlow(TerminalUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -46,10 +48,9 @@ class TerminalViewModel @Inject constructor(
     }
 
     private fun appendOutputLine(line: String) {
+        outputBuilder.append(parseAnsiToAnnotatedString(line))
         _uiState.update {
-            it.copy(
-                terminalOutput = it.terminalOutput + line
-            )
+            it.copy(terminalOutput = outputBuilder.toAnnotatedString())
         }
     }
 

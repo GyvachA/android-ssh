@@ -42,7 +42,7 @@ class SshShellSession(
                     val count = reader.read(buffer)
                     if (count == -1) break
                     val chunk = String(buffer, 0, count)
-                    val cleaned = stripAnsi(chunk)
+                    val cleaned = chunk
                     if (cleaned.isNotEmpty()) {
                         _outputFlow.emit(cleaned)
                     }
@@ -58,9 +58,6 @@ class SshShellSession(
         writer.write("\n")
         writer.flush()
     }
-
-    private fun stripAnsi(input: String): String =
-        input.replace(Regex("\u001B\\[[;?\\d]*[a-zA-Z]"), "")
 
     override fun close() {
         channel.disconnect()
