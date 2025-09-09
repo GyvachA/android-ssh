@@ -341,7 +341,6 @@ class SingboxService : VpnService() {
             notification?.let { notif ->
                 scope.launch {
                     Log.d(SINGBOX_SERVICE_TAG, "Notification: ${notif.title} - ${notif.body}")
-//                    sendLog("Notification: ${notif.title} - ${notif.body}")
                 }
             }
         }
@@ -383,7 +382,6 @@ class SingboxService : VpnService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Log.d(SINGBOX_SERVICE_TAG, "onStartCommand: starting foreground service")
 
         when (intent?.action) {
             ACTION_STOP -> {
@@ -515,14 +513,12 @@ class SingboxService : VpnService() {
             val commandServer = CommandServer(commandServerHandler, COMMAND_SERVER_MAX_LINES)
             commandServer.start()
             this.commandServer = commandServer
-            Log.d(SINGBOX_SERVICE_TAG, "Command server started in ${workDir.absolutePath}")
         } catch (e: Exception) {
             Log.e(SINGBOX_SERVICE_TAG, "Error starting command server", e)
         }
     }
 
     private suspend fun restartService() {
-        Log.d(SINGBOX_SERVICE_TAG, "Restarting service")
         _serviceStatus.update { Status.Restarting }
 
         boxService?.let { service ->
@@ -541,7 +537,6 @@ class SingboxService : VpnService() {
     }
 
     private suspend fun stopService() {
-        Log.d(SINGBOX_SERVICE_TAG, "Stopping service")
         _serviceStatus.update { Status.Stopping }
 
         boxService?.let { service ->
@@ -584,7 +579,6 @@ class SingboxService : VpnService() {
                     putExtra(EXTRA_LOG_LINE, log)
                 }
                 sendBroadcast(intent)
-                Log.d(SINGBOX_SERVICE_TAG, log)
             } catch (e: Exception) {
                 Log.e(SINGBOX_SERVICE_TAG, "Failed to send broadcast", e)
             }
@@ -598,6 +592,8 @@ class SingboxService : VpnService() {
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             description = "Used for Singbox foreground service"
+            setSound(null, null)
+            enableVibration(false)
             setShowBadge(false)
         }
         val manager = getSystemService(NotificationManager::class.java)
@@ -633,6 +629,7 @@ class SingboxService : VpnService() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setOngoing(true)
+            .setSilent(true)
             .setShowWhen(false)
             .addAction(android.R.drawable.ic_media_pause, "Stop", stopPendingIntent)
             .addAction(android.R.drawable.ic_media_play, "Restart", restartPendingIntent)
@@ -646,7 +643,6 @@ class SingboxService : VpnService() {
     }
 
     override fun onDestroy() {
-        Log.d(SINGBOX_SERVICE_TAG, "Service destroying")
         scope.launch {
             stopService()
         }
@@ -655,7 +651,6 @@ class SingboxService : VpnService() {
     }
 
     override fun onRevoke() {
-        Log.d(SINGBOX_SERVICE_TAG, "VPN permission revoked")
         scope.launch {
             stopService()
         }
