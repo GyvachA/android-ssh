@@ -1,7 +1,9 @@
 package com.gyvacha.androidssh
 
 import android.app.Application
+import android.util.Log
 import com.google.crypto.tink.aead.AeadConfig
+import com.yandex.mobile.ads.common.MobileAds
 import dagger.hilt.android.HiltAndroidApp
 import io.nekohasekai.libbox.Libbox
 import io.nekohasekai.libbox.SetupOptions
@@ -33,5 +35,13 @@ class SshApp : Application() {
             }
         )
         Libbox.redirectStderr(File(workingDir, "stderr.log").path)
+
+        // Yandex mobileads
+        MobileAds.initialize(
+            context = this,
+            initializationListener = {
+                Log.d("YandexAds", "Initialized")
+            }
+        )
     }
 }

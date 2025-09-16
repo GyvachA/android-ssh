@@ -65,4 +65,5 @@
     <string name="edit_proxy_config">Edit config</string>
     <string name="no_active_config">No active config</string>
     <string name="service_start_error">Error while starting service</string>
+    <string name="more">More</string>
 </resources>

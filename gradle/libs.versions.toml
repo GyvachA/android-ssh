@@ -26,6 +26,7 @@ detekt-compose = "0.4.27"
 detekt-formatting = "1.23.8"
 barcode-scanning = "17.3.0"
 camerax = "1.4.2"
+yandex-ads = "7.15.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -65,6 +66,7 @@ camera = { group = "androidx.camera", name = "camera-camera2", version.ref = "ca
 camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
 jsch = { group = "com.github.mwiede", name = "jsch", version.ref = "jsch" }
+yandex-ads = { group = "com.yandex.android", name = "mobileads", version.ref = "yandex-ads" }
 
 
 [plugins]

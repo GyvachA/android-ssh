@@ -90,4 +90,5 @@
     <string name="edit_proxy_config">Изменить конфиг</string>
     <string name="no_active_config">Нет активного конфига</string>
     <string name="service_start_error">Ошибка при запуске сервиса</string>
+    <string name="more">Подробнее</string>
 </resources>

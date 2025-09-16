@@ -29,9 +29,10 @@ android {
         applicationId = "com.gyvacha.androidssh"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
-
+        val yandexAdUnitId = localProps["YANDEX_AD_UNIT_ID"] ?: ""
+        buildConfigField("String", "YANDEX_AD_UNIT_ID", "\"${yandexAdUnitId}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -40,7 +41,7 @@ android {
 
     splits {
         abi {
-            isEnable = true
+            isEnable = false
             isUniversalApk = true
             reset()
             include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
@@ -92,6 +93,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -124,6 +126,7 @@ dependencies {
     implementation(libs.camera.lifecycle)
     implementation(libs.camera.view)
     implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.yandex.ads)
     ksp(libs.room.compiler)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
