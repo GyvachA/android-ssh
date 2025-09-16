@@ -31,8 +31,10 @@ android {
         targetSdk = 36
         versionCode = 2
         versionName = "1.0"
-        val yandexAdUnitId = localProps["YANDEX_AD_UNIT_ID"] ?: ""
-        buildConfigField("String", "YANDEX_AD_UNIT_ID", "\"${yandexAdUnitId}\"")
+        val yandexAdFeedId = localProps["YANDEX_AD_FEED_ID"] ?: ""
+        buildConfigField("String", "YANDEX_AD_FEED_ID", "\"${yandexAdFeedId}\"")
+        val yandexAdFeedIdSecond = localProps["YANDEX_AD_FEED_ID_SECOND"] ?: ""
+        buildConfigField("String", "YANDEX_AD_FEED_ID_SECOND", "\"${yandexAdFeedIdSecond}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -127,6 +129,7 @@ dependencies {
     implementation(libs.camera.view)
     implementation(libs.mlkit.barcode.scanning)
     implementation(libs.yandex.ads)
+    implementation(libs.androidx.recyclerview)
     ksp(libs.room.compiler)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)

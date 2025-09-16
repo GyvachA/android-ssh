@@ -28,9 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.gyvacha.androidssh.BuildConfig
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.PingResult
 import com.gyvacha.androidssh.domain.model.ProxyConfig
@@ -39,12 +41,14 @@ import com.gyvacha.androidssh.domain.model.ProxyType
 import com.gyvacha.androidssh.domain.model.Status
 import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
+import com.gyvacha.androidssh.ui.components.FeedAdList
 import com.gyvacha.androidssh.ui.components.MenuWithIcon
 import com.gyvacha.androidssh.ui.components.RequestNotificationPermission
 import com.gyvacha.androidssh.ui.components.RequestVpnPermission
 import com.gyvacha.androidssh.ui.components.SingboxConfigCard
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
 import com.gyvacha.androidssh.ui.utils.SingboxViewEvent
+import com.gyvacha.androidssh.ui.viewmodel.FeedAdsViewModel
 import com.gyvacha.androidssh.ui.viewmodel.SingboxViewModel
 import com.gyvacha.androidssh.utils.ClipboardService
 import com.gyvacha.androidssh.utils.LocalMessageNotifier
@@ -56,7 +60,8 @@ fun SingboxScreen(
     topAppBarParams: TopAppBarParams,
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: SingboxViewModel = hiltViewModel()
+    viewModel: SingboxViewModel = hiltViewModel(),
+    feedAdsViewModel: FeedAdsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val configs by viewModel.configs.collectAsStateWithLifecycle()
@@ -65,12 +70,14 @@ fun SingboxScreen(
     val clipboardService = ClipboardService(LocalClipboard.current)
     val snackbarManager = LocalMessageNotifier.current
     val singboxState by viewModel.singboxState.collectAsStateWithLifecycle()
+    val feedAd by feedAdsViewModel.feedAd.collectAsStateWithLifecycle()
 
     val serviceErrorNoActiveConfig = stringResource(R.string.no_active_config)
     val serviceStartError = stringResource(R.string.service_start_error)
     val serviceStarted = stringResource(R.string.singbox_service_started)
 
     LaunchedEffect(Unit) {
+        feedAdsViewModel.loadFeed(BuildConfig.YANDEX_AD_FEED_ID_SECOND)
         viewModel.eventFlow.collect { event ->
             when (event) {
                 SingboxViewEvent.ServiceErrorNoActiveConfig -> messageNotifier?.showSnackbar(
@@ -194,7 +201,7 @@ fun SingboxScreen(
                     }
                     Text(
                         text = when (uiState.pingResult) {
-                            is PingResult.Idle -> "Idle"
+                            is PingResult.Idle -> ""
                             is PingResult.Success -> "${(uiState.pingResult as PingResult.Success).ms} ms"
                             is PingResult.Failure -> "Error: ${(uiState.pingResult as PingResult.Failure).error}"
                         },
@@ -235,6 +242,18 @@ fun SingboxScreen(
         LazyColumn(
             modifier = Modifier.padding(padding)
         ) {
+            if (configs.isEmpty()) {
+                item {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.empty_yet),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
+            }
             items(configs) { config ->
                 SingboxConfigCard(
                     config = config,
@@ -248,6 +267,9 @@ fun SingboxScreen(
                         navController.navigate(AppNavigation.XrayRoute.EditProxyConfig(it))
                     }
                 )
+            }
+            item {
+                FeedAdList(feedAd = feedAd)
             }
         }
     }
