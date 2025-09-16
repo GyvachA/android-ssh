@@ -43,7 +43,13 @@ class TerminalViewModel @Inject constructor(
             it.copy(terminalInput = "")
         }
         viewModelScope.launch {
-            executeCommandUseCase(command)
+            runCatching {
+                executeCommandUseCase(command)
+            }
+                .onFailure { err ->
+                    Log.e(this@TerminalViewModel::class.simpleName, err.localizedMessage, err)
+                    err.localizedMessage?.let { appendOutputLine(it + "\n") }
+                }
         }
     }
 

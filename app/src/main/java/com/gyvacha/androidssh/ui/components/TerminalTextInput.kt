@@ -61,7 +61,7 @@ fun TerminalTextInput(
                 shape = ShapeDefaults.ExtraLarge
             )
             IconButton(
-                enabled = enabled,
+                enabled = enabled && inputValue.isNotEmpty(),
                 onClick = { onSend() }
             ) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.send))
