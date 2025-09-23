@@ -19,5 +19,6 @@ data class TerminalUiState(
             userName = "",
             authType = SshAuthType.SSH_KEY
         )
-    )
+    ),
+    val pendingHostKey: String? = null
 )

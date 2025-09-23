@@ -27,7 +27,7 @@ class SingboxRepositoryImpl(
     private var logReceiver: BroadcastReceiver? = null
     private var startIntent: Intent? = null
 
-    override suspend fun start(configPath: String) {
+    override suspend fun start(content: String?) {
         return withContext(Dispatchers.IO) {
             if (serviceStatus.value == Status.Started ||
                 serviceStatus.value == Status.Starting ||
@@ -37,7 +37,7 @@ class SingboxRepositoryImpl(
             }
             registerLogReceiver()
             startIntent = Intent(context, SingboxService::class.java).apply {
-                putExtra(SingboxService.EXTRA_CONFIG_PATH, configPath)
+                putExtra(SingboxService.EXTRA_CONFIG_PATH, content)
             }
             startIntent?.let { ContextCompat.startForegroundService(context, it) }
         }

@@ -447,18 +447,10 @@ class SingboxService : VpnService() {
             }
 
             val configFileManager = SingboxConfigFileManager(this@SingboxService)
-            val configFile = configFileManager.getFile()
+            val configContent = configFileManager.readFromFile()
 
-            if (!configFile.exists() || !configFile.canRead()) {
-                Log.e(SINGBOX_SERVICE_TAG, "Config file not accessible")
-                stopService()
-                return@withContext
-            }
-
-            val configContent = configFile.readText()
-
-            if (configContent.isBlank()) {
-                Log.e(SINGBOX_SERVICE_TAG, "Config file is empty")
+            if (configContent.isNullOrBlank()) {
+                Log.e(SINGBOX_SERVICE_TAG, "Encrypted config is missing or empty")
                 stopService()
                 return@withContext
             }

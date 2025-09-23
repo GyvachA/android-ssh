@@ -1,16 +1,25 @@
 package com.gyvacha.androidssh.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -19,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
+import com.gyvacha.androidssh.ui.components.KnownHostCard
 import com.gyvacha.androidssh.ui.components.SettingsCard
 import com.gyvacha.androidssh.ui.components.SshKeyCard
 import com.gyvacha.androidssh.ui.components.SshKeysBottomSheet
@@ -59,6 +69,12 @@ fun SettingsScreen(
                     viewModel.updateSshKeyExtended(true)
                 }
             )
+            SettingsCard(
+                title = stringResource(R.string.known_hosts),
+                onCardClick = {
+                    viewModel.updateKnownHostExtended(true)
+                }
+            )
         }
 
         if (uiState.extendedSshKeys && !isDialogOpen) {
@@ -82,6 +98,43 @@ fun SettingsScreen(
                     isShowMenu = true,
                     onDeleteSshKey = { viewModel.deleteSshKey(sshKey) }
                 )
+            }
+        }
+
+        if (uiState.extendedKnownHosts) {
+            val sheetState = rememberModalBottomSheetState()
+
+            ModalBottomSheet(
+                sheetState = sheetState,
+                onDismissRequest = { viewModel.updateKnownHostExtended(false) }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.medium_padding))
+                ) {
+                    LazyColumn {
+                        if (uiState.knownHosts.isEmpty()) {
+                            item {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.empty_yet),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.labelLarge.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                )
+                            }
+                        }
+                        items(uiState.knownHosts.toList()) { (host, fingerprint) ->
+                            KnownHostCard(
+                                host = host,
+                                fingerprint = fingerprint,
+                                onDeleteKnownHost = { viewModel.deleteKnownHost(host) }
+                            )
+                        }
+                    }
+                }
             }
         }
     }

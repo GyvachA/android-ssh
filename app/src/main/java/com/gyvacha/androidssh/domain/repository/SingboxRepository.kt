@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface SingboxRepository {
     val logs: Flow<String>
     val serviceStatus: StateFlow<Status>
-    suspend fun start(configPath: String)
+    suspend fun start(content: String?)
     suspend fun stop()
 }

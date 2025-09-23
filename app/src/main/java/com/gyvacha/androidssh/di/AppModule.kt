@@ -45,6 +45,7 @@ import com.gyvacha.androidssh.domain.usecase.StopSingboxUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateConfigUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateHostUseCase
 import com.gyvacha.androidssh.domain.usecase.UpdateSshKeyUseCase
+import com.gyvacha.androidssh.utils.FingerprintManager
 import com.gyvacha.androidssh.utils.SingboxConfigFileManager
 import dagger.Module
 import dagger.Provides
@@ -184,7 +185,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSshRepository(): SshRepository = SshRepositoryImpl()
+    fun provideSshRepository(
+        fingerprintManager: FingerprintManager
+    ): SshRepository = SshRepositoryImpl(fingerprintManager)
 
     @Provides
     fun provideScanImageUseCase(repository: QrScannerRepository): ScanImageUseCase =
@@ -210,4 +213,9 @@ object AppModule {
     @Singleton
     fun provideSingboxConfigFileManager(@ApplicationContext context: Context): SingboxConfigFileManager =
         SingboxConfigFileManager(context)
+
+    @Provides
+    @Singleton
+    fun provideFingerprintManager(@ApplicationContext context: Context): FingerprintManager =
+        FingerprintManager(context)
 }

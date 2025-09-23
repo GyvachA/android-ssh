@@ -13,8 +13,17 @@ class SshConnectViaKeyUseCase @Inject constructor(
         username: String,
         privateKey: String,
         publicKey: String,
-        passphrase: String?
+        passphrase: String?,
+        onHostKeyReceived: suspend (fingerprint: String) -> Boolean
     ): SharedFlow<String> {
-        return repository.connectViaKey(host, port, username, privateKey, publicKey, passphrase)
+        return repository.connectViaKey(
+            host,
+            port,
+            username,
+            privateKey,
+            publicKey,
+            passphrase,
+            onHostKeyReceived
+        )
     }
 }

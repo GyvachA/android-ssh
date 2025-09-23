@@ -8,7 +8,7 @@ class StartSingboxUseCase(
     private val fileManager: SingboxConfigFileManager
 ) {
     suspend operator fun invoke() {
-        val configPath = fileManager.getFile().path
-        repository.start(configPath)
+        val content = fileManager.readFromFile()
+        repository.start(content)
     }
 }

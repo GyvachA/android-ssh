@@ -43,5 +43,6 @@ class SshApp : Application() {
                 Log.d("YandexAds", "Initialized")
             }
         )
+        MobileAds.setAgeRestrictedUser(true)
     }
 }

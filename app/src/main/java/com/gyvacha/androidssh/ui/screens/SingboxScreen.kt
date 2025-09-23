@@ -158,25 +158,25 @@ fun SingboxScreen(
                                                 isActive = false
                                             )
                                             viewModel.insertConfig(proxyConfig)
-                                            viewModel.updateExpandedTopAppBarMenu(false)
                                         } else {
                                             snackbarManager?.showSnackbar(errorParsing)
                                         }
+                                        viewModel.updateExpandedTopAppBarMenu(false)
                                     }
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.import_from_qr_code)) },
                                 onClick = {
-                                    navController.navigate(AppNavigation.XrayRoute.ImportFromQR)
                                     viewModel.updateExpandedTopAppBarMenu(false)
+                                    navController.navigate(AppNavigation.XrayRoute.ImportFromQR)
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.add_manually)) },
                                 onClick = {
-                                    navController.navigate(AppNavigation.XrayRoute.EditProxyConfig())
                                     viewModel.updateExpandedTopAppBarMenu(false)
+                                    navController.navigate(AppNavigation.XrayRoute.EditProxyConfig())
                                 }
                             )
                         }

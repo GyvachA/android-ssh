@@ -92,4 +92,8 @@
     <string name="service_start_error">Ошибка при запуске сервиса</string>
     <string name="more">Подробнее</string>
     <string name="empty_yet">Тут пока пусто</string>
+    <string name="new_host_detected">Обнаружен новый хост</string>
+    <string name="trust">Доверять</string>
+    <string name="reject">Отклонить</string>
+    <string name="known_hosts" translatable="false">Known hosts</string>
 </resources>

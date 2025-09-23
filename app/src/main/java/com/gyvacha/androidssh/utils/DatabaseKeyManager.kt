@@ -10,9 +10,9 @@ import java.security.SecureRandom
 
 object DatabaseKeyManager {
 
-    private const val MASTER_KEY_URI = "android-keystore://db_master_key"
-    private const val KEYSET_PREF = "db_encrypted_prefs"
-    private const val KEYSET_NAME = "encrypted_passphrase_key"
+    const val MASTER_KEY_URI = "android-keystore://db_master_key"
+    const val KEYSET_PREF = "db_encrypted_prefs"
+    const val KEYSET_NAME = "encrypted_passphrase_key"
     private const val PREF_NAME = "host_db"
     private const val PREF_DATABASE_PASSPHRASE = "encrypted_db_passphrase"
     private const val BYTE_ARRAY_SIZE = 32

@@ -11,8 +11,10 @@ import com.gyvacha.androidssh.domain.usecase.SshConnectViaPwdUseCase
 import com.gyvacha.androidssh.domain.usecase.SshDisconnectUseCase
 import com.gyvacha.androidssh.domain.usecase.SshExecuteCommandUseCase
 import com.gyvacha.androidssh.ui.state.TerminalUiState
+import com.gyvacha.androidssh.utils.FingerprintManager
 import com.gyvacha.androidssh.utils.parseAnsiToAnnotatedString
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,11 +27,14 @@ class TerminalViewModel @Inject constructor(
     private val getHostWithSshKeyUseCase: GetHostWithSshKeyUseCase,
     private val connectViaPwdUseCase: SshConnectViaPwdUseCase,
     private val connectViaSshKeyUseCase: SshConnectViaKeyUseCase,
-    private val disconnectUseCase: SshDisconnectUseCase
+    private val disconnectUseCase: SshDisconnectUseCase,
+    private val fingerprintManager: FingerprintManager
 ) : ViewModel() {
     private val outputBuilder = AnnotatedString.Builder()
     private val _uiState = MutableStateFlow(TerminalUiState())
     val uiState = _uiState.asStateFlow()
+
+    private var hostKeyContinuation: CompletableDeferred<Boolean>? = null
 
     fun updateTerminalInput(newInput: String) {
         _uiState.update {
@@ -68,11 +73,23 @@ class TerminalViewModel @Inject constructor(
         }
     }
 
+    fun confirmHostKey(approved: Boolean) {
+        _uiState.update { it.copy(pendingHostKey = null) }
+        hostKeyContinuation?.complete(approved)
+        hostKeyContinuation = null
+    }
+
+    private suspend fun waitForUserDecision(): Boolean {
+        hostKeyContinuation = CompletableDeferred()
+        return hostKeyContinuation!!.await()
+    }
+
     fun initSshConnect(hostId: Int) {
         viewModelScope.launch {
             runCatching {
                 updateIsLoading(true)
                 val hostWithSshKey = getHostWithSshKeyUseCase(hostId)
+                val hostKeyId = "${hostWithSshKey.host.hostNameOrIp}:${hostWithSshKey.host.port}"
                 _uiState.update { it.copy(hostWithSshKey = hostWithSshKey) }
                 val outputFlow = when (hostWithSshKey.host.authType) {
                     SshAuthType.PASSWORD -> {
@@ -81,7 +98,9 @@ class TerminalViewModel @Inject constructor(
                             hostWithSshKey.host.port,
                             hostWithSshKey.host.userName,
                             hostWithSshKey.host.password ?: ""
-                        )
+                        ) { fingerprint ->
+                            handleHostKey(hostKeyId, fingerprint)
+                        }
                     }
                     SshAuthType.SSH_KEY -> {
                         connectViaSshKeyUseCase(
@@ -91,7 +110,9 @@ class TerminalViewModel @Inject constructor(
                             hostWithSshKey.sshKey?.privateKey ?: "",
                             hostWithSshKey.sshKey?.publicKey ?: "",
                             hostWithSshKey.sshKey?.passphrase,
-                        )
+                        ) { fingerprint ->
+                            handleHostKey(hostKeyId, fingerprint)
+                        }
                     }
                 }
                 updateIsLoading(false)
@@ -108,6 +129,17 @@ class TerminalViewModel @Inject constructor(
                     updateIsLoading(false)
                     appendOutputLine("Error: ${err.localizedMessage}")
                 }
+        }
+    }
+
+    private suspend fun handleHostKey(host: String, fingerprint: String): Boolean {
+        return if (fingerprintManager.isKnown(host, fingerprint)) {
+            true
+        } else {
+            _uiState.update { it.copy(pendingHostKey = fingerprint) }
+            val approved = waitForUserDecision()
+            if (approved) fingerprintManager.add(host, fingerprint)
+            approved
         }
     }
 

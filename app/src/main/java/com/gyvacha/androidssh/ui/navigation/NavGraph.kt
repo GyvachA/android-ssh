@@ -78,6 +78,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
             composable<AppNavigation.HostsRoute.Terminal> { backstackEntry ->
                 val hostId = backstackEntry.toRoute<AppNavigation.HostsRoute.Terminal>().hostId
                 TerminalScreen(
+                    navController = navController,
                     hostId = hostId,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.terminal),
