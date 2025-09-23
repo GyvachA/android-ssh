@@ -67,4 +67,7 @@
     <string name="service_start_error">Error while starting service</string>
     <string name="more">More</string>
     <string name="empty_yet">It\'s empty here yet</string>
+    <string name="new_host_detected">New host detected</string>
+    <string name="trust">Trust</string>
+    <string name="reject">Reject</string>
 </resources>
