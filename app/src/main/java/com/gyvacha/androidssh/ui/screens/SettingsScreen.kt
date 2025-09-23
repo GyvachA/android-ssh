@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -17,9 +20,11 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -74,6 +79,15 @@ fun SettingsScreen(
                 onCardClick = {
                     viewModel.updateKnownHostExtended(true)
                 }
+            )
+            val context = LocalContext.current
+            SettingsCard(
+                title = stringResource(R.string.privacy_policy),
+                onCardClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, "https://gyvacha.github.io/android-ssh/".toUri())
+                    context.startActivity(intent)
+                },
+                cardImage = Icons.Filled.Info
             )
         }
 

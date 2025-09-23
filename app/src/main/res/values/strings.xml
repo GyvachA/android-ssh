@@ -96,4 +96,5 @@
     <string name="trust">Доверять</string>
     <string name="reject">Отклонить</string>
     <string name="known_hosts" translatable="false">Known hosts</string>
+    <string name="privacy_policy">Политика коонфиденциальности</string>
 </resources>

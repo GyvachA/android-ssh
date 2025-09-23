@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.gyvacha.androidssh.R
@@ -18,7 +19,8 @@ import com.gyvacha.androidssh.R
 fun SettingsCard(
     title: String,
     onCardClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cardImage: ImageVector = Icons.Filled.Key
 ) {
     BaseCard(
         modifier = modifier,
@@ -32,7 +34,7 @@ fun SettingsCard(
         ) {
             Icon(
                 modifier = Modifier.padding(end = dimensionResource(R.dimen.medium_padding)),
-                imageVector = Icons.Filled.Key,
+                imageVector = cardImage,
                 contentDescription = title
             )
             Text(title)
