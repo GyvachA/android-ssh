@@ -29,12 +29,12 @@ android {
         applicationId = "com.gyvacha.androidssh"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.1"
-        val yandexAdFeedId = localProps["YANDEX_AD_FEED_ID"] ?: ""
-        buildConfigField("String", "YANDEX_AD_FEED_ID", "\"${yandexAdFeedId}\"")
-        val yandexAdFeedIdSecond = localProps["YANDEX_AD_FEED_ID_SECOND"] ?: ""
-        buildConfigField("String", "YANDEX_AD_FEED_ID_SECOND", "\"${yandexAdFeedIdSecond}\"")
+        versionCode = 7
+        versionName = "1.1.1"
+        val yandexAdBannerId = localProps["YANDEX_AD_BANNER_ID"] ?: ""
+        buildConfigField("String", "YANDEX_AD_BANNER_ID", "\"${yandexAdBannerId}\"")
+        val yandexAdBannerIdSecond = localProps["YANDEX_AD_BANNER_ID_SECOND"] ?: ""
+        buildConfigField("String", "YANDEX_AD_BANNER_ID_SECOND", "\"${yandexAdBannerIdSecond}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true

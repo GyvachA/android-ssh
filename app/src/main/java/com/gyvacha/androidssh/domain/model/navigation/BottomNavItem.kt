@@ -31,7 +31,7 @@ sealed class BottomNavItem(
         fun getItemsList() = listOf(
             Settings to AppNavigation.SettingsRoute,
             Hosts to AppNavigation.HostsRoute,
-            Xray to AppNavigation.XrayRoute
+            Xray to AppNavigation.SingboxRoute
         )
     }
 }

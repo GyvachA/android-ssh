@@ -102,8 +102,8 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
             }
         }
 
-        navigation<AppNavigation.XrayRoute>(startDestination = AppNavigation.XrayRoute.Xray) {
-            composable<AppNavigation.XrayRoute.Xray> {
+        navigation<AppNavigation.SingboxRoute>(startDestination = AppNavigation.SingboxRoute.Singbox) {
+            composable<AppNavigation.SingboxRoute.Singbox> {
                 SingboxScreen(
                     navController = navController,
                     topAppBarParams = TopAppBarParams(
@@ -113,13 +113,13 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                     )
                 )
             }
-            composable<AppNavigation.XrayRoute.ImportFromQR> {
+            composable<AppNavigation.SingboxRoute.ImportFromQR> {
                 QrScannerScreen(
                     navController = navController
                 )
             }
-            composable<AppNavigation.XrayRoute.EditProxyConfig> { backstackEntry ->
-                val proxyConfigId = backstackEntry.toRoute<AppNavigation.XrayRoute.EditProxyConfig>().proxyConfigId
+            composable<AppNavigation.SingboxRoute.EditProxyConfig> { backstackEntry ->
+                val proxyConfigId = backstackEntry.toRoute<AppNavigation.SingboxRoute.EditProxyConfig>().proxyConfigId
                 EditProxyConfigScreen(
                     navController = navController,
                     topAppBarParams = TopAppBarParams(

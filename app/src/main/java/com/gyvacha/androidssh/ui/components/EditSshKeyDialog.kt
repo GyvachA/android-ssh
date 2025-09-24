@@ -3,6 +3,8 @@ package com.gyvacha.androidssh.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -11,7 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.SshKey
@@ -26,6 +28,7 @@ fun EditSshKeyDialog(
     sshKeyId: Int? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
         if (sshKeyId != null) {
@@ -39,6 +42,7 @@ fun EditSshKeyDialog(
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth()
+                    .verticalScroll(scrollState),
             ) {
                 TextFieldCharacterCount(
                     label = { Text(stringResource(R.string.alias) + "*") },

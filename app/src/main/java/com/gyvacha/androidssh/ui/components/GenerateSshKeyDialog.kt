@@ -3,6 +3,8 @@ package com.gyvacha.androidssh.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -15,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.SshKey
@@ -36,6 +38,7 @@ fun GenerateSshKeyDialog(
         SshKeyGenerator.Companion.Algorithm.ALGORITHM_RSA.title
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollState = rememberScrollState()
 
     val messageNotifier = LocalMessageNotifier.current
     val messageSshKeyCreated = stringResource(R.string.ssh_key_created)
@@ -61,6 +64,7 @@ fun GenerateSshKeyDialog(
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth()
+                    .verticalScroll(scrollState)
             ) {
                 TextFieldCharacterCount(
                     enabled = !uiState.isLoading,

@@ -10,22 +10,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.gyvacha.androidssh.BuildConfig
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
-import com.gyvacha.androidssh.ui.components.FeedAdList
 import com.gyvacha.androidssh.ui.components.HostCard
+import com.gyvacha.androidssh.ui.components.StickyBanner
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
-import com.gyvacha.androidssh.ui.viewmodel.FeedAdsViewModel
 import com.gyvacha.androidssh.ui.viewmodel.HostsViewModel
+import com.gyvacha.androidssh.ui.viewmodel.StickyBannerViewModel
 
 @Composable
 fun HostsScreen(
@@ -33,18 +34,23 @@ fun HostsScreen(
     topAppBarParams: TopAppBarParams,
     modifier: Modifier = Modifier,
     viewModel: HostsViewModel = hiltViewModel(),
-    feedAdsViewModel: FeedAdsViewModel = hiltViewModel()
+    stickyBannerViewModel: StickyBannerViewModel = hiltViewModel()
 ) {
     val hosts by viewModel.hosts.collectAsStateWithLifecycle()
-    val feedAd by feedAdsViewModel.feedAd.collectAsStateWithLifecycle()
+    val banner by stickyBannerViewModel.bannerAd.collectAsState()
     LaunchedEffect(Unit) {
-        feedAdsViewModel.loadFeed(BuildConfig.YANDEX_AD_FEED_ID)
+        stickyBannerViewModel.loadBanner(BuildConfig.YANDEX_AD_BANNER_ID_SECOND)
     }
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBarWithBackButton(
                 topAppBarParams
+            )
+        },
+        bottomBar = {
+            StickyBanner(
+                banner = banner
             )
         }
     ) { padding ->
@@ -81,9 +87,6 @@ fun HostsScreen(
                             navController.navigate(AppNavigation.HostsRoute.EditHost(host.hostId))
                         }
                     )
-                }
-                item {
-                    FeedAdList(feedAd = feedAd)
                 }
             }
         }

@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.gyvacha.androidssh.R
@@ -80,7 +80,9 @@ fun EditProxyConfigScreen(
                     },
                     onCancel = {
                         navController.navigateUp()
-                    }
+                    },
+                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.medium_padding))
+                        .padding(bottom = dimensionResource(R.dimen.medium_padding))
                 )
             }
         },
@@ -89,8 +91,8 @@ fun EditProxyConfigScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(dimensionResource(R.dimen.medium_padding))
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .padding(dimensionResource(R.dimen.medium_padding)),
         ) {
             Text(stringResource(R.string.proxy_type))
             Spacer(Modifier.padding(dimensionResource(R.dimen.small_padding)))
@@ -149,22 +151,27 @@ fun EditProxyConfigScreen(
                     config = config,
                     onUpdate = { viewModel.updateConfig(it) }
                 )
+
                 is ProxySpec.Vmess -> VmessConfigForm(
                     config = config,
                     onUpdate = { viewModel.updateConfig(it) }
                 )
+
                 is ProxySpec.Trojan -> TrojanConfigForm(
                     config = config,
                     onUpdate = { viewModel.updateConfig(it) }
                 )
+
                 is ProxySpec.Shadowsocks -> ShadowsocksConfigForm(
                     config = config,
                     onUpdate = { viewModel.updateConfig(it) }
                 )
+
                 is ProxySpec.Socks -> SocksConfigForm(
                     config = config,
                     onUpdate = { viewModel.updateConfig(it) }
                 )
+
                 is ProxySpec.Http -> HttpConfigForm(
                     config = config,
                     onUpdate = { viewModel.updateConfig(it) }

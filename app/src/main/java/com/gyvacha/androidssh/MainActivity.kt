@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,13 +25,18 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     keepSplash = false
                 }
-                AndroidSshApp()
+                AndroidSshApp(intent)
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 }
 
 @Composable
-fun AndroidSshApp() {
-    MainScreen()
+fun AndroidSshApp(intent: Intent) {
+    MainScreen(intent)
 }

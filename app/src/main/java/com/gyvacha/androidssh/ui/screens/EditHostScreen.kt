@@ -28,7 +28,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -133,7 +133,9 @@ fun EditHostScreen(
                     },
                     onCancel = {
                         navController.navigateUp()
-                    }
+                    },
+                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.medium_padding))
+                        .padding(bottom = dimensionResource(R.dimen.medium_padding))
                 )
             }
         }
@@ -141,8 +143,8 @@ fun EditHostScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(dimensionResource(R.dimen.medium_padding))
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .padding(dimensionResource(R.dimen.medium_padding)),
         ) {
             TextFieldCharacterCount(
                 value = uiState.hostWithSshKey.host.alias,
@@ -256,24 +258,27 @@ fun EditHostScreen(
                     }
                 }
             }
-        }
 
-        if (uiState.isShowBottomSheet && !isDialogOpen) {
-            SshKeysBottomSheet(
-                onDismissRequest = { viewModel.updateShowBottomSheet(false) },
-                generateSshKeyClick = {
-                    navController.navigate(AppNavigation.GenerateSshKey)
+            if (uiState.isShowBottomSheet && !isDialogOpen) {
+                SshKeysBottomSheet(
+                    onDismissRequest = { viewModel.updateShowBottomSheet(false) },
+                    generateSshKeyClick = {
+                        navController.navigate(AppNavigation.GenerateSshKey)
+                    }
+                ) { sshKey ->
+                    SshKeyCard(
+                        sshKey = sshKey,
+                        onClick = {
+                            viewModel.updateShowBottomSheet(false)
+                            viewModel.updateSshKey(sshKey)
+                        },
+                        actionButtonImage = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                        actionButtonDesc = stringResource(R.string.choose_ssh_key),
+                        modifier = Modifier.padding(
+                            top = padding.calculateTopPadding()
+                        )
+                    )
                 }
-            ) { sshKey ->
-                SshKeyCard(
-                    sshKey = sshKey,
-                    onClick = {
-                        viewModel.updateShowBottomSheet(false)
-                        viewModel.updateSshKey(sshKey)
-                    },
-                    actionButtonImage = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    actionButtonDesc = stringResource(R.string.choose_ssh_key)
-                )
             }
         }
     }

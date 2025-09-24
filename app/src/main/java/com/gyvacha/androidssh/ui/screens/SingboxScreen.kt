@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.screens
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -29,7 +31,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.gyvacha.androidssh.BuildConfig
@@ -41,15 +43,15 @@ import com.gyvacha.androidssh.domain.model.ProxyType
 import com.gyvacha.androidssh.domain.model.Status
 import com.gyvacha.androidssh.domain.model.navigation.AppNavigation
 import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
-import com.gyvacha.androidssh.ui.components.FeedAdList
 import com.gyvacha.androidssh.ui.components.MenuWithIcon
 import com.gyvacha.androidssh.ui.components.RequestNotificationPermission
 import com.gyvacha.androidssh.ui.components.RequestVpnPermission
 import com.gyvacha.androidssh.ui.components.SingboxConfigCard
+import com.gyvacha.androidssh.ui.components.StickyBanner
 import com.gyvacha.androidssh.ui.components.TopAppBarWithBackButton
 import com.gyvacha.androidssh.ui.utils.SingboxViewEvent
-import com.gyvacha.androidssh.ui.viewmodel.FeedAdsViewModel
 import com.gyvacha.androidssh.ui.viewmodel.SingboxViewModel
+import com.gyvacha.androidssh.ui.viewmodel.StickyBannerViewModel
 import com.gyvacha.androidssh.utils.ClipboardService
 import com.gyvacha.androidssh.utils.LocalMessageNotifier
 import com.gyvacha.androidssh.utils.ParseProxyConfig.parseProxyUri
@@ -61,7 +63,7 @@ fun SingboxScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: SingboxViewModel = hiltViewModel(),
-    feedAdsViewModel: FeedAdsViewModel = hiltViewModel()
+    stickyBannerViewModel: StickyBannerViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val configs by viewModel.configs.collectAsStateWithLifecycle()
@@ -70,14 +72,14 @@ fun SingboxScreen(
     val clipboardService = ClipboardService(LocalClipboard.current)
     val snackbarManager = LocalMessageNotifier.current
     val singboxState by viewModel.singboxState.collectAsStateWithLifecycle()
-    val feedAd by feedAdsViewModel.feedAd.collectAsStateWithLifecycle()
+    val banner by stickyBannerViewModel.bannerAd.collectAsState()
 
     val serviceErrorNoActiveConfig = stringResource(R.string.no_active_config)
     val serviceStartError = stringResource(R.string.service_start_error)
     val serviceStarted = stringResource(R.string.singbox_service_started)
 
     LaunchedEffect(Unit) {
-        feedAdsViewModel.loadFeed(BuildConfig.YANDEX_AD_FEED_ID_SECOND)
+        stickyBannerViewModel.loadBanner(BuildConfig.YANDEX_AD_BANNER_ID_SECOND)
         viewModel.eventFlow.collect { event ->
             when (event) {
                 SingboxViewEvent.ServiceErrorNoActiveConfig -> messageNotifier?.showSnackbar(
@@ -169,14 +171,14 @@ fun SingboxScreen(
                                 text = { Text(stringResource(R.string.import_from_qr_code)) },
                                 onClick = {
                                     viewModel.updateExpandedTopAppBarMenu(false)
-                                    navController.navigate(AppNavigation.XrayRoute.ImportFromQR)
+                                    navController.navigate(AppNavigation.SingboxRoute.ImportFromQR)
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.add_manually)) },
                                 onClick = {
                                     viewModel.updateExpandedTopAppBarMenu(false)
-                                    navController.navigate(AppNavigation.XrayRoute.EditProxyConfig())
+                                    navController.navigate(AppNavigation.SingboxRoute.EditProxyConfig())
                                 }
                             )
                         }
@@ -186,54 +188,59 @@ fun SingboxScreen(
         },
         bottomBar = {
             Surface(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(R.dimen.medium_padding)),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        onClick = {
-                            viewModel.requestPing()
-                        }
-                    ) {
-                        Text(stringResource(R.string.ping))
-                    }
-                    Text(
-                        text = when (uiState.pingResult) {
-                            is PingResult.Idle -> ""
-                            is PingResult.Success -> "${(uiState.pingResult as PingResult.Success).ms} ms"
-                            is PingResult.Failure -> "Error: ${(uiState.pingResult as PingResult.Failure).error}"
-                        },
+                Column {
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = dimensionResource(R.dimen.small_padding))
-                    )
-                    FloatingActionButton(
-                        onClick = {
-                            when (singboxState) {
-                                Status.Stopped -> viewModel.updateRequestPermission(true)
-                                Status.Started -> viewModel.stopSingbox()
-                                else -> {}
-                            }
-                        },
-                        shape = CircleShape,
-                        containerColor = MaterialTheme.colorScheme.primary,
+                            .fillMaxWidth()
+                            .padding(dimensionResource(R.dimen.medium_padding)),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        when (singboxState) {
-                            Status.Stopped -> Icon(
-                                Icons.Filled.PlayArrow,
-                                contentDescription = stringResource(R.string.start_singbox)
-                            )
-                            Status.Started -> Icon(
-                                Icons.Filled.Stop,
-                                contentDescription = stringResource(R.string.stop_singbox)
-                            )
-                            Status.Stopping, Status.Restarting, Status.Starting -> {
-                                CircularProgressIndicator()
+                        Button(
+                            onClick = {
+                                viewModel.requestPing()
+                            }
+                        ) {
+                            Text(stringResource(R.string.ping))
+                        }
+                        Text(
+                            text = when (uiState.pingResult) {
+                                is PingResult.Idle -> ""
+                                is PingResult.Success -> "${(uiState.pingResult as PingResult.Success).ms} ms"
+                                is PingResult.Failure -> "Error: ${(uiState.pingResult as PingResult.Failure).error}"
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = dimensionResource(R.dimen.small_padding))
+                        )
+                        FloatingActionButton(
+                            onClick = {
+                                when (singboxState) {
+                                    Status.Stopped -> viewModel.updateRequestPermission(true)
+                                    Status.Started -> viewModel.stopSingbox()
+                                    else -> {}
+                                }
+                            },
+                            shape = CircleShape,
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ) {
+                            when (singboxState) {
+                                Status.Stopped -> Icon(
+                                    Icons.Filled.PlayArrow,
+                                    contentDescription = stringResource(R.string.start_singbox)
+                                )
+                                Status.Started -> Icon(
+                                    Icons.Filled.Stop,
+                                    contentDescription = stringResource(R.string.stop_singbox)
+                                )
+                                Status.Stopping, Status.Restarting, Status.Starting -> {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
                     }
+                    StickyBanner(
+                        banner = banner
+                    )
                 }
             }
         },
@@ -264,12 +271,9 @@ fun SingboxScreen(
                         viewModel.deleteConfig(config)
                     },
                     onUpdateConfig = {
-                        navController.navigate(AppNavigation.XrayRoute.EditProxyConfig(it))
+                        navController.navigate(AppNavigation.SingboxRoute.EditProxyConfig(it))
                     }
                 )
-            }
-            item {
-                FeedAdList(feedAd = feedAd)
             }
         }
     }

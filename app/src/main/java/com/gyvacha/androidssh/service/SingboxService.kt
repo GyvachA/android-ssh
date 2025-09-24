@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.gyvacha.androidssh.MainActivity
 import com.gyvacha.androidssh.R
 import com.gyvacha.androidssh.domain.model.Status
 import com.gyvacha.androidssh.receiver.SingboxActionReceiver
@@ -613,11 +614,22 @@ class SingboxService : VpnService() {
             restartIntent,
             PendingIntent.FLAG_IMMUTABLE
         )
+        val launchIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(NAVIGATE_TO_SINGBOX, true)
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            2,
+            launchIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
             .setContentTitle("Singbox VPN")
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setOngoing(true)
@@ -657,6 +669,7 @@ class SingboxService : VpnService() {
         const val NOTIFICATION_ID = 1001
         const val ACTION_STOP = "singbox_stop"
         const val ACTION_RESTART = "singbox_restart"
+        const val NAVIGATE_TO_SINGBOX = "navigate_to_singbox"
 
         private val _serviceStatus = MutableStateFlow(Status.Stopped)
         val serviceStatus: StateFlow<Status> = _serviceStatus.asStateFlow()
