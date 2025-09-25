@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -121,6 +122,7 @@ fun EditHostScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .imePadding()
             ) {
                 BottomFabSaveActions(
                     isSaveButtonActive = uiState.isFormValid,
@@ -135,7 +137,6 @@ fun EditHostScreen(
                         navController.navigateUp()
                     },
                     modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.medium_padding))
-                        .padding(bottom = dimensionResource(R.dimen.medium_padding))
                 )
             }
         }
@@ -264,7 +265,10 @@ fun EditHostScreen(
                     onDismissRequest = { viewModel.updateShowBottomSheet(false) },
                     generateSshKeyClick = {
                         navController.navigate(AppNavigation.GenerateSshKey)
-                    }
+                    },
+                    modifier = Modifier.padding(
+                        top = padding.calculateTopPadding()
+                    )
                 ) { sshKey ->
                     SshKeyCard(
                         sshKey = sshKey,
@@ -273,10 +277,7 @@ fun EditHostScreen(
                             viewModel.updateSshKey(sshKey)
                         },
                         actionButtonImage = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                        actionButtonDesc = stringResource(R.string.choose_ssh_key),
-                        modifier = Modifier.padding(
-                            top = padding.calculateTopPadding()
-                        )
+                        actionButtonDesc = stringResource(R.string.choose_ssh_key)
                     )
                 }
             }

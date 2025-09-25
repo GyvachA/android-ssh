@@ -1,9 +1,7 @@
 package com.gyvacha.androidssh.ui.screens
 
 import android.content.Intent
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -23,8 +21,6 @@ import com.gyvacha.androidssh.ui.navigation.BottomNavGraph
 import com.gyvacha.androidssh.ui.navigation.BottomNavigationBar
 import com.gyvacha.androidssh.utils.LocalMessageNotifier
 import com.gyvacha.androidssh.utils.SnackbarNotifier
-import com.gyvacha.androidssh.utils.applyNavBarPadding
-import com.gyvacha.androidssh.utils.applySystemBarsPadding
 
 @Composable
 fun MainScreen(intent: Intent, modifier: Modifier = Modifier) {
@@ -56,13 +52,11 @@ fun MainScreen(intent: Intent, modifier: Modifier = Modifier) {
     CompositionLocalProvider(LocalMessageNotifier provides snackbarNotifier) {
         Scaffold(
             modifier = modifier,
-            contentWindowInsets = WindowInsets.safeDrawing,
             bottomBar = {
                 if (shouldShowBottomBar) {
                     BottomNavigationBar(
                         navController = navController,
                         currentDestination = currentDestination,
-                        modifier = Modifier.applyNavBarPadding()
                     )
                 }
             },
@@ -71,7 +65,6 @@ fun MainScreen(intent: Intent, modifier: Modifier = Modifier) {
             BottomNavGraph(
                 navController = navController,
                 modifier = Modifier.padding(innerPadding)
-                    .applySystemBarsPadding()
             )
         }
     }

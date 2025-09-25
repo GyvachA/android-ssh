@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     keepSplash = false
                 }
-                AndroidSshApp(intent)
+                AndroidSshApp(intent = intent)
             }
         }
     }
@@ -38,5 +38,5 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AndroidSshApp(intent: Intent) {
-    MainScreen(intent)
+    MainScreen(intent = intent)
 }

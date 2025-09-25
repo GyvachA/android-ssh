@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,6 +67,7 @@ fun EditProxyConfigScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .imePadding()
             ) {
                 BottomFabSaveActions(
                     isSaveButtonActive = uiState.isFormValid,
@@ -82,7 +84,6 @@ fun EditProxyConfigScreen(
                         navController.navigateUp()
                     },
                     modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.medium_padding))
-                        .padding(bottom = dimensionResource(R.dimen.medium_padding))
                 )
             }
         },

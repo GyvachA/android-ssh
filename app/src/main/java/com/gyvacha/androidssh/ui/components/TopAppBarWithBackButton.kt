@@ -1,5 +1,6 @@
 package com.gyvacha.androidssh.ui.components
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +18,7 @@ import com.gyvacha.androidssh.domain.model.navigation.TopAppBarParams
 @Composable
 fun TopAppBarWithBackButton(topAppBarParams: TopAppBarParams, modifier: Modifier = Modifier) {
     TopAppBar(
+        windowInsets = WindowInsets(0, 0, 0, 0),
         title = { Text(topAppBarParams.screenTitle) },
         modifier = modifier,
         navigationIcon = {

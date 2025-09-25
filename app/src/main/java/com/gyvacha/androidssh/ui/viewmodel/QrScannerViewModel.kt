@@ -49,4 +49,12 @@ class QrScannerViewModel @Inject constructor(
             insertConfigUseCase(config)
         }
     }
+
+    fun updateShowPermissionRationale(newState: Boolean) {
+        _uiState.update {
+            it.copy(
+                showPermissionRationale = newState
+            )
+        }
+    }
 }

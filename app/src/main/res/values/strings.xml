@@ -97,4 +97,8 @@
     <string name="reject">Отклонить</string>
     <string name="known_hosts" translatable="false">Known hosts</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="permission_required">Требуется разрешение</string>
+    <string name="open_settings">Открыть настройки</string>
+    <string name="camera_permission_explanation">Разрешение на использование камеры нужно для сканирования QR-кодов с настройками прокси.      Без него вы сможете добавлять конфигурации только вручную или из буфера обмена.</string>
+    <string name="notification_permission_explanation">Разрешение на уведомления обязательно для работы VPN.      Без него приложение не сможет показывать статус подключения и управлять VPN.</string>
 </resources>

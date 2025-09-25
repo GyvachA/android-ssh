@@ -71,4 +71,8 @@
     <string name="trust">Trust</string>
     <string name="reject">Reject</string>
     <string name="privacy_policy">Privacy policy</string>
+    <string name="permission_required">Permission required</string>
+    <string name="open_settings">Open settings</string>
+    <string name="camera_permission_explanation">Camera permission is required to scan QR codes with proxy settings.      Without it, you can only add configurations manually or from the clipboard.</string>
+    <string name="notification_permission_explanation">Notification permission is required for VPN to work.      Without it, the app cannot show connection status or control VPN.</string>
 </resources>

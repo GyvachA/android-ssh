@@ -196,6 +196,7 @@ fun SingboxScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Button(
+                            enabled = configs.any { it.isActive },
                             onClick = {
                                 viewModel.requestPing()
                             }
