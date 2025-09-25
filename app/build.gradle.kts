@@ -29,8 +29,8 @@ android {
         applicationId = "com.gyvacha.androidssh"
         minSdk = 26
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.1.2"
+        versionCode = 9
+        versionName = "1.1.3"
         val yandexAdBannerId = localProps["YANDEX_AD_BANNER_ID"] ?: ""
         buildConfigField("String", "YANDEX_AD_BANNER_ID", "\"${yandexAdBannerId}\"")
         val yandexAdBannerIdSecond = localProps["YANDEX_AD_BANNER_ID_SECOND"] ?: ""
