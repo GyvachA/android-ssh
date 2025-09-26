@@ -7,12 +7,12 @@ junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
-composeBom = "2025.09.00"
+composeBom = "2025.09.01"
 hilt = "2.57.1"
 ksp = "2.2.0-2.0.2"
-navigationCompose = "2.9.4"
+navigationCompose = "2.9.5"
 hiltNavigationCompose = "1.3.0"
-room = "2.8.0"
+room = "2.8.1"
 database-sqlcipher = "4.10.0"
 materialIcons = "1.7.8"
 kotlinxSerialization = "1.9.0"
@@ -28,6 +28,9 @@ barcode-scanning = "17.3.0"
 camerax = "1.5.0"
 yandex-ads = "7.16.0"
 recyclerview = "1.4.0"
+firebase-bom = "34.3.0"
+firebase-crashlytics-plugin = "3.0.6"
+google-services-plugin = "4.4.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -69,6 +72,8 @@ camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "
 jsch = { group = "com.github.mwiede", name = "jsch", version.ref = "jsch" }
 yandex-ads = { group = "com.yandex.android", name = "mobileads", version.ref = "yandex-ads" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ndk" }
 
 
 [plugins]
@@ -79,4 +84,5 @@ kotlinAndroidKsp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidHilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-
+firebaseCrashlyticsPlugin = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
+googleServicesPlugin = { id = "com.google.gms.google-services", version.ref = "google-services-plugin" }

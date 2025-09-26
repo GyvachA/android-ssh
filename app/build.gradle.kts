@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.serializationKotlin)
     alias(libs.plugins.kotlinCompose)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.googleServicesPlugin)
+    alias(libs.plugins.firebaseCrashlyticsPlugin)
 }
 
 detekt {
@@ -29,8 +31,8 @@ android {
         applicationId = "com.gyvacha.androidssh"
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.1.3"
+        versionCode = 10
+        versionName = "1.1.4"
         val yandexAdBannerId = localProps["YANDEX_AD_BANNER_ID"] ?: ""
         buildConfigField("String", "YANDEX_AD_BANNER_ID", "\"${yandexAdBannerId}\"")
         val yandexAdBannerIdSecond = localProps["YANDEX_AD_BANNER_ID_SECOND"] ?: ""
@@ -130,6 +132,8 @@ dependencies {
     implementation(libs.mlkit.barcode.scanning)
     implementation(libs.yandex.ads)
     implementation(libs.androidx.recyclerview)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics.ktx)
     ksp(libs.room.compiler)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)

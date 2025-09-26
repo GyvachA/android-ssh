@@ -39,7 +39,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                     navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.label_servers),
-                        canNavigateBack = navController.previousBackStackEntry != null,
+                        canNavigateBack = false,
                         navigateUp = navController::navigateUp,
                         actions = {
                             IconButton(onClick = {
@@ -95,7 +95,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                     navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.label_settings),
-                        canNavigateBack = navController.previousBackStackEntry != null,
+                        canNavigateBack = false,
                         navigateUp = navController::navigateUp
                     )
                 )
@@ -108,7 +108,7 @@ fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifi
                     navController = navController,
                     topAppBarParams = TopAppBarParams(
                         screenTitle = stringResource(R.string.label_singbox),
-                        canNavigateBack = navController.previousBackStackEntry != null,
+                        canNavigateBack = false,
                         navigateUp = navController::navigateUp
                     )
                 )
