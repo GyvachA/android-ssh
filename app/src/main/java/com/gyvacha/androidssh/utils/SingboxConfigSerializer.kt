@@ -132,18 +132,37 @@ object SingboxConfigSerializer {
             }
 
             is ProxySpec.Vmess -> {
-                val transportConfig = when (spec.transport) {
+                val transportConfig = when (val t = spec.transport) {
                     is Transport.WS -> TransportConfig(
                         type = "ws",
-                        path = spec.transport.path,
-                        headers = mapOf("Host" to spec.transport.hostHeader).takeIf {
-                            spec.transport.hostHeader.isNotBlank()
+                        path = t.path,
+                        headers = if (t.hostHeader.isNotBlank()) {
+                            mapOf("Host" to t.hostHeader)
+                        } else {
+                            emptyMap()
                         }
                     )
                     is Transport.GRPC -> TransportConfig(
                         type = "grpc",
-                        serviceName = spec.transport.serviceName
+                        serviceName = t.serviceName
                     )
+                    else -> null
+                }
+
+                val tlsConfig = when (spec.security.lowercase()) {
+                    "tls" -> {
+                        val alpn = when (spec.transport) {
+                            is Transport.GRPC -> listOf("h2")
+                            is Transport.WS -> listOf("http/1.1")
+                            else -> null
+                        }
+                        TlsConfig(
+                            enabled = true,
+                            serverName = spec.sni ?: spec.server,
+                            insecure = false,
+                            alpn = alpn
+                        )
+                    }
                     else -> null
                 }
 
@@ -155,32 +174,30 @@ object SingboxConfigSerializer {
                     uuid = spec.uuid,
                     alterId = spec.alterId,
                     transport = transportConfig,
-                    tls = if (spec.port == 443 || spec.sni != null) {
+                    tls = tlsConfig
+                )
+            }
+
+            is ProxySpec.Trojan -> {
+                val useTls = spec.security?.lowercase() != "none"
+                Outbound(
+                    type = "trojan",
+                    tag = "proxy",
+                    server = spec.server,
+                    serverPort = spec.port,
+                    password = spec.password,
+                    tls = if (useTls) {
                         TlsConfig(
                             enabled = true,
                             serverName = spec.sni ?: spec.server,
                             insecure = false,
-                            alpn = listOf("h2", "http/1.1")
+                            alpn = spec.alpn ?: listOf("h2", "http/1.1")
                         )
                     } else {
                         null
                     }
                 )
             }
-
-            is ProxySpec.Trojan -> Outbound(
-                type = "trojan",
-                tag = "proxy",
-                server = spec.server,
-                serverPort = spec.port,
-                password = spec.password,
-                tls = TlsConfig(
-                    enabled = true,
-                    serverName = spec.sni ?: spec.server,
-                    insecure = false,
-                    alpn = spec.alpn ?: listOf("h2", "http/1.1")
-                )
-            )
 
             is ProxySpec.Shadowsocks -> Outbound(
                 type = "shadowsocks",

@@ -31,11 +31,11 @@ fun ShadowsocksConfigForm(
         )
 
         TextFieldCharacterCount(
-            value = config.password,
+            value = config.password ?: "",
             onValueChange = { onUpdate(config.copy(password = it)) },
             label = { Text(stringResource(R.string.password) + "*") },
             maxLength = maxTextLength,
-            isError = config.password.isBlank(),
+            isError = config.password.isNullOrBlank(),
             errorMessage = getTextFieldErrorMessage(TextFieldErrors.STRING_BLANK_ERROR)
         )
     }

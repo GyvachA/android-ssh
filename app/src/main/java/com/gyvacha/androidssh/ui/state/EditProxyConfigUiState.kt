@@ -27,8 +27,8 @@ data class EditProxyConfigUiState(
         val typeValid = when (cfg) {
             is ProxySpec.Vless -> cfg.uuid.isNotBlank()
             is ProxySpec.Vmess -> cfg.uuid.isNotBlank()
-            is ProxySpec.Trojan -> cfg.password.isNotBlank()
-            is ProxySpec.Shadowsocks -> cfg.password.isNotBlank() && cfg.method.isNotBlank()
+            is ProxySpec.Trojan -> !cfg.password.isNullOrBlank()
+            is ProxySpec.Shadowsocks -> !cfg.password.isNullOrBlank() && cfg.method.isNotBlank()
             is ProxySpec.Socks -> true
             is ProxySpec.Http -> true
         }

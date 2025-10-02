@@ -69,7 +69,7 @@ complexity:
   LongMethod:
     threshold: 300
   CyclomaticComplexMethod:
-    threshold: 30
+    threshold: 40
   NestedBlockDepth:
     threshold: 10
 

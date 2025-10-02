@@ -28,9 +28,10 @@ sealed class ProxySpec {
     data class Trojan(
         override val server: String,
         override val port: Int,
-        val password: String,
+        val password: String?,
         val sni: String? = null,
-        val alpn: List<String>? = null
+        val alpn: List<String>? = null,
+        val security: String? = null
     ) : ProxySpec()
 
     @Serializable
@@ -42,7 +43,9 @@ sealed class ProxySpec {
         val alterId: Int = 0,
         val security: String = "auto",
         val transport: Transport = Transport.TCP,
+        val tls: Boolean = false,
         val sni: String? = null,
+        val alpn: List<String>? = null,
         val name: String? = null
     ) : ProxySpec()
 
@@ -52,7 +55,7 @@ sealed class ProxySpec {
         override val server: String,
         override val port: Int,
         val method: String,
-        val password: String,
+        val password: String?,
         val plugin: String? = null
     ) : ProxySpec()
 

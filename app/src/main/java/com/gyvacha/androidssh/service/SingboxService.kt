@@ -376,7 +376,10 @@ class SingboxService : VpnService() {
 
         override fun writeLog(message: String?) {
             scope.launch {
-                message?.let { sendLog(it) }
+                message?.let {
+                    // Log.d(SINGBOX_SERVICE_TAG, it)
+                    sendLog(it)
+                }
             }
         }
     }
