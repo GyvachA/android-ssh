@@ -127,6 +127,7 @@ class EditHostViewModel @Inject constructor(
     }
 
     fun getHostWithSshKey(newHostId: Int) {
+        if (_uiState.value.hostWithSshKey.host.hostId == newHostId) return
         viewModelScope.launch {
             val hostWithSshKey = getHostWithSshKeyUseCase(newHostId)
             updateHostWithSshKey(hostWithSshKey)

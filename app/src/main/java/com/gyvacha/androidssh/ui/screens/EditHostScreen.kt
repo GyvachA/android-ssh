@@ -84,11 +84,12 @@ fun EditHostScreen(
             }
         }
     }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(hostId) {
         if (hostId != null) {
             viewModel.getHostWithSshKey(hostId)
         }
-
+    }
+    LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
                 is EditHostViewEvent.DatabaseExceptionCaught -> messageNotifier?.showSnackbar(

@@ -30,7 +30,7 @@ fun EditSshKeyDialog(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(sshKeyId) {
         if (sshKeyId != null) {
             viewModel.getSshKey(sshKeyId)
         }

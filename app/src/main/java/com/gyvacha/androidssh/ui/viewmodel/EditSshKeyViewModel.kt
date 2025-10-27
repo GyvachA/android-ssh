@@ -95,6 +95,7 @@ class EditSshKeyViewModel @Inject constructor(
     }
 
     fun getSshKey(sshKeyId: Int) {
+        if (_uiState.value.sshKey.sshKeyId == sshKeyId) return
         viewModelScope.launch {
             val sshKey = getSshKeyUseCase(sshKeyId)
             updateSshKey(sshKey)

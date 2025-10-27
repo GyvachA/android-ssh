@@ -74,6 +74,7 @@ class EditProxyConfigViewModel @Inject constructor(
     }
 
     fun getProxyConfig(proxyConfigId: Long) {
+        if (_uiState.value.proxyConfig.id == proxyConfigId) return
         viewModelScope.launch {
             getProxyConfigUseCase(proxyConfigId)?.let {
                 updateProxy(it)

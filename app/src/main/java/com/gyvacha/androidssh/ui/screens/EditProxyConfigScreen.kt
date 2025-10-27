@@ -55,7 +55,7 @@ fun EditProxyConfigScreen(
     val scrollState = rememberScrollState()
     val chipsScrollState = rememberScrollState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(proxyConfigId) {
         if (proxyConfigId != null) {
             viewModel.getProxyConfig(proxyConfigId)
         }

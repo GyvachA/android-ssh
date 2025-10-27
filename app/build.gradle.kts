@@ -31,8 +31,8 @@ android {
         applicationId = "com.gyvacha.androidssh"
         minSdk = 26
         targetSdk = 36
-        versionCode = 11
-        versionName = "1.1.5"
+        versionCode = 12
+        versionName = "1.1.6"
         val yandexAdBannerId = localProps["YANDEX_AD_BANNER_ID"] ?: ""
         buildConfigField("String", "YANDEX_AD_BANNER_ID", "\"${yandexAdBannerId}\"")
         val yandexAdBannerIdSecond = localProps["YANDEX_AD_BANNER_ID_SECOND"] ?: ""
@@ -134,6 +134,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics.ktx)
+    implementation(libs.firebase.analytics)
     ksp(libs.room.compiler)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)

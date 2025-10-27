@@ -85,6 +85,7 @@ class TerminalViewModel @Inject constructor(
     }
 
     fun initSshConnect(hostId: Int) {
+        if (_uiState.value.hostWithSshKey.host.hostId == hostId) return
         viewModelScope.launch {
             runCatching {
                 updateIsLoading(true)

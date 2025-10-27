@@ -45,7 +45,7 @@ fun TerminalScreen(
     val outputScrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(hostId) {
         viewModel.initSshConnect(hostId)
     }
     LaunchedEffect(uiState.terminalOutput) {
